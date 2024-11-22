@@ -127,15 +127,18 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="gameBoard.cpp" />
     <ClCompile Include="gameConfig.cpp" />
     <ClCompile Include="general.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Mario.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="gameBoard.h" />
     <ClInclude Include="gameConfig.h" />
     <ClInclude Include="general.h" />
     <ClInclude Include="Mario.h" />
+    <ClInclude Include="point.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
