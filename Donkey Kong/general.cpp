@@ -1,6 +1,7 @@
 #include <windows.h> // for gotoxy
 #include <process.h> // for system
 #include <iostream>
+#include "general.h"
 
 
 void gotoxy(int x, int y) {
@@ -17,4 +18,15 @@ void gotoxy(int x, int y) {
 void clrsrc()
 {
 	system("cls");
+}
+
+void ShowConsoleCursor(bool showFlag)
+{
+		HANDLE out = GetStdHandle(STD_OUTPUT_HANDLE);
+
+		CONSOLE_CURSOR_INFO     cursorInfo;
+
+		GetConsoleCursorInfo(out, &cursorInfo);
+		cursorInfo.bVisible = showFlag; // set the cursor visibility
+		SetConsoleCursorInfo(out, &cursorInfo);
 }

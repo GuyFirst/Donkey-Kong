@@ -3,6 +3,7 @@
 #include "general.h"
 
 
+
 void Mario::draw(char ch)
 {
 	gotoxy(m_x, m_y);
@@ -34,11 +35,13 @@ void Mario::move(gameConfig::eKeys key)
 		m_diff_y = 0;
 		break;
 	}
-	m_x += m_diff_x;
-	if (m_x > 78 || m_x < 3)
+	if ((m_x > gameBoard::MIN_X + gameBoard::GAME_WIDTH - 2 && key == gameConfig::eKeys::RIGHT) || (m_x < gameBoard::MIN_X + 3 && key == gameConfig::eKeys::LEFT))
 		m_diff_x = 0;
-
-	m_y += m_diff_y;
-	if (m_y > 25 || m_y < 2)
+	m_x += m_diff_x;
+	
+	
+	
+	if ((m_y > gameBoard::MIN_Y+gameBoard::GAME_HEIGHT - 2 &&key == gameConfig::eKeys::DOWN) || (m_y < gameBoard::MIN_Y+2 && key == gameConfig::eKeys::UP))
 		m_diff_y = 0;
+	m_y += m_diff_y;
 }

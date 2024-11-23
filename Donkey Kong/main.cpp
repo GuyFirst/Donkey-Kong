@@ -6,26 +6,17 @@
 #include "gameBoard.h"
 #include "point.h"
 
-//we did a mario that moved to our keyboard response/
-//we need to realize why is the x moving slower than the y
-//and also make a real border for the game
 
 
 int main()
 {
-	point p[4];
-	p[0].init(2, 2);
-	p[1].init(78, 2);
-	p[2].init(78, 23);
-	p[3].init(2,23);
-
+	ShowConsoleCursor(false);
 	gameBoard game;
-	game.draw(p);
-
-   /* Mario mario;
+	game.draw();
+    Mario mario;
+	char keyPressed = (char)(gameConfig::eKeys::STAY);
 	while (true)
 	{
-		char keyPressed = 0;
 		if (_kbhit())
 		{
 			keyPressed = _getch();
@@ -34,11 +25,12 @@ int main()
 		}
 		
 		mario.draw('@');
-		Sleep(10);
+		Sleep(30);
 		mario.draw(' ');
 		mario.move((gameConfig::eKeys)keyPressed);
-	}*/
+	}
 	
+	gotoxy(0, game.GAME_HEIGHT + game.MIN_Y + 2);
 }
 
 
