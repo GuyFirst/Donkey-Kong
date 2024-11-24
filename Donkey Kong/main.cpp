@@ -14,6 +14,7 @@ int main()
 	gameBoard game;
 	game.draw();
     Mario mario;
+	
 	char keyPressed = (char)(gameConfig::eKeys::STAY);
 	while (true)
 	{
@@ -22,12 +23,13 @@ int main()
 			keyPressed = _getch();
 			if (keyPressed == (int)gameConfig::eKeys::ESC)
 				break;
+			
 		}
-		
 		mario.draw('@');
 		Sleep(30);
 		mario.draw(' ');
 		mario.move((gameConfig::eKeys)keyPressed);
+		
 	}
 	
 	gotoxy(0, game.GAME_HEIGHT + game.MIN_Y + 2);
