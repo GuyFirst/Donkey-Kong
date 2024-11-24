@@ -1,10 +1,10 @@
-#include "gameBoard.h"
+#include "Map.h"
 #include "general.h"
 #include "platform.h"
 #include <iostream>
 
 
-void gameBoard::draw()
+void Map::draw()
 {
 	//2 loops drawing ths borders of the game
 	for (int col = this->MIN_X; col < this->GAME_WIDTH + this->MIN_X; col++)
@@ -22,7 +22,10 @@ void gameBoard::draw()
 		std::cout << "||";
 	}
 	platform p;
-	p.init('=', 7, 20);
+	p.init('=', 7, 20); //bottom left platform 
 	p.draw();
+	p.init('=', 30, 5, 25); //paulina platform
+	p.draw();
+	
 
 }

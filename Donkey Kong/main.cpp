@@ -3,7 +3,7 @@
 #include "general.h"
 #include <conio.h> //for kbhit_ getch
 #include <Windows.h>
-#include "gameBoard.h"
+#include "Map.h"
 #include "point.h"
 
 
@@ -11,10 +11,9 @@
 int main()
 {
 	ShowConsoleCursor(false);
-	gameBoard game;
-	game.draw();
+	Map map;
+	map.draw();
 	Mario mario;
-	int counter = 0;
 	char keyPressed = (char)(gameConfig::eKeys::STAY);
 	while (true)
 	{
@@ -31,5 +30,5 @@ int main()
 
 	}
 
-	gotoxy(0, game.GAME_HEIGHT + game.MIN_Y + 2);
+	gotoxy(0, map.GAME_HEIGHT + map.MIN_Y + 2);
 }

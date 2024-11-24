@@ -127,7 +127,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="gameBoard.cpp" />
+    <ClCompile Include="Map.cpp" />
     <ClCompile Include="gameConfig.cpp" />
     <ClCompile Include="general.cpp" />
     <ClCompile Include="main.cpp" />
@@ -135,7 +135,7 @@
     <ClCompile Include="platform.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="gameBoard.h" />
+    <ClInclude Include="Map.h" />
     <ClInclude Include="gameConfig.h" />
     <ClInclude Include="general.h" />
     <ClInclude Include="Mario.h" />

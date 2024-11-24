@@ -1,6 +1,6 @@
 #pragma once
 #include "point.h"
-class gameBoard
+class Map
 {
 public:
 	static constexpr int GAME_WIDTH  = 76;

@@ -41,13 +41,13 @@ void Mario::move(gameConfig::eKeys key)
 		m_diff_y = 0;
 		break;
 	}
-	if ((m_x > gameBoard::MIN_X + gameBoard::GAME_WIDTH - 2 && key == gameConfig::eKeys::RIGHT) || (m_x < gameBoard::MIN_X + 3 && key == gameConfig::eKeys::LEFT))
+	if ((m_x > Map::MIN_X + Map::GAME_WIDTH - 2 && key == gameConfig::eKeys::RIGHT) || (m_x < Map::MIN_X + 3 && key == gameConfig::eKeys::LEFT))
 		m_diff_x = 0;
 	m_x += m_diff_x;
 
 
 
-	if ((m_y > gameBoard::MIN_Y + gameBoard::GAME_HEIGHT - 2 && key == gameConfig::eKeys::DOWN) || (m_y < gameBoard::MIN_Y + 2 && key == gameConfig::eKeys::UP))
+	if ((m_y > Map::MIN_Y + Map::GAME_HEIGHT - 2 && key == gameConfig::eKeys::DOWN) || (m_y < Map::MIN_Y + 2 && key == gameConfig::eKeys::UP))
 		m_diff_y = 0;
 	m_y += m_diff_y;
 }

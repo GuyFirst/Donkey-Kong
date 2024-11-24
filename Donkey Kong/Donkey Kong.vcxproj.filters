@@ -27,7 +27,7 @@
     <ClCompile Include="general.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="gameBoard.cpp">
+    <ClCompile Include="Map.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="platform.cpp">
@@ -44,7 +44,7 @@
     <ClInclude Include="general.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="gameBoard.h">
+    <ClInclude Include="Map.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="point.h">
