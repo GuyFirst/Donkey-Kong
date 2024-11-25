@@ -53,20 +53,28 @@ void Mario::move(gameConfig::eKeys key)
 
 void Mario::jump()
 {
-	if (isNearWall(m_diff_x))
-		m_diff_x = 0;
+	char curr = this->getMapChar();
 	int jumpHeight = 2;
 	int jumpDuration = 100;
+	if (isNearWall(m_diff_x))
+		m_diff_x = 0;
 	m_diff_y = (int)gameConfig::Direction::NEGATIVE;
 	for (int i = 0; i < jumpHeight; i++)
 	{
 		if (isNearWall(m_diff_x))
 			m_diff_x = 0;
-		this->draw(' ');
+		if (curr == 'H')
+			this->draw('H');
+		else
+			this->draw(' ');
 		m_x += m_diff_x;
 		m_y += m_diff_y;
-		this->draw('@');
-		Sleep(30);
+		curr = this->getMapChar();
+		if (curr == 'H')
+			this->draw('#');
+		else
+			this->draw('@');
+		Sleep(70);
 	}
 	m_diff_y = (int)gameConfig::Direction::POSITIVE;
 	Sleep(jumpDuration);
@@ -74,13 +82,23 @@ void Mario::jump()
 	{
 		if (isNearWall(m_diff_x))
 			m_diff_x = 0;
-		this->draw(' ');
+		if (curr == 'H')
+			this->draw('H');
+		else
+			this->draw(' ');
 		m_x += m_diff_x;
 		m_y += m_diff_y;
-		this->draw('@');
-		Sleep(30);
+		curr = this->getMapChar();
+		if (curr == 'H')
+			this->draw('#');
+		else
+			this->draw('@');
+		Sleep(70);
 	}
-	this->draw(' ');
+	if (curr == 'H')
+		this->draw('H');
+	else
+		this->draw(' ');
 	m_diff_y = 0;
 }
 

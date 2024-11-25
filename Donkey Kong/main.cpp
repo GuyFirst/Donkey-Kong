@@ -26,10 +26,17 @@ int main()
 				break;
 		}
 		char curr = mario.getMapChar();
-		mario.draw('@');
-		Sleep(50);
-		mario.draw(' ');
-		mario.move((gameConfig::eKeys)keyPressed);
+		if (curr == 'H')
+			mario.draw('#');
+		else
+			mario.draw('@');
+		Sleep(70);
+		if (curr == 'H')
+			mario.draw('H');
+		else
+			mario.draw(' ');
+
+			mario.move((gameConfig::eKeys)keyPressed);
 		keyPressed = 0;
 
 	}
