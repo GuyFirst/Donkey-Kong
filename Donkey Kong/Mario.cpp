@@ -18,29 +18,20 @@ void Mario::draw(char ch)
 
 void Mario::move(gameConfig::eKeys key)
 {
-	static int counter = 0;
 	switch (key)
 	{
 	case gameConfig::eKeys::LEFT:
-		if (isNearBorder(key))
-			return;
 		m_diff_x = -1;
 		m_diff_y = 0;
 		break;
 	case gameConfig::eKeys::RIGHT:
-		if (isNearBorder(key))
-			return;
 		m_diff_x = 1;
 		m_diff_y = 0;
 		break;
 	case gameConfig::eKeys::UP:
-		if (isNearBorder(key))
-			return;
 			jump();
 		break;
 	case gameConfig::eKeys::DOWN:
-		if (isNearBorder(key))
-			return;
 		m_diff_x = 0;
 		m_diff_y = 1;
 		break;
@@ -49,6 +40,11 @@ void Mario::move(gameConfig::eKeys key)
 		m_diff_y = 0;
 		return;
 	}
+	if (isNearBorderX(m_diff_x))
+	{
+		m_diff_x = 0;
+	}
+		
 	m_x += m_diff_x;
 	m_y += m_diff_y;
 	
@@ -90,7 +86,10 @@ void Mario::jump()
 	m_diff_y = 0;
 }
 
-bool Mario::isNearBorder(gameConfig::eKeys key)
+bool Mario::isNearBorderX(int dir)
 {
+	if ((this->map->originalMap[Map::MIN_Y+ m_y][ m_x + m_diff_x-Map::MIN_X]) != ' ')
+		return true;
 	return false;
+	
 }

@@ -30,9 +30,6 @@
     <ClCompile Include="Map.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="platform.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Mario.h">
@@ -48,9 +45,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="point.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="platform.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

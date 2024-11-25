@@ -132,14 +132,12 @@
     <ClCompile Include="general.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Mario.cpp" />
-    <ClCompile Include="platform.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Map.h" />
     <ClInclude Include="gameConfig.h" />
     <ClInclude Include="general.h" />
     <ClInclude Include="Mario.h" />
-    <ClInclude Include="platform.h" />
     <ClInclude Include="point.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

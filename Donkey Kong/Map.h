@@ -33,8 +33,8 @@ public:
     };
 	static constexpr int MIN_X = 2;
 	static constexpr int MIN_Y = 2;
-	char currentMap[Map::GAME_HEIGHT][Map::GAME_WIDTH + 1] = {};
-	void resetBoard() {
+	char currentMap[Map::GAME_HEIGHT][Map::GAME_WIDTH] = {};
+	void resetMap() {
         for (int i = 0; i < Map::GAME_HEIGHT; ++i)
             memcpy(currentMap[i], originalMap[i], Map::GAME_WIDTH + 1);
 	}

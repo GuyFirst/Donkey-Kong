@@ -12,14 +12,14 @@ int main()
 {
 	ShowConsoleCursor(false);
 	Map m;
-	m.resetBoard();
+	m.resetMap();
 	m.printMap();
 	Mario mario;
 	mario.map = &m;
 	char keyPressed = (char)(gameConfig::eKeys::STAY);
 	while (true)
 	{
-		
+		keyPressed = 0;
 		if (_kbhit())
 		{
 			keyPressed = _getch();
