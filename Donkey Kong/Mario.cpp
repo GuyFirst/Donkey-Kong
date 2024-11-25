@@ -61,11 +61,15 @@ void Mario::move(gameConfig::eKeys key)
 
 void Mario::jump()
 {
+	if (isNearBorderX(m_diff_x))
+		m_diff_x = 0;
 	int jumpHeight = 2;
 	int jumpDuration = 100;
 	m_diff_y = -1;
 	for (int i = 0; i < jumpHeight; i++)
 	{
+		if (isNearBorderX(m_diff_x))
+			m_diff_x = 0;
 		this->draw(' ');
 		m_x += m_diff_x;
 		m_y += m_diff_y;

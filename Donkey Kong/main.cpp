@@ -4,7 +4,6 @@
 #include <conio.h> //for kbhit_ getch
 #include <Windows.h>
 #include "Map.h"
-#include "point.h"
 
 
 
