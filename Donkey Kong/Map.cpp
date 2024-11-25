@@ -1,31 +1,42 @@
 #include "Map.h"
 #include "general.h"
 #include "platform.h"
+#include "gameConfig.h"
 #include <iostream>
 
 
 void Map::draw()
 {
-	//2 loops drawing ths borders of the game
-	for (int col = this->MIN_X; col < this->GAME_WIDTH + this->MIN_X; col++)
+
+	char map[(int)Map::GAME_HEIGHT][(int)Map::GAME_WIDTH] = {"QQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQ",
+															 "Q                                                                         Q",
+															 "Q                                                                         Q",
+															 "Q                                                                         Q",
+															 "Q                                                                         Q",
+															 "Q                                                                         Q",
+															 "Q                                                                         Q",
+															 "Q                                                                         Q",
+															 "Q                                                                         Q",
+															 "Q                                                                         Q",
+															 "Q                                                                         Q",
+															 "Q                                                                         Q",
+															 "Q                                                                         Q",
+															 "Q                                                                         Q",
+															 "Q                                                                         Q",
+															 "Q                                                                         Q",
+															 "Q                                                                         Q",
+															 "Q                                                                         Q",
+															 "Q                                                                         Q",
+															 "Q                                                                         Q",
+															 "Q                                                                         Q",
+															 "Q                                                                         Q",
+															 "QQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQ", };
+	gotoxy(Map::MIN_X, Map::MIN_Y);
+	for (int i = 0; i < Map::GAME_HEIGHT; i++)
 	{
-		gotoxy(col, this->MIN_Y);
-		std::cout << '=';
-		gotoxy(col, this->MIN_Y + this->GAME_HEIGHT);
-		std::cout << '=';
+		std::cout << map[i];
+		gotoxy(Map::MIN_X, Map::MIN_Y + i + 1);
 	}
-	for (int row = this->MIN_Y; row < this->GAME_HEIGHT + this->MIN_Y; row++)
-	{
-		gotoxy(this->MIN_X, row);
-		std::cout << "||";
-		gotoxy(this->MIN_X + this->GAME_WIDTH, row);
-		std::cout << "||";
-	}
-	platform p;
-	p.init('=', 7, 20); //bottom left platform 
-	p.draw();
-	p.init('=', 30, 5, 25); //paulina platform
-	p.draw();
 	
 
 }

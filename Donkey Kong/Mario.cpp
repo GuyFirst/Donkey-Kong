@@ -30,7 +30,8 @@ void Mario::move(gameConfig::eKeys key)
 		m_diff_y = 0;
 		break;
 	case gameConfig::eKeys::UP:
-		m_diff_y = -1;
+		if (!m_isJumping)
+			jump();
 		break;
 	case gameConfig::eKeys::DOWN:
 		m_diff_x = 0;
@@ -54,4 +55,5 @@ void Mario::move(gameConfig::eKeys key)
 
 void Mario::jump()
 {
+	;
 }
