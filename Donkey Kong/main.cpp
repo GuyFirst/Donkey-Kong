@@ -25,8 +25,9 @@ int main()
 			if (keyPressed == (int)gameConfig::eKeys::ESC)
 				break;
 		}
+		char curr = mario.getMapChar();
 		mario.draw('@');
-		Sleep(80);
+		Sleep(50);
 		mario.draw(' ');
 		mario.move((gameConfig::eKeys)keyPressed);
 		keyPressed = 0;

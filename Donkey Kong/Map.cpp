@@ -6,10 +6,8 @@
 
 void Map::printMap()
 {
-        gotoxy(Map::MIN_X, Map::MIN_Y);
         for (int i = 0; i < Map::GAME_HEIGHT; ++i)
         {
-            std::cout << currentMap[i];
-            gotoxy(Map::MIN_X, Map::MIN_Y + i + 1);
+            std::cout << currentMap[i] << '\n';
         }
 }

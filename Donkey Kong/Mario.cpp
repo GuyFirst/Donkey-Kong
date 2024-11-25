@@ -21,54 +21,46 @@ void Mario::move(gameConfig::eKeys key)
 	switch (key)
 	{
 	case gameConfig::eKeys::LEFT:
-		m_diff_x = -1;
+		m_diff_x = (int)gameConfig::Direction::NEGATIVE;
 		m_diff_y = 0;
 		break;
 	case gameConfig::eKeys::RIGHT:
-		m_diff_x = 1;
+		m_diff_x = (int)gameConfig::Direction::POSITIVE;
 		m_diff_y = 0;
 		break;
 	case gameConfig::eKeys::UP:
 			jump();
 		break;
 	case gameConfig::eKeys::DOWN:
-		m_diff_x = 0;
-		m_diff_y = 1;
+		m_diff_y = (int)gameConfig::Direction::POSITIVE;
 		break;
 	case gameConfig::eKeys::STAY:
 		m_diff_x = 0;
 		m_diff_y = 0;
 		return;
 	}
-	if (isNearBorderX(m_diff_x))
+	if (isNearWall(m_diff_x))
+			m_diff_x = 0;
+	if (isOnFloor())
 	{
-		m_diff_x = 0;
+		m_diff_y = 0;
 	}
-		
+
 	m_x += m_diff_x;
 	m_y += m_diff_y;
 	
-	/*if ((m_x > Map::MIN_X + Map::GAME_WIDTH - 2 && key == gameConfig::eKeys::RIGHT) || (m_x < Map::MIN_X + 3 && key == gameConfig::eKeys::LEFT))
-		m_diff_x = 0;
-	m_x += m_diff_x;
-
-
-
-	if ((m_y > Map::MIN_Y + Map::GAME_HEIGHT - 2 && key == gameConfig::eKeys::DOWN) || (m_y < Map::MIN_Y + 2 && key == gameConfig::eKeys::UP))
-		m_diff_y = 0;
-	m_y += m_diff_y;*/
 }
 
 void Mario::jump()
 {
-	if (isNearBorderX(m_diff_x))
+	if (isNearWall(m_diff_x))
 		m_diff_x = 0;
 	int jumpHeight = 2;
 	int jumpDuration = 100;
-	m_diff_y = -1;
+	m_diff_y = (int)gameConfig::Direction::NEGATIVE;
 	for (int i = 0; i < jumpHeight; i++)
 	{
-		if (isNearBorderX(m_diff_x))
+		if (isNearWall(m_diff_x))
 			m_diff_x = 0;
 		this->draw(' ');
 		m_x += m_diff_x;
@@ -76,10 +68,12 @@ void Mario::jump()
 		this->draw('@');
 		Sleep(30);
 	}
-	m_diff_y = 1;
+	m_diff_y = (int)gameConfig::Direction::POSITIVE;
 	Sleep(jumpDuration);
 	for (int i = 0; i < jumpHeight; i++)
 	{
+		if (isNearWall(m_diff_x))
+			m_diff_x = 0;
 		this->draw(' ');
 		m_x += m_diff_x;
 		m_y += m_diff_y;
@@ -90,10 +84,30 @@ void Mario::jump()
 	m_diff_y = 0;
 }
 
-bool Mario::isNearBorderX(int dir)
+bool Mario::isNearWall(int dirX)
 {
-	if ((this->map->originalMap[Map::MIN_Y+ m_y][ m_x + m_diff_x-Map::MIN_X]) != ' ')
-		return true;
+	if (dirX == (int)gameConfig::Direction::POSITIVE)
+	{
+		if (m_x > Map::GAME_WIDTH - 3)
+			return true;
+	}
+	else
+	{
+		if (m_x <= 0)
+			return true;
+	}	
 	return false;
 	
+}
+
+bool Mario::isOnFloor()
+{
+	if (this->map->originalMap[m_y+1][m_x] == '=')
+		return true;
+	return false;
+}
+
+char Mario::getMapChar()
+{
+	return this->map->originalMap[m_y][m_x];
 }
