@@ -11,12 +11,15 @@
 int main()
 {
 	ShowConsoleCursor(false);
-	Map map;
-	map.draw();
+	Map m;
+	m.resetBoard();
+	m.printMap();
 	Mario mario;
+	mario.map = &m;
 	char keyPressed = (char)(gameConfig::eKeys::STAY);
 	while (true)
 	{
+		
 		if (_kbhit())
 		{
 			keyPressed = _getch();
@@ -27,8 +30,8 @@ int main()
 		Sleep(80);
 		mario.draw(' ');
 		mario.move((gameConfig::eKeys)keyPressed);
+		keyPressed = 0;
 
 	}
 
-	gotoxy(0, map.GAME_HEIGHT + map.MIN_Y + 2);
 }
