@@ -2,7 +2,7 @@
 #include <Windows.h>
 
 #include "Mario.h"
-
+#include "gameConfig.h"
 #include "general.h"
 
 
@@ -29,7 +29,7 @@ void Mario::move(gameConfig::eKeys key)
 		m_diff_y = 0;
 		break;
 	case gameConfig::eKeys::UP:
-			jump();
+		jump();
 		break;
 	case gameConfig::eKeys::DOWN:
 		m_diff_y = (int)gameConfig::Direction::POSITIVE;
@@ -40,7 +40,10 @@ void Mario::move(gameConfig::eKeys key)
 		return;
 	}
 	if (isNearWall(m_diff_x))
-			m_diff_x = 0;
+	{
+		m_diff_x = 0;
+	}
+
 	if (isOnFloor())
 	{
 		m_diff_y = 0;
@@ -48,7 +51,7 @@ void Mario::move(gameConfig::eKeys key)
 
 	m_x += m_diff_x;
 	m_y += m_diff_y;
-	
+
 }
 
 void Mario::jump()
@@ -106,21 +109,21 @@ bool Mario::isNearWall(int dirX)
 {
 	if (dirX == (int)gameConfig::Direction::POSITIVE)
 	{
-		if (m_x > Map::GAME_WIDTH - 3)
+		if (m_x > gameConfig::GAME_WIDTH - 3)
 			return true;
 	}
 	else
 	{
 		if (m_x <= 0)
 			return true;
-	}	
+	}
 	return false;
-	
+
 }
 
 bool Mario::isOnFloor()
 {
-	if (this->map->originalMap[m_y+1][m_x] == '=')
+	if (this->map->originalMap[m_y + 1][m_x] == '=')
 		return true;
 	return false;
 }
