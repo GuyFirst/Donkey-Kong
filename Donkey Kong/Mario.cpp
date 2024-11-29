@@ -29,9 +29,14 @@ void Mario::move(gameConfig::eKeys key)
 		m_diff_y = 0;
 		break;
 	case gameConfig::eKeys::UP:
-		jump();
+		if(isOnFloor())
+		  jump();
+		if (isUnderLadder())
+		 climb();
 		break;
 	case gameConfig::eKeys::DOWN:
+		if (isOnLadder())
+			downLadder();
 		m_diff_y = (int)gameConfig::Direction::POSITIVE;
 		break;
 	case gameConfig::eKeys::STAY:
@@ -44,10 +49,12 @@ void Mario::move(gameConfig::eKeys key)
 		m_diff_x = 0;
 	}
 
-	if (isOnFloor())
+	if (!isOnFloor())
 	{
-		m_diff_y = 0;
+		m_diff_y = 1;
 	}
+	else
+		m_diff_y = 0;
 
 	m_x += m_diff_x;
 	m_y += m_diff_y;
@@ -58,9 +65,6 @@ void Mario::jump()
 {
 	char curr = this->getMapChar();
 	int jumpHeight = 2;
-	int jumpDuration = 100;
-	if (isNearWall(m_diff_x))
-		m_diff_x = 0;
 	m_diff_y = (int)gameConfig::Direction::NEGATIVE;
 	for (int i = 0; i < jumpHeight; i++)
 	{
@@ -69,7 +73,7 @@ void Mario::jump()
 		if (curr == 'H')
 			this->draw('H');
 		else
-			this->draw(' ');
+			this->draw(curr);
 		m_x += m_diff_x;
 		m_y += m_diff_y;
 		curr = this->getMapChar();
@@ -77,39 +81,17 @@ void Mario::jump()
 			this->draw('#');
 		else
 			this->draw('@');
-		Sleep(70);
+		Sleep(gameConfig::SLEEP_DURATION);
 	}
-	m_diff_y = (int)gameConfig::Direction::POSITIVE;
-	Sleep(jumpDuration);
-	for (int i = 0; i < jumpHeight; i++)
-	{
-		if (isNearWall(m_diff_x))
-			m_diff_x = 0;
-		if (curr == 'H')
-			this->draw('H');
-		else
-			this->draw(' ');
-		m_x += m_diff_x;
-		m_y += m_diff_y;
-		curr = this->getMapChar();
-		if (curr == 'H')
-			this->draw('#');
-		else
-			this->draw('@');
-		Sleep(70);
-	}
-	if (curr == 'H')
-		this->draw('H');
-	else
-		this->draw(' ');
 	m_diff_y = 0;
+	this->draw(curr);
 }
 
 bool Mario::isNearWall(int dirX)
 {
 	if (dirX == (int)gameConfig::Direction::POSITIVE)
 	{
-		if (m_x > gameConfig::GAME_WIDTH - 3)
+		if (m_x > gameConfig::GAME_WIDTH - 4)
 			return true;
 	}
 	else
@@ -123,7 +105,7 @@ bool Mario::isNearWall(int dirX)
 
 bool Mario::isOnFloor()
 {
-	if (this->map->originalMap[m_y + 1][m_x] == '=')
+	if (this->map->originalMap[m_y + 1][m_x] != ' ')
 		return true;
 	return false;
 }
@@ -131,4 +113,36 @@ bool Mario::isOnFloor()
 char Mario::getMapChar()
 {
 	return this->map->originalMap[m_y][m_x];
+}
+
+bool Mario::isUnderLadder()
+{
+	if (this->map->originalMap[m_y - 1][m_x] == 'H')
+		return true;
+	return false;
+}
+
+bool Mario::isOnLadder()
+{
+	if (this->map->originalMap[m_y + 1][m_x] == 'H')
+		return true;
+	return false;
+}
+
+void Mario::climb()
+{
+	this->m_diff_y = -1;
+	while (this->map->originalMap[m_y][m_x] == 'H')
+	{
+		this->draw('H');
+		m_y += m_diff_y;
+		this->draw('#');
+		Sleep(gameConfig::SLEEP_DURATION);
+	}
+	this->draw(' ');
+}
+
+void Mario::downLadder()
+{
+	;
 }

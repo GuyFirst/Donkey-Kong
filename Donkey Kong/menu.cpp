@@ -4,6 +4,7 @@
 #include "menu.h"
 #include <Windows.h>
 #include "general.h"
+#include "Map.h"
 
 
 
@@ -12,7 +13,7 @@ void menu::mainMenu()
     showMenu();
     while (true)
     {
-        char keyPressed = '\0';
+        char keyPressed = '=';
         if (_kbhit())
             {
                 keyPressed = _getch();
@@ -34,39 +35,32 @@ void menu::mainMenu()
                  clrsrc();
                  return;
         }
-       
+        if (keyPressed == '0')
+        {
+                int i=0;
+                while (true) {
+                    std::cout << "WELCOME TO MTA PIZZA" << i << "\n";
+                    i++;
+                    Sleep(20);
+                }
+
+        }
     }
 }
 
 void menu::showMenu() {
  
-
-    std::cout << "=====================" << std::endl;
-    std::cout << "  Welcome to Donkey Kong  " << std::endl;
-    std::cout << "=====================" << std::endl;
-    std::cout << "1. Start New Game" << std::endl;
-    std::cout << "8. Game Instructions" << std::endl;
-    std::cout << "9. Exit" << std::endl;
-    std::cout << "Please select an option: ";
+    for (int i = 0; i < Map::GAME_HEIGHT; ++i)
+        std::cout << this->loginScreen[i] << '\n';
     return;
 
-}
-
-void menu::startGame() {
-    std::cout << "Starting a new game..." << std::endl;
-    return;
 }
 
 void menu::showInstructions() {
+    gotoxy(0, 0);
+    for (int i = 0; i < Map::GAME_HEIGHT; ++i)
+        std::cout << this->instructionsScreen[i] << '\n';
     char key = 0;
-    std::cout << "=====================" << std::endl;
-    std::cout << "  Game Instructions  " << std::endl;
-    std::cout << "=====================" << std::endl;
-    std::cout << "1. Use A (left), W (up), D (right), X (down), S (stand) keys to move Mario." << std::endl;
-    std::cout << "2. Avoid barrels." << std::endl;
-    std::cout << "3. Reach to the princess to win!" << std::endl;
-    std::cout << "4. Have fun!" << std::endl;
-    std::cout << "Press esc key to return to the main menu..." << std::endl;
     while (true)
     {
         if (_kbhit())

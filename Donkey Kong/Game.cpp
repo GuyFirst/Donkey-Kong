@@ -35,16 +35,15 @@ void Game::startGame()
             }
         }
 
+
         char curr = mario.getMapChar();
         if (curr == 'H')
             mario.draw('#');
         else
             mario.draw('@');
-        Sleep(70);
-        if (curr == 'H')
-            mario.draw('H');
-        else
-            mario.draw(' ');
+        Sleep(gameConfig::SLEEP_DURATION);
+       
+        mario.draw(curr);
 
         mario.move((gameConfig::eKeys)keyPressed);
         keyPressed = 0;

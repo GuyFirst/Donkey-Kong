@@ -7,7 +7,6 @@ class Game
 {
 public:
 	void run();
-	void mainMenu();
 	void startGame();
 };
 

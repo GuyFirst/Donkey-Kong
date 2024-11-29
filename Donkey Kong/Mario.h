@@ -20,5 +20,9 @@ public:
 	bool isNearWall(int dirX);
 	bool isOnFloor();
 	char getMapChar();
+	bool isUnderLadder();
+	bool isOnLadder();
+	void climb();
+	void downLadder();
 };
 
