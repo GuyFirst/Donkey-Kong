@@ -1,5 +1,4 @@
 #pragma once
-#pragma once
 #include "gameConfig.h"
 
 class menu
@@ -62,9 +61,10 @@ public:
         "===============================================================================", // 25
 
     };
-    void mainMenu();
+    int mainMenu();
     void showMenu();
     void showInstructions();
-    void exitGame();
-    
+    int exitGame();
+    void win();
+
 };

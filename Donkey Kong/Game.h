@@ -8,5 +8,6 @@ class Game
 public:
 	void run();
 	void startGame();
+
 };
 

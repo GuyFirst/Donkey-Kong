@@ -29,10 +29,12 @@ void Mario::move(gameConfig::eKeys key)
 		m_diff_y = 0;
 		break;
 	case gameConfig::eKeys::UP:
-		if(isOnFloor())
-		  jump();
-		if (isUnderLadder())
-		 climb();
+		if (isUnderLadder()) {
+			climb();
+			break;
+		}
+		if (isOnFloor())
+			jump();
 		break;
 	case gameConfig::eKeys::DOWN:
 		if (isOnLadder())
@@ -70,6 +72,10 @@ void Mario::jump()
 	{
 		if (isNearWall(m_diff_x))
 			m_diff_x = 0;
+		if (isUnderFloor()) {
+			this->draw(curr);
+			return;
+		}
 		if (curr == 'H')
 			this->draw('H');
 		else
@@ -105,7 +111,21 @@ bool Mario::isNearWall(int dirX)
 
 bool Mario::isOnFloor()
 {
-	if (this->map->originalMap[m_y + 1][m_x] != ' ')
+	if (this->map->currentMap[m_y + 1][m_x] != ' ')
+		return true;
+	return false;
+}
+
+bool Mario::isUnderFloor()
+{
+	if (this->map->currentMap[m_y - 1][m_x] != ' ')
+		return true;
+	return false;
+}
+
+bool Mario::isNearPaulina()
+{
+	if (this->map->currentMap[m_y][m_x + m_diff_x] == '$')
 		return true;
 	return false;
 }
@@ -117,32 +137,49 @@ char Mario::getMapChar()
 
 bool Mario::isUnderLadder()
 {
-	if (this->map->originalMap[m_y - 1][m_x] == 'H')
+	if (this->map->currentMap[m_y - 1][m_x] == 'H')
 		return true;
 	return false;
 }
 
 bool Mario::isOnLadder()
 {
-	if (this->map->originalMap[m_y + 1][m_x] == 'H')
+	if (this->map->currentMap[m_y + 2][m_x] == 'H')
 		return true;
 	return false;
 }
 
 void Mario::climb()
 {
-	this->m_diff_y = -1;
-	while (this->map->originalMap[m_y][m_x] == 'H')
+	this->m_diff_y = (int)gameConfig::Direction::NEGATIVE;
+	while (this->map->currentMap[m_y][m_x] == 'H')
 	{
 		this->draw('H');
 		m_y += m_diff_y;
 		this->draw('#');
 		Sleep(gameConfig::SLEEP_DURATION);
 	}
+	char curr = this->getMapChar();
+	this->draw(curr);
+	m_y += m_diff_y;
+	this->draw('#');
+	Sleep(gameConfig::SLEEP_DURATION);
 	this->draw(' ');
 }
 
 void Mario::downLadder()
 {
-	;
+	this->m_diff_y = (int)gameConfig::Direction::POSITIVE;
+	while (this->map->currentMap[m_y + 2][m_x] == 'H') {
+		char curr = this->getMapChar();
+		this->draw(curr);
+		m_y += m_diff_y;
+		this->draw('#');
+		Sleep(gameConfig::SLEEP_DURATION);
+	}
+	char curr = this->getMapChar();
+	this->draw(curr);
+	m_y += m_diff_y;
+	this->draw('#');
+	Sleep(gameConfig::SLEEP_DURATION);
 }
