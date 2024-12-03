@@ -130,3 +130,52 @@ void menu::win()
     Sleep(2000);
     return;
 }
+
+void menu::lose()
+{
+    const char WinScreen[gameConfig::GAME_HEIGHT][gameConfig::GAME_WIDTH] = {
+       "                                                                               ", // 1
+       "                                                                               ", // 2
+       "                                                                               ", // 3
+       "                                                                               ", // 4
+       "                                                                               ", // 5
+       "                                                                               ", // 6
+       "                              ~ ~ ~YOU~ ~ ~ ~LOST~ ~                           ", // 7
+       "                                                                               ", // 8
+       "                                                                               ", // 9
+       "                                                                               ", // 10
+       "                                                                               ", // 11
+       "                                                                               ", // 12
+       "                                   OH NO                                       ", // 13
+       "                                      U R LOSER                                ", // 14
+       "                                                                               ", // 15
+       "                                                                               ", // 16
+       "                                                                               ", // 17
+       "                                                                               ", // 18
+       "                                                                               ", // 19
+       "                                                                               ", // 20
+       "                                                                               ", // 21
+       "                                                                               ", // 22
+       "                                                                               ", // 23
+       "                                                                               ", // 24
+       "===============================================================================", // 25
+    };
+    const char message[] = "Returning to the main menu";
+    gotoxy(0, 0);
+
+    for (int col = 0; col < 25; col++)
+    {
+        std::cout << WinScreen[col] << '\n';
+    }
+    int i = 0;
+    Sleep(1000);
+    gotoxy(28, 22);
+    while (message[i] != '\0')
+    {
+        std::cout << message[i];
+        Sleep(100);
+        i++;
+    }
+    Sleep(2000);
+    return;
+}

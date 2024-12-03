@@ -66,5 +66,6 @@ public:
     void showInstructions();
     int exitGame();
     void win();
+    void lose();
 
 };

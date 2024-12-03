@@ -18,14 +18,17 @@ void Game::run()
         flag = menu.mainMenu();
         if (flag == -1)
             return;
-        startGame();
-        menu.win();
+        flag = startGame();
+        if (flag == 1)
+            menu.win();
+        else
+            menu.lose();
 
     }
     return;
 }
 
-void Game::startGame()
+int Game::startGame()
 {
     ShowConsoleCursor(false);
     Map m;
@@ -36,7 +39,7 @@ void Game::startGame()
     Barrel arrB[(int)gameConfig::Size::BARREL_MAX] = {};
     int barrelCurr = 0;
     int counter = 0;
-    int currLives = 3;
+    int currLives = (int)gameConfig::Size::START_LIVES;
     char keyPressed = (char)(gameConfig::eKeys::STAY);
     while (true) {
         keyPressed = 0;
@@ -49,28 +52,35 @@ void Game::startGame()
             }
         }
         counter++;
-        if (currLives != mario.lives)
-        {
-            loseALife();
-            Sleep(1000);
-            clrsrc();
-            m.resetMap();
-            gotoxy(0, 0);
-            m.printMap();
-            currLives--;
-            // reser mario to his first location and destroy all barrels
+        if (currLives != mario.lives) {
+            if (!currLives)
+                return -1;
+            loseALife();  // Handle losing a life
+            Sleep(1000);  // Pause for a moment
+            clrsrc();  // Clear the screen
+            m.resetMap();  // Reset the map
+            gotoxy(0, 0);  // Move the cursor to the top-left
+            m.printMap();  // Print the map again
+            currLives--;  // Decrease the remaining lives
+            mario.resetMario();  // Reset Mario's state
+
+            // Reset the barrels array after losing a life
+            barrelCurr = 0;  // Reset the barrel counter
+            for (int i = 0; i < (int)gameConfig::Size::BARREL_MAX; i++) {
+                arrB[i].reset();  // Reset each barrel
+            }
+            counter = 0;
         }
         char curr = mario.getMapChar();
         if (mario.isNearPaulina()) {
-
-            break;
+            return 1;
         }
         if (curr == 'H')
             mario.draw('#');
         else
             mario.draw('@');
 
-        if (counter == 12 && barrelCurr < (int)gameConfig::Size::BARREL_MAX)
+        if (counter == 20 && barrelCurr < (int)gameConfig::Size::BARREL_MAX)
         {
             arrB[barrelCurr].addBarrel(arrB, barrelCurr);
             arrB[barrelCurr].map = &m;
@@ -83,8 +93,10 @@ void Game::startGame()
             arrB[i].draw('O');
         }
         Sleep(gameConfig::SLEEP_DURATION);
+
         curr = mario.getMapChar();
         mario.draw(curr);
+        mario.move((gameConfig::eKeys)keyPressed, arrB, barrelCurr);
         if (barrelCurr)
         {
             for (int i = 0; i < barrelCurr; i++)    //barrel movemant
@@ -94,14 +106,11 @@ void Game::startGame()
                 arrB[i].move();
             }
         }
-        mario.move((gameConfig::eKeys)keyPressed, arrB, barrelCurr);
-
-
-
+        
 
         keyPressed = 0;
     }
-    return;
+    return 0;
 }
 
 void Game::pause()

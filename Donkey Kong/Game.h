@@ -7,7 +7,7 @@ class Game
 {
 public:
 	void run();
-	void startGame();
+	int startGame();
 	void pause();
 	void loseALife();
 };

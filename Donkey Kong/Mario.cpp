@@ -6,8 +6,6 @@
 #include "general.h"
 
 
-
-
 void Mario::draw(char ch)
 {
 	gotoxy(m_x, m_y);
@@ -39,6 +37,7 @@ void Mario::move(gameConfig::eKeys key, Barrel b[], int barrelCurr)
 	case gameConfig::eKeys::DOWN:
 		if (isOnLadder())
 			downLadder(b, barrelCurr);
+
 		m_diff_y = (int)gameConfig::Direction::POSITIVE;
 		break;
 	case gameConfig::eKeys::STAY:
@@ -60,15 +59,28 @@ void Mario::move(gameConfig::eKeys key, Barrel b[], int barrelCurr)
 	{
 		m_diff_y = 0;
 		checkFallHeight();
+		m_countHeight = 0;
 	}
 
 	m_x += m_diff_x;
 	m_y += m_diff_y;
 
+	if (!isOnFloor())
+	{
+		m_diff_y = 1;
+		this->m_countHeight++;
+	}
+	else
+	{
+		m_diff_y = 0;
+		checkFallHeight();
+		m_countHeight = 0;
+	}
 }
 
 void Mario::jump(Barrel b[], int barrelCurr)
 {
+	int counterFlag = 0;
 	char curr = this->getMapChar();
 	int jumpHeight = 2;
 	m_diff_y = (int)gameConfig::Direction::NEGATIVE;
@@ -76,7 +88,7 @@ void Mario::jump(Barrel b[], int barrelCurr)
 	{
 		if (isNearWall(m_diff_x)) //mario movement
 			m_diff_x = 0;
-		if (isUnderFloor()) {
+		if (isUnderFloor()) { //dont jump if theres floor exactly above me
 			this->draw(curr);
 			return;
 		}
@@ -85,21 +97,7 @@ void Mario::jump(Barrel b[], int barrelCurr)
 		else
 			this->draw(curr);
 
-		for (int i = 0; i < barrelCurr; i++)
-		{
-			curr = b[i].getMapChar();
-			b[i].draw('O');
-		}
-
-		if (barrelCurr)
-		{
-			for (int i = 0; i < barrelCurr; i++)
-			{
-				curr = b[i].getMapChar();
-				b[i].draw(curr);
-				b[i].move();
-			}
-		}
+		
 
 		m_x += m_diff_x;
 		m_y += m_diff_y;
@@ -108,8 +106,24 @@ void Mario::jump(Barrel b[], int barrelCurr)
 			this->draw('#');
 		else
 			this->draw('@');
-		Sleep(gameConfig::SLEEP_DURATION);
 
+
+		if (barrelCurr)                     //keep moving the barrels
+			{
+				for (int i = 0; i < barrelCurr; i++)
+				{
+					curr = b[i].getMapChar();
+					b[i].draw(curr);
+					b[i].move();
+				}
+		}
+
+		for (int i = 0; i < barrelCurr; i++) //keep moving the barrels
+		{
+			curr = b[i].getMapChar();
+			b[i].draw('O');
+		}
+		Sleep(gameConfig::SLEEP_DURATION);
 
 	}
 	m_diff_y = 0;
@@ -283,4 +297,14 @@ void Mario::checkFallHeight()
 	}
 	
 	
+}
+
+void Mario::resetMario()
+{
+	 m_x = (int)Map::GAME_WIDTH / 2; //start point in the middle of the floor
+	 m_y = (int)Map::GAME_HEIGHT - 2;//start point one character above the floor
+	 m_diff_x = 0;
+	 m_diff_y = 0;
+	 m_countHeight = 0;
+	return;
 }

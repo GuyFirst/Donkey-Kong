@@ -5,10 +5,10 @@
 class Barrel
 {
 	enum class numbers { MAX_BARRELS = 7 };
-	int m_x = 5; //first apperance of any barrel
-	int m_y = 4;
-	int m_diff_x = 0;
-	int m_diff_y = 1;
+	int m_x = (int)gameConfig::Pos::BARREL_X_START; //first apperance of any barrel
+	int m_y = (int)gameConfig::Pos::BARREL_Y_START;
+	int m_diff_x = (int)gameConfig::Direction::STAY;
+	int m_diff_y = (int)gameConfig::Direction::POSITIVE;
 	int m_prev_diff_x = 0;
 
 public:
@@ -21,5 +21,6 @@ public:
 	bool isOnAir(char& refFloor);
 	bool isNearWall(int dirX);
 	char getMapChar() { return this->map->originalMap[m_y][m_x]; }
+	void reset();
 };
 

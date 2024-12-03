@@ -32,7 +32,7 @@ void Barrel::move()
 	}
 	if (isNearWall(m_diff_x))
 	{
-		draw(' ');
+		reset();
 		return;
 	}
 	m_x += m_diff_x;
@@ -70,6 +70,16 @@ bool Barrel::isNearWall(int dirX)
 			return true;
 	}
 	return false;
+}
+
+void Barrel::reset()
+{
+    m_x = 5; //first apperance of any barrel
+	m_y = 4;
+    m_diff_x = 0;
+	m_diff_y = 1;
+	m_prev_diff_x = 0;
+	return;
 }
 
 bool Barrel::isOnFloor(char& refFloor)
