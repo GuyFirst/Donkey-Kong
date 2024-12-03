@@ -16,9 +16,10 @@ public:
 	void move();
 	void draw(char ch);
 	bool isOnFloor(char& refFloor);
-	void addBarrel(Barrel* barrelArr[(int)numbers::MAX_BARRELS], int size);
+	void addBarrel(Barrel barrelArr[(int)numbers::MAX_BARRELS], int size);
 	void removeBarrel(Barrel* barrelArr[(int)numbers::MAX_BARRELS], int size);
 	bool isOnAir(char& refFloor);
+	bool isNearWall(int dirX);
 	char getMapChar() { return this->map->originalMap[m_y][m_x]; }
 };
 

@@ -16,7 +16,7 @@ void Mario::draw(char ch)
 
 
 
-void Mario::move(gameConfig::eKeys key)
+void Mario::move(gameConfig::eKeys key, Barrel b[], int barrelCurr)
 {
 	switch (key)
 	{
@@ -30,15 +30,15 @@ void Mario::move(gameConfig::eKeys key)
 		break;
 	case gameConfig::eKeys::UP:
 		if (isUnderLadder()) {
-			climb();
+			climb(b, barrelCurr);
 			break;
 		}
 		if (isOnFloor())
-			jump();
+			jump(b, barrelCurr);
 		break;
 	case gameConfig::eKeys::DOWN:
 		if (isOnLadder())
-			downLadder();
+			downLadder(b, barrelCurr);
 		m_diff_y = (int)gameConfig::Direction::POSITIVE;
 		break;
 	case gameConfig::eKeys::STAY:
@@ -54,23 +54,27 @@ void Mario::move(gameConfig::eKeys key)
 	if (!isOnFloor())
 	{
 		m_diff_y = 1;
+		this->m_countHeight++;
 	}
 	else
+	{
 		m_diff_y = 0;
+		checkFallHeight();
+	}
 
 	m_x += m_diff_x;
 	m_y += m_diff_y;
 
 }
 
-void Mario::jump()
+void Mario::jump(Barrel b[], int barrelCurr)
 {
 	char curr = this->getMapChar();
 	int jumpHeight = 2;
 	m_diff_y = (int)gameConfig::Direction::NEGATIVE;
 	for (int i = 0; i < jumpHeight; i++)
 	{
-		if (isNearWall(m_diff_x))
+		if (isNearWall(m_diff_x)) //mario movement
 			m_diff_x = 0;
 		if (isUnderFloor()) {
 			this->draw(curr);
@@ -80,6 +84,23 @@ void Mario::jump()
 			this->draw('H');
 		else
 			this->draw(curr);
+
+		for (int i = 0; i < barrelCurr; i++)
+		{
+			curr = b[i].getMapChar();
+			b[i].draw('O');
+		}
+
+		if (barrelCurr)
+		{
+			for (int i = 0; i < barrelCurr; i++)
+			{
+				curr = b[i].getMapChar();
+				b[i].draw(curr);
+				b[i].move();
+			}
+		}
+
 		m_x += m_diff_x;
 		m_y += m_diff_y;
 		curr = this->getMapChar();
@@ -88,6 +109,8 @@ void Mario::jump()
 		else
 			this->draw('@');
 		Sleep(gameConfig::SLEEP_DURATION);
+
+
 	}
 	m_diff_y = 0;
 	this->draw(curr);
@@ -149,37 +172,115 @@ bool Mario::isOnLadder()
 	return false;
 }
 
-void Mario::climb()
+void Mario::climb(Barrel arrB[], int barrelCurr)
 {
+	char curr;
 	this->m_diff_y = (int)gameConfig::Direction::NEGATIVE;
 	while (this->map->currentMap[m_y][m_x] == 'H')
 	{
-		this->draw('H');
+		this->draw('H'); //mario movemant
+		if (barrelCurr)
+		{
+			for (int i = 0; i < barrelCurr; i++)    //barrel movemant
+			{
+				curr = arrB[i].getMapChar();
+				arrB[i].draw(curr);
+				arrB[i].move();
+			}
+		}
+		
+		
 		m_y += m_diff_y;
-		this->draw('#');
+
+		this->draw('#'); //mario movemant
+		
+		for (int i = 0; i < barrelCurr; i++) //barrel movemant
+		{
+			curr = arrB[i].getMapChar();
+			arrB[i].draw('O');
+		}
 		Sleep(gameConfig::SLEEP_DURATION);
 	}
-	char curr = this->getMapChar();
+    curr = this->getMapChar();
 	this->draw(curr);
+	
+	if (barrelCurr)
+	{
+		for (int i = 0; i < barrelCurr; i++)    //barrel movemant
+		{
+			curr = arrB[i].getMapChar();
+			arrB[i].draw(curr);
+			arrB[i].move();
+		}
+	}
+
 	m_y += m_diff_y;
 	this->draw('#');
+	for (int i = 0; i < barrelCurr; i++) //barrel movemant
+	{
+		curr = arrB[i].getMapChar();
+		arrB[i].draw('O');
+	}
+	
 	Sleep(gameConfig::SLEEP_DURATION);
 	this->draw(' ');
 }
 
-void Mario::downLadder()
+void Mario::downLadder(Barrel arrB[], int barrelCurr)
 {
 	this->m_diff_y = (int)gameConfig::Direction::POSITIVE;
 	while (this->map->currentMap[m_y + 2][m_x] == 'H') {
 		char curr = this->getMapChar();
 		this->draw(curr);
+		if (barrelCurr)
+		{
+			for (int i = 0; i < barrelCurr; i++)    //barrel movemant
+			{
+				curr = arrB[i].getMapChar();
+				arrB[i].draw(curr);
+				arrB[i].move();
+			}
+		}
+
 		m_y += m_diff_y;
 		this->draw('#');
+		
+		for (int i = 0; i < barrelCurr; i++) //barrel movemant
+		{
+			curr = arrB[i].getMapChar();
+			arrB[i].draw('O');
+		}
 		Sleep(gameConfig::SLEEP_DURATION);
 	}
 	char curr = this->getMapChar();
 	this->draw(curr);
+	if (barrelCurr)
+	{
+		for (int i = 0; i < barrelCurr; i++)    //barrel movemant
+		{
+			curr = arrB[i].getMapChar();
+			arrB[i].draw(curr);
+			arrB[i].move();
+		}
+	}
 	m_y += m_diff_y;
 	this->draw('#');
+	
+	for (int i = 0; i < barrelCurr; i++) //barrel movemant
+	{
+		curr = arrB[i].getMapChar();
+		arrB[i].draw('O');
+	}
 	Sleep(gameConfig::SLEEP_DURATION);
+}
+
+void Mario::checkFallHeight()
+{
+	if (m_countHeight >= 5)
+	{
+		this->lives--;
+		this->m_countHeight = 0;
+	}
+	
+	
 }

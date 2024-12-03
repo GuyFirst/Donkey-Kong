@@ -2,6 +2,7 @@
 #pragma once
 #include "gameConfig.h"
 #include "Map.h"
+#include "Barrel.h"
 
 
 class Mario
@@ -11,12 +12,14 @@ class Mario
 	int m_y = (int)Map::GAME_HEIGHT - 2;//start point one character above the floor
 	int m_diff_x = 0;
 	int m_diff_y = 0;
+	int m_countHeight = 0;
 
 public:
+	int lives = 3;
 	Map* map;
 	void draw(char);
-	void move(gameConfig::eKeys key);
-	void jump();
+	void move(gameConfig::eKeys key, Barrel b[], int barrelCurr);
+	void jump(Barrel b[], int barrelCurr);
 	bool isNearWall(int dirX);
 	bool isOnFloor();
 	bool isUnderFloor();
@@ -24,7 +27,8 @@ public:
 	char getMapChar();
 	bool isUnderLadder();
 	bool isOnLadder();
-	void climb();
-	void downLadder();
+	void climb(Barrel b[], int barrelCurr);
+	void downLadder(Barrel b[], int barrelCurr);
+	void checkFallHeight();
 };
 

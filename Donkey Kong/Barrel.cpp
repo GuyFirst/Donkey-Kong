@@ -3,8 +3,8 @@
 void Barrel::move()
 {
 	char floor = '\0';
+
 	char& refFloor = floor;
-	m_prev_diff_x = m_diff_x;
 	if (isOnAir(refFloor))
 	{
 		m_diff_y = (int)gameConfig::Direction::POSITIVE;
@@ -16,22 +16,24 @@ void Barrel::move()
 		switch (floor)
 		{
 		case  '>':
-			m_diff_x = (int)gameConfig::Direction::POSITIVE;
+			m_prev_diff_x = m_diff_x = (int)gameConfig::Direction::POSITIVE;
 
 			break;
 
 		case '<':
-			m_diff_x = (int)gameConfig::Direction::NEGATIVE;
+			m_prev_diff_x = m_diff_x = (int)gameConfig::Direction::NEGATIVE;
 
 			break;
-			/*case 'H':
-				m_diff_y = (int)gameConfig::Direction::POSITIVE;
-				break;*/
 		}
 
+		
 
 
-
+	}
+	if (isNearWall(m_diff_x))
+	{
+		draw(' ');
+		return;
 	}
 	m_x += m_diff_x;
 	m_y += m_diff_y;
@@ -55,10 +57,31 @@ bool Barrel::isOnAir(char& refFloor)
 	return false;
 }
 
+bool Barrel::isNearWall(int dirX)
+{
+	if (dirX == (int)gameConfig::Direction::POSITIVE)
+	{
+		if (m_x > gameConfig::GAME_WIDTH - 4)
+			return true;
+	}
+	else
+	{
+		if (m_x <= 0)
+			return true;
+	}
+	return false;
+}
+
 bool Barrel::isOnFloor(char& refFloor)
 {
 	refFloor = this->map->currentMap[m_y + 1][m_x];
 	if (this->map->currentMap[m_y + 1][m_x] != ' ' && this->map->currentMap[m_y][m_x] != 'H')
 		return true;
 	return false;
+}
+
+void Barrel::addBarrel(Barrel arr[], int size)
+{
+	Barrel b;
+	arr[size] = b;
 }

@@ -7,5 +7,6 @@ public:
 	static constexpr int SLEEP_DURATION = 95;
 	enum class eKeys { LEFT = 'a', UP = 'w', RIGHT = 'd', DOWN = 'x', STAY = 's', ESC = 27 };
 	enum class Direction { POSITIVE = 1, NEGATIVE = -1 };
+	enum class Size { BARREL_MAX = 10};
 };
 

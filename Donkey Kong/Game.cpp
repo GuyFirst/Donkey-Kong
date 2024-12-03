@@ -33,20 +33,33 @@ void Game::startGame()
     m.printMap();
     Mario mario;
     mario.map = &m;
-    Barrel b;
-    b.map = &m;
+    Barrel arrB[(int)gameConfig::Size::BARREL_MAX] = {};
+    int barrelCurr = 0;
+    int counter = 0;
+    int currLives = 3;
     char keyPressed = (char)(gameConfig::eKeys::STAY);
     while (true) {
         keyPressed = 0;
         if (_kbhit()) {
             keyPressed = _getch();
+         
             if (keyPressed == (int)gameConfig::eKeys::ESC) {
-                std::cout << "Exiting to main menu..." << std::endl;
-                break;
+                pause();
+                m.printMap();
             }
         }
-
-
+        counter++;
+        if (currLives != mario.lives)
+        {
+            loseALife();
+            Sleep(1000);
+            clrsrc();
+            m.resetMap();
+            gotoxy(0, 0);
+            m.printMap();
+            currLives--;
+            // reser mario to his first location and destroy all barrels
+        }
         char curr = mario.getMapChar();
         if (mario.isNearPaulina()) {
 
@@ -57,17 +70,31 @@ void Game::startGame()
         else
             mario.draw('@');
 
-        curr = b.getMapChar();
-
-        b.draw('O');
-
+        if (counter == 12 && barrelCurr < (int)gameConfig::Size::BARREL_MAX)
+        {
+            arrB[barrelCurr].addBarrel(arrB, barrelCurr);
+            arrB[barrelCurr].map = &m;
+            barrelCurr++;
+            counter = 0;
+        }
+        for (int i = 0; i < barrelCurr; i++)
+        {
+            curr = arrB[i].getMapChar();
+            arrB[i].draw('O');
+        }
         Sleep(gameConfig::SLEEP_DURATION);
         curr = mario.getMapChar();
         mario.draw(curr);
-        curr = b.getMapChar();
-        b.draw(curr);
-        b.move();
-        mario.move((gameConfig::eKeys)keyPressed);
+        if (barrelCurr)
+        {
+            for (int i = 0; i < barrelCurr; i++)    //barrel movemant
+            {
+                curr = arrB[i].getMapChar();
+                arrB[i].draw(curr);
+                arrB[i].move();
+            }
+        }
+        mario.move((gameConfig::eKeys)keyPressed, arrB, barrelCurr);
 
 
 
@@ -76,5 +103,37 @@ void Game::startGame()
     }
     return;
 }
+
+void Game::pause()
+{
+    clrsrc();
+    gotoxy(40, 10);
+    std::cout << "Game paused, press ESC again to continue.";
+    gotoxy(40, 12);
+    std::cout<<"But it is not mandatory to present such a message.";
+    char keyPressed = 0;
+   
+    while (true) {
+        if (_kbhit()) {
+            keyPressed = _getch();
+            if (keyPressed == (char)gameConfig::eKeys::ESC) {
+                clrsrc();
+                gotoxy(0, 0);
+                return;
+            }
+
+        }
+    }
+}
+
+void Game::loseALife()
+{
+    clrsrc();
+    gotoxy(40, 10);
+    std::cout << "oh no u lose a life oh no";
+
+}
+
+
 
 
