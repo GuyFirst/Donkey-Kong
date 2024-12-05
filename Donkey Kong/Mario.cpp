@@ -1,4 +1,4 @@
-#include <iostream>
+﻿#include <iostream>
 #include <Windows.h>
 
 #include "Mario.h"
@@ -13,122 +13,124 @@ void Mario::draw(char ch)
 }
 
 
-
-void Mario::move(gameConfig::eKeys key, Barrel b[], int barrelCurr)
+void Mario::move(gameConfig::eKeys key )
 {
-	switch (key)
-	{
-	case gameConfig::eKeys::LEFT:
-		m_diff_x = (int)gameConfig::Direction::NEGATIVE;
-		m_diff_y = 0;
-		break;
-	case gameConfig::eKeys::RIGHT:
-		m_diff_x = (int)gameConfig::Direction::POSITIVE;
-		m_diff_y = 0;
-		break;
-	case gameConfig::eKeys::UP:
-		if (isUnderLadder()) {
-			climb(b, barrelCurr);
+	// Erase Mario from the current position
+	draw(this->map->currentMap[m_y][m_x]); // Draw the background character at the current position
+
+
+	// If no key is provided, continue the last action
+	if (key != gameConfig::eKeys::NONE) {
+		switch (key) {
+		case gameConfig::eKeys::LEFT:
+			state = State::WALKING;
+			m_diff_x = (int)gameConfig::Direction::NEGATIVE;
+			m_diff_y = 0;
 			break;
-		}
-		if (isOnFloor())
-			jump(b, barrelCurr);
-		break;
-	case gameConfig::eKeys::DOWN:
-		if (isOnLadder())
-			downLadder(b, barrelCurr);
 
-		m_diff_y = (int)gameConfig::Direction::POSITIVE;
-		break;
-	case gameConfig::eKeys::STAY:
-		m_diff_x = 0;
-		m_diff_y = 0;
-		return;
-	}
-	if (isNearWall(m_diff_x))
-	{
-		m_diff_x = 0;
-	}
+		case gameConfig::eKeys::RIGHT:
+			state = State::WALKING;
+			m_diff_x = (int)gameConfig::Direction::POSITIVE;
+			m_diff_y = 0;
+			break;
 
-	if (!isOnFloor())
-	{
-		m_diff_y = 1;
-		this->m_countHeight++;
-	}
-	else
-	{
-		m_diff_y = 0;
-		checkFallHeight();
-		m_countHeight = 0;
-	}
+		case gameConfig::eKeys::UP:
+			if (isUnderLadder()) {
+				state = State::CLIMBING_UP;
+			}
+			else if (isOnFloor()) {
+				state = State::JUMPING;
+			}
+			break;
 
-	m_x += m_diff_x;
-	m_y += m_diff_y;
+		case gameConfig::eKeys::DOWN:
+			if (isOnLadder()) {
+				state = State::CLIMBING_DOWN;
+			}
+			m_diff_y = (int)gameConfig::Direction::POSITIVE;
+			break;
 
-	if (!isOnFloor())
-	{
-		m_diff_y = 1;
-		this->m_countHeight++;
-	}
-	else
-	{
-		m_diff_y = 0;
-		checkFallHeight();
-		m_countHeight = 0;
-	}
-}
-
-void Mario::jump(Barrel b[], int barrelCurr)
-{
-	int counterFlag = 0;
-	char curr = this->getMapChar();
-	int jumpHeight = 2;
-	m_diff_y = (int)gameConfig::Direction::NEGATIVE;
-	for (int i = 0; i < jumpHeight; i++)
-	{
-		if (isNearWall(m_diff_x)) //mario movement
+		case gameConfig::eKeys::STAY:
+			state = State::STANDING;
 			m_diff_x = 0;
-		if (isUnderFloor()) { //dont jump if theres floor exactly above me
-			this->draw(curr);
+			m_diff_y = 0;
 			return;
 		}
-		if (curr == 'H')
-			this->draw('H');
-		else
-			this->draw(curr);
-
-		
-
-		m_x += m_diff_x;
-		m_y += m_diff_y;
-		curr = this->getMapChar();
-		if (curr == 'H')
-			this->draw('#');
-		else
-			this->draw('@');
-
-
-		if (barrelCurr)                     //keep moving the barrels
-			{
-				for (int i = 0; i < barrelCurr; i++)
-				{
-					curr = b[i].getMapChar();
-					b[i].draw(curr);
-					b[i].move();
-				}
-		}
-
-		for (int i = 0; i < barrelCurr; i++) //keep moving the barrels
-		{
-			curr = b[i].getMapChar();
-			b[i].draw('O');
-		}
-		Sleep(gameConfig::SLEEP_DURATION);
-
 	}
-	m_diff_y = 0;
-	this->draw(curr);
+
+	// Execute the current action based on the state
+	switch (state) {
+	case State::JUMPING:
+		jump(); 
+		break;
+
+	case State::CLIMBING_UP:
+		climb(); 
+		break;
+
+	case State::CLIMBING_DOWN:
+		downLadder(); 
+		break;
+
+	case State::WALKING:
+		m_x += m_diff_x; 
+		m_y += m_diff_y; 
+		break;
+
+	case State::STANDING:
+		break; 
+	}
+
+	// Handle falling if not on the floor
+	if (!isOnFloor()) {
+		m_diff_y = 1; 
+		m_countHeight++;
+	}
+	else {
+		m_diff_y = 0; // Reset vertical movement
+		checkFallHeight(); // Check for fall damage
+		m_countHeight = 0;
+	}
+
+	// Draw Mario at the new position
+	draw('@');
 }
+
+
+void Mario::jump()
+{
+	
+	m_x += m_diff_x;
+
+	// When Mario is on the floor
+	if (state == State::JUMPING && isOnFloor()) {
+		m_diff_y = -2; 
+		m_y += m_diff_y;
+		state = State::JUMPING;
+		return;
+	}
+
+	// When Mario is in the air
+	if (state == State::JUMPING && !isOnFloor()) {
+		m_diff_y = 2;
+		m_y += m_diff_y;
+
+		// Check if he landed back on the floor
+		if (isOnFloor()) {
+			// Return to WALKING state if there is horizontal movement
+			if (m_diff_x != 0 && !isNearWall(m_diff_x)) {
+				state = State::WALKING;
+			}
+			else {
+				state = State::STANDING; // Stop if not moving horizontally
+			}
+			m_diff_y = 0; 
+		}
+		return;
+	}
+}
+
+
 
 bool Mario::isNearWall(int dirX)
 {
@@ -155,7 +157,7 @@ bool Mario::isOnFloor()
 
 bool Mario::isUnderFloor()
 {
-	if (this->map->currentMap[m_y - 1][m_x] != ' ')
+	if (this->map->currentMap[m_y - 1][m_x] != ' ' &&  this->map->currentMap[m_y - 2][m_x] != ' ')
 		return true;
 	return false;
 }
@@ -174,118 +176,46 @@ char Mario::getMapChar()
 
 bool Mario::isUnderLadder()
 {
-	if (this->map->currentMap[m_y - 1][m_x] == 'H')
+	if (this->map->currentMap[m_y - 1][m_x] == 'H' || this->map->currentMap[m_y][m_x] == 'H' || this->map->currentMap[m_y + 1][m_x] == 'H')
 		return true;
 	return false;
 }
 
 bool Mario::isOnLadder()
 {
-	if (this->map->currentMap[m_y + 2][m_x] == 'H')
+	if (this->map->currentMap[m_y + 2][m_x] == 'H' ||  this->map->currentMap[m_y + 1][m_x] == 'H')
 		return true;
 	return false;
 }
 
-void Mario::climb(Barrel arrB[], int barrelCurr)
+void Mario::climb()
 {
-	char curr;
-	this->m_diff_y = (int)gameConfig::Direction::NEGATIVE;
-	while (this->map->currentMap[m_y][m_x] == 'H')
-	{
-		this->draw('H'); //mario movemant
-		if (barrelCurr)
-		{
-			for (int i = 0; i < barrelCurr; i++)    //barrel movemant
-			{
-				curr = arrB[i].getMapChar();
-				arrB[i].draw(curr);
-				arrB[i].move();
-			}
-		}
-		
-		
-		m_y += m_diff_y;
-
-		this->draw('#'); //mario movemant
-		
-		for (int i = 0; i < barrelCurr; i++) //barrel movemant
-		{
-			curr = arrB[i].getMapChar();
-			arrB[i].draw('O');
-		}
-		Sleep(gameConfig::SLEEP_DURATION);
-	}
-    curr = this->getMapChar();
-	this->draw(curr);
-	
-	if (barrelCurr)
-	{
-		for (int i = 0; i < barrelCurr; i++)    //barrel movemant
-		{
-			curr = arrB[i].getMapChar();
-			arrB[i].draw(curr);
-			arrB[i].move();
-		}
+	if (isUnderLadder()) {
+		m_diff_y = (int)gameConfig::Direction::NEGATIVE; 
+		m_y += m_diff_y; 
+		state = State::CLIMBING_UP; 
 	}
 
-	m_y += m_diff_y;
-	this->draw('#');
-	for (int i = 0; i < barrelCurr; i++) //barrel movemant
-	{
-		curr = arrB[i].getMapChar();
-		arrB[i].draw('O');
+	// If mario done climbing
+	if (!isUnderLadder()) {
+		state = State::STANDING; 
+		m_diff_y = 0; 
 	}
-	
-	Sleep(gameConfig::SLEEP_DURATION);
-	this->draw(' ');
 }
 
-void Mario::downLadder(Barrel arrB[], int barrelCurr)
+void Mario::downLadder()
 {
-	this->m_diff_y = (int)gameConfig::Direction::POSITIVE;
-	while (this->map->currentMap[m_y + 2][m_x] == 'H') {
-		char curr = this->getMapChar();
-		this->draw(curr);
-		if (barrelCurr)
-		{
-			for (int i = 0; i < barrelCurr; i++)    //barrel movemant
-			{
-				curr = arrB[i].getMapChar();
-				arrB[i].draw(curr);
-				arrB[i].move();
-			}
-		}
+	if (isOnLadder()) {
+		m_diff_y = (int)gameConfig::Direction::POSITIVE; 
+		m_y += m_diff_y; 
+		state = State::CLIMBING_DOWN; 
+	}
 
-		m_y += m_diff_y;
-		this->draw('#');
-		
-		for (int i = 0; i < barrelCurr; i++) //barrel movemant
-		{
-			curr = arrB[i].getMapChar();
-			arrB[i].draw('O');
-		}
-		Sleep(gameConfig::SLEEP_DURATION);
+	// If he isn't on the ladder
+	if (!isOnLadder()) {
+		state = State::STANDING; 
+		m_diff_y = 0; 
 	}
-	char curr = this->getMapChar();
-	this->draw(curr);
-	if (barrelCurr)
-	{
-		for (int i = 0; i < barrelCurr; i++)    //barrel movemant
-		{
-			curr = arrB[i].getMapChar();
-			arrB[i].draw(curr);
-			arrB[i].move();
-		}
-	}
-	m_y += m_diff_y;
-	this->draw('#');
-	
-	for (int i = 0; i < barrelCurr; i++) //barrel movemant
-	{
-		curr = arrB[i].getMapChar();
-		arrB[i].draw('O');
-	}
-	Sleep(gameConfig::SLEEP_DURATION);
 }
 
 void Mario::checkFallHeight()
@@ -308,3 +238,6 @@ void Mario::resetMario()
 	 m_countHeight = 0;
 	return;
 }
+
+
+

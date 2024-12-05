@@ -14,12 +14,15 @@ class Mario
 	int m_diff_y = (int)gameConfig::Direction::STAY;
 	int m_countHeight = (int)gameConfig::Size::ZERO_SIZE;
 
+
 public:
 	int lives = (int)gameConfig::Size::START_LIVES;
+	enum class State {JUMPING, CLIMBING_UP, CLIMBING_DOWN, WALKING, STANDING};
+	State state = State::STANDING;
 	Map* map;
 	void draw(char);
-	void move(gameConfig::eKeys key, Barrel b[], int barrelCurr);
-	void jump(Barrel b[], int barrelCurr);
+	void move(gameConfig::eKeys key = gameConfig::eKeys::NONE);
+	void jump();
 	bool isNearWall(int dirX);
 	bool isOnFloor();
 	bool isUnderFloor();
@@ -27,8 +30,8 @@ public:
 	char getMapChar();
 	bool isUnderLadder();
 	bool isOnLadder();
-	void climb(Barrel b[], int barrelCurr);
-	void downLadder(Barrel b[], int barrelCurr);
+	void climb();
+	void downLadder();
 	void checkFallHeight();
 	void resetMario();
 };

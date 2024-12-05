@@ -25,8 +25,8 @@ public:
        "        <<<<<<<<<<<<                                            H              ", // 16
        "              H                                                 H              ", // 17
        "              H                                                 H              ", // 18
-       "             ==================                                 H              ", // 19
-       "                      H                                         H              ", // 20
+       "              H                                                 H              ", // 19
+       "            ==================                                  H              ", // 20
        "                      H             =============================              ", // 21
        "                      H                     H                                  ", // 22
        "                      H                     H                                  ", // 23
@@ -40,5 +40,6 @@ public:
             memcpy(currentMap[i], originalMap[i], Map::GAME_WIDTH);
     }
     void printMap();
+    void printOGMap();
 };
 

@@ -3,8 +3,11 @@
 void Barrel::move()
 {
 	char floor = '\0';
-
 	char& refFloor = floor;
+	
+	// Erase barrel from the current position
+	draw(this->map->currentMap[m_y][m_x]); // Draw the background character at the current position
+	
 	if (isOnAir(refFloor))
 	{
 		m_diff_y = (int)gameConfig::Direction::POSITIVE;
@@ -37,14 +40,17 @@ void Barrel::move()
 	}
 	m_x += m_diff_x;
 	m_y += m_diff_y;
+	// Draw barrel at the new position
+	draw('O'); // Replace 'O' with the character representing a barrel
 	m_diff_x = m_prev_diff_x;
+	
 	return;
 }
 
 void Barrel::draw(char ch)
 {
 	gotoxy(m_x, m_y);
-	this->map->currentMap[m_y][m_x] = ch;
+	
 	std::cout << ch;
 
 }
