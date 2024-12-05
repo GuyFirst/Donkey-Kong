@@ -31,23 +31,23 @@ void Game::run()
 int Game::startGame()
 {
     ShowConsoleCursor(false);
-    Map m;
-    m.resetMap();
-    m.printMap();
-
-    Mario mario;
-    mario.map = &m;
-
+    int currLives = (int)gameConfig::Size::START_LIVES;
     Barrel arrB[(int)gameConfig::Size::BARREL_MAX] = {};
     int barrelCurr = 0;
     int counter = 0;
-    int currLives = (int)gameConfig::Size::START_LIVES;
+    Map m;
+    m.resetMap();
+    m.printMap();
+    m.printRemainingLives(currLives);
+    Mario mario;
+    mario.map = &m;
     char keyPressed = (char)(gameConfig::eKeys::STAY);
     bool isLocked = false;
 
     while (true) {
         keyPressed = 0;
-
+       
+ 
         // Get input from the user only if Mario is not locked
         if (!isLocked && _kbhit()) {
             keyPressed = _getch();
@@ -60,23 +60,21 @@ int Game::startGame()
         }
 
         counter++;
-
+        
         // Handle losing a life
         if (currLives != mario.lives) {
-            if (!currLives)
-                return -1; // End the game if no lives remain
-
-            loseALife();  // Display a message about losing a life
-            Sleep(1000);  // Pause for a moment
-            clrsrc();     // Clear the screen
-            m.resetMap(); // Reset the map
-            gotoxy(0, 0); // Reset the cursor to the top-left
-            m.printMap(); // Print the map again
-            currLives--;  // Decrease the remaining lives
+            if (currLives == 1)
+               return -1; // End the game if no lives remain
+            loseALife();  
+            m.resetMap(); 
+            m.printMap(); 
+            currLives--; // Decrease the remaining lives
+            m.printRemainingLives(currLives);
             mario.resetMario(); // Reset Mario's position and state
             barrelCurr = 0;     // Reset the barrels
             counter = 0;
             isLocked = false;   // Unlock Mario after resetting
+            
         }
 
         // Check if Mario has reached Paulina
@@ -140,9 +138,9 @@ int Game::startGame()
 void Game::pause()
 {
     clrsrc();
-    gotoxy(40, 10);
+    gotoxy(20, 10);
     std::cout << "Game paused, press ESC again to continue.";
-    gotoxy(40, 12);
+    gotoxy(20, 12);
     std::cout<<"But it is not mandatory to present such a message.";
     char keyPressed = 0;
    
@@ -161,10 +159,11 @@ void Game::pause()
 
 void Game::loseALife()
 {
+    Sleep(500);
     clrsrc();
     gotoxy(40, 10);
     std::cout << "oh no u lose a life oh no";
-
+    Sleep(1000);
 }
 
 

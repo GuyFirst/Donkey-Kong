@@ -73,6 +73,14 @@ void Mario::move(gameConfig::eKeys key )
 		break;
 
 	case State::WALKING:
+		if (isNearWall(this->m_diff_x))
+		{
+			state = State::STANDING;
+			m_diff_x = (int)gameConfig::Direction::STAY;
+			if (!isOnFloor())
+				m_y += m_diff_y;
+			break;
+		}
 		m_x += m_diff_x; 
 		m_y += m_diff_y; 
 		break;
@@ -89,7 +97,7 @@ void Mario::move(gameConfig::eKeys key )
 	else {
 		m_diff_y = 0; // Reset vertical movement
 		checkFallHeight(); // Check for fall damage
-		m_countHeight = 0;
+		m_countHeight = 0; 
 	}
 
 	// Draw Mario at the new position
@@ -97,22 +105,23 @@ void Mario::move(gameConfig::eKeys key )
 }
 
 
-void Mario::jump()
-{
+void Mario::jump(){
 	
 	m_x += m_diff_x;
-
 	// When Mario is on the floor
-	if (state == State::JUMPING && isOnFloor()) {
-		m_diff_y = -2; 
+	if (this->jumpCounter < 2)
+	{
+		m_diff_y = -1;
 		m_y += m_diff_y;
 		state = State::JUMPING;
+		this->jumpCounter++;
 		return;
 	}
 
+
 	// When Mario is in the air
 	if (state == State::JUMPING && !isOnFloor()) {
-		m_diff_y = 2;
+		m_diff_y = 1;
 		m_y += m_diff_y;
 
 		// Check if he landed back on the floor
@@ -125,6 +134,7 @@ void Mario::jump()
 				state = State::STANDING; // Stop if not moving horizontally
 			}
 			m_diff_y = 0; 
+			this->jumpCounter = 0;
 		}
 		return;
 	}
