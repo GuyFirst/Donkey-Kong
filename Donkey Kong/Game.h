@@ -10,5 +10,7 @@ public:
 	int startGame();
 	void pause();
 	void loseALife();
+	void win();
+	void lose();
 };
 

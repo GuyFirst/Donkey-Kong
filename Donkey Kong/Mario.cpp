@@ -6,18 +6,17 @@
 #include "general.h"
 
 
-void Mario::draw(char ch)
+void Mario::draw(char ch) const
 {
-	gotoxy(m_x, m_y);
+	gotoxy(position.getX(), position.getY());
 	std::cout << ch;
 }
 
 
 
-
 void Mario::move(gameConfig::eKeys key) {
 	// Erase Mario from the current position
-	draw(this->map->currentMap[m_y][m_x]);
+	draw(this->map->currentMap[position.getY()][position.getX()]);
 
 	// Handle input keys
 	if (key != gameConfig::eKeys::NONE) {
@@ -84,8 +83,8 @@ void Mario::move(gameConfig::eKeys key) {
 				state = State::STANDING; // Reset to STANDING if on the floor
 			}
 		}
-		m_x += m_diff_x;
-		m_y += m_diff_y;
+		position.setX(position.getX() + m_diff_x);
+	    position.setY(position.getY() + m_diff_y);
 		break;
 
 	case State::STANDING:
@@ -113,7 +112,7 @@ void Mario::move(gameConfig::eKeys key) {
 void Mario::jump() {
 	// Add horizontal movement during the jump
 	if (!isNearWall(m_diff_x)) {
-		m_x += m_diff_x;
+		position.setX(position.getX() + m_diff_x);
 	}
 	else {
 		// If Mario hits a wall, stop horizontal movement
@@ -121,10 +120,10 @@ void Mario::jump() {
 	}
 
 	// Check for collision with a ceiling
-	if (this->map->currentMap[m_y - 1][m_x] != ' ' && this->map->currentMap[m_y - 1][m_x] != 'H') {
+	if (this->map->currentMap[position.getY() - 1][position.getX()] != ' ' && this->map->currentMap[position.getY() - 1][position.getX()] != 'H') {
 		// If there is a ceiling, stop upward movement and fall
 		m_diff_y = 1; // Begin falling
-		m_y += m_diff_y;
+		position.setY(position.getY() + m_diff_y);
 
 		// Update state to WALKING or STANDING depending on horizontal movement
 		if (m_diff_x != 0 && !isNearWall(m_diff_x)) {
@@ -141,7 +140,7 @@ void Mario::jump() {
 	// Handle upward movement during the jump
 	if (this->jumpCounter < 2) {
 		m_diff_y = -1; // Move up
-		m_y += m_diff_y;
+		position.setY(position.getY() + m_diff_y);
 		state = State::JUMPING;
 		this->jumpCounter++;
 		return;
@@ -150,7 +149,7 @@ void Mario::jump() {
 	// Handle downward movement if in the air
 	if (state == State::JUMPING && !isOnFloor()) {
 		m_diff_y = 1; // Move down
-		m_y += m_diff_y;
+		position.setY(position.getY() + m_diff_y);
 
 		// Check if Mario has landed on the floor
 		if (isOnFloor()) {
@@ -177,12 +176,12 @@ bool Mario::isNearWall(int dirX)
 {
 	if (dirX == (int)gameConfig::Direction::POSITIVE)
 	{
-		if (m_x > gameConfig::GAME_WIDTH - 4)
+		if (position.getX() > gameConfig::GAME_WIDTH - 4)
 			return true;
 	}
 	else
 	{
-		if (m_x <= 0)
+		if (position.getX() <= 0)
 			return true;
 	}
 	return false;
@@ -191,7 +190,7 @@ bool Mario::isNearWall(int dirX)
 
 bool Mario::isOnFloor()
 {
-	if (this->map->currentMap[m_y + 1][m_x] != ' ')
+	if (this->map->currentMap[position.getY() + 1][position.getX()] != ' ')
 		return true;
 	return false;
 }
@@ -199,15 +198,15 @@ bool Mario::isOnFloor()
 bool Mario::isUnderFloor()
 {
 	if (state == State::STANDING) {
-		if (this->map->currentMap[m_y - 1][m_x] != ' ' && this->map->currentMap[m_y - 1][m_x] != 'H')
+		if (this->map->currentMap[position.getY() - 1][position.getX()] != ' ' && this->map->currentMap[position.getY() - 1][position.getX()] != 'H')
 			return true;
 	}
 	else {
 		if (this->m_diff_x == (int)gameConfig::Direction::POSITIVE) // going right
-			if ((this->map->currentMap[m_y - 1][m_x] != ' ' && this->map->currentMap[m_y - 1][m_x] != 'H') || ((this->map->currentMap[m_y - 1][m_x+1] != ' ' && this->map->currentMap[m_y - 1][m_x+1] != 'H')))
+			if ((this->map->currentMap[position.getY() - 1][position.getX()] != ' ' && this->map->currentMap[position.getY() - 1][position.getX()] != 'H') || ((this->map->currentMap[position.getY() - 1][position.getX() + 1] != ' ' && this->map->currentMap[position.getY() - 1][position.getX() +1] != 'H')))
 				return true;
 		if(this->m_diff_x == (int)gameConfig::Direction::NEGATIVE) // going left
-		if ((this->map->currentMap[m_y - 1][m_x] != ' ' && this->map->currentMap[m_y - 1][m_x] != 'H') || ((this->map->currentMap[m_y - 1][m_x - 1] != ' ' && this->map->currentMap[m_y - 1][m_x - 1] != 'H')))
+		if ((this->map->currentMap[position.getY() - 1][position.getX()] != ' ' && this->map->currentMap[position.getY() - 1][position.getX()] != 'H') || ((this->map->currentMap[position.getY() - 1][position.getX() - 1] != ' ' && this->map->currentMap[position.getY() - 1][position.getX() - 1] != 'H')))
 			return true;
 	}
 	return false;
@@ -215,26 +214,26 @@ bool Mario::isUnderFloor()
 
 bool Mario::isNearPaulina()
 {
-	if (this->map->currentMap[m_y][m_x + m_diff_x] == '$')
+	if (this->map->currentMap[position.getY()][position.getX() + m_diff_x] == '$')
 		return true;
 	return false;
 }
 
 char Mario::getMapChar()
 {
-	return this->map->originalMap[m_y][m_x];
+	return this->map->originalMap[position.getY()][position.getX()];
 }
 
 bool Mario::isUnderLadder()
 {
-	if (this->map->currentMap[m_y - 1][m_x] == 'H' || this->map->currentMap[m_y][m_x] == 'H' || this->map->currentMap[m_y + 1][m_x] == 'H')
+	if (this->map->currentMap[position.getY() - 1][position.getX()] == 'H' || this->map->currentMap[position.getY()][position.getX()] == 'H' || this->map->currentMap[position.getY() + 1][position.getX()] == 'H')
 		return true;
 	return false;
 }
 
 bool Mario::isOnLadder()
 {
-	if (this->map->currentMap[m_y + 2][m_x] == 'H' ||  this->map->currentMap[m_y + 1][m_x] == 'H')
+	if (this->map->currentMap[position.getY() + 2][position.getX()] == 'H' ||  this->map->currentMap[position.getY() + 1][position.getX()] == 'H')
 		return true;
 	return false;
 }
@@ -243,7 +242,7 @@ void Mario::climb()
 {
 	if (isUnderLadder()) {
 		m_diff_y = (int)gameConfig::Direction::NEGATIVE; 
-		m_y += m_diff_y; 
+		position.setY(position.getY() + m_diff_y);
 		state = State::CLIMBING_UP; 
 	}
 
@@ -258,7 +257,7 @@ void Mario::downLadder()
 {
 	if (isOnLadder()) {
 		m_diff_y = (int)gameConfig::Direction::POSITIVE; 
-		m_y += m_diff_y; 
+		position.setY(position.getY() + m_diff_y);
 		state = State::CLIMBING_DOWN; 
 	}
 
@@ -282,8 +281,8 @@ void Mario::checkFallHeight()
 
 void Mario::resetMario()
 {
-	 m_x = (int)Map::GAME_WIDTH / 2; //start point in the middle of the floor
-	 m_y = (int)Map::GAME_HEIGHT - 2;//start point one character above the floor
+	 position.setX((int)Map::GAME_WIDTH / 2); //start point in the middle of the floor
+	 position.setY((int)Map::GAME_HEIGHT - 2);//start point one character above the floor
 	 m_diff_x = 0;
 	 m_diff_y = 0;
 	 m_countHeight = 0;
