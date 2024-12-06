@@ -13,13 +13,13 @@ void Mario::draw(char ch)
 }
 
 
-void Mario::move(gameConfig::eKeys key )
-{
+
+
+void Mario::move(gameConfig::eKeys key) {
 	// Erase Mario from the current position
-	draw(this->map->currentMap[m_y][m_x]); // Draw the background character at the current position
+	draw(this->map->currentMap[m_y][m_x]);
 
-
-	// If no key is provided, continue the last action
+	// Handle input keys
 	if (key != gameConfig::eKeys::NONE) {
 		switch (key) {
 		case gameConfig::eKeys::LEFT:
@@ -35,7 +35,10 @@ void Mario::move(gameConfig::eKeys key )
 			break;
 
 		case gameConfig::eKeys::UP:
-			if (isUnderLadder()) {
+			if (isUnderFloor()) {
+				break;
+			}
+			else if (isUnderLadder()) {
 				state = State::CLIMBING_UP;
 			}
 			else if (isOnFloor()) {
@@ -47,7 +50,9 @@ void Mario::move(gameConfig::eKeys key )
 			if (isOnLadder()) {
 				state = State::CLIMBING_DOWN;
 			}
-			m_diff_y = (int)gameConfig::Direction::POSITIVE;
+			if (!isOnFloor()) {
+				m_diff_y = (int)gameConfig::Direction::POSITIVE;
+			}
 			break;
 
 		case gameConfig::eKeys::STAY:
@@ -61,84 +66,110 @@ void Mario::move(gameConfig::eKeys key )
 	// Execute the current action based on the state
 	switch (state) {
 	case State::JUMPING:
-		jump(); 
+		jump();
 		break;
 
 	case State::CLIMBING_UP:
-		climb(); 
+		climb();
 		break;
 
 	case State::CLIMBING_DOWN:
-		downLadder(); 
+		downLadder();
 		break;
 
 	case State::WALKING:
-		if (isNearWall(this->m_diff_x))
-		{
-			state = State::STANDING;
-			m_diff_x = (int)gameConfig::Direction::STAY;
-			if (!isOnFloor())
-				m_y += m_diff_y;
-			break;
+		if (isNearWall(this->m_diff_x)) {
+			m_diff_x = 0; // Stop horizontal movement
+			if (isOnFloor()) {
+				state = State::STANDING; // Reset to STANDING if on the floor
+			}
 		}
-		m_x += m_diff_x; 
-		m_y += m_diff_y; 
+		m_x += m_diff_x;
+		m_y += m_diff_y;
 		break;
 
 	case State::STANDING:
-		break; 
+		break;
 	}
 
-	// Handle falling if not on the floor
-	if (!isOnFloor()) {
-		m_diff_y = 1; 
-		m_countHeight++;
-	}
-	else {
-		m_diff_y = 0; // Reset vertical movement
-		checkFallHeight(); // Check for fall damage
-		m_countHeight = 0; 
-	}
-
+		// Handle falling if not on the floor
+		if (!isOnFloor()) {
+			m_diff_y = 1; // Simulate gravity
+			m_countHeight++;
+		}
+		else {
+			m_diff_y = 0; // Reset vertical movement
+			checkFallHeight(); // Check for fall damage
+			m_countHeight = 0;
+		}
+	
 	// Draw Mario at the new position
 	draw('@');
 }
 
 
-void Mario::jump(){
-	
-	m_x += m_diff_x;
-	// When Mario is on the floor
-	if (this->jumpCounter < 2)
-	{
-		m_diff_y = -1;
+
+
+void Mario::jump() {
+	// Add horizontal movement during the jump
+	if (!isNearWall(m_diff_x)) {
+		m_x += m_diff_x;
+	}
+	else {
+		// If Mario hits a wall, stop horizontal movement
+		m_diff_x = 0;
+	}
+
+	// Check for collision with a ceiling
+	if (this->map->currentMap[m_y - 1][m_x] != ' ' && this->map->currentMap[m_y - 1][m_x] != 'H') {
+		// If there is a ceiling, stop upward movement and fall
+		m_diff_y = 1; // Begin falling
+		m_y += m_diff_y;
+
+		// Update state to WALKING or STANDING depending on horizontal movement
+		if (m_diff_x != 0 && !isNearWall(m_diff_x)) {
+			state = State::WALKING;
+		}
+		else {
+			state = State::STANDING;
+		}
+
+		this->jumpCounter = 0; // Reset jump counter
+		return;
+	}
+
+	// Handle upward movement during the jump
+	if (this->jumpCounter < 2) {
+		m_diff_y = -1; // Move up
 		m_y += m_diff_y;
 		state = State::JUMPING;
 		this->jumpCounter++;
 		return;
 	}
 
-
-	// When Mario is in the air
+	// Handle downward movement if in the air
 	if (state == State::JUMPING && !isOnFloor()) {
-		m_diff_y = 1;
+		m_diff_y = 1; // Move down
 		m_y += m_diff_y;
 
-		// Check if he landed back on the floor
+		// Check if Mario has landed on the floor
 		if (isOnFloor()) {
-			// Return to WALKING state if there is horizontal movement
+			// Update state to WALKING or STANDING depending on horizontal movement
 			if (m_diff_x != 0 && !isNearWall(m_diff_x)) {
 				state = State::WALKING;
 			}
 			else {
-				state = State::STANDING; // Stop if not moving horizontally
+				state = State::STANDING;
 			}
-			m_diff_y = 0; 
-			this->jumpCounter = 0;
+			m_diff_y = 0; // Reset vertical movement
+			this->jumpCounter = 0; // Reset jump counter
 		}
+
 		return;
 	}
 }
+
+
 
 
 
@@ -167,8 +198,18 @@ bool Mario::isOnFloor()
 
 bool Mario::isUnderFloor()
 {
-	if (this->map->currentMap[m_y - 1][m_x] != ' ' &&  this->map->currentMap[m_y - 2][m_x] != ' ')
-		return true;
+	if (state == State::STANDING) {
+		if (this->map->currentMap[m_y - 1][m_x] != ' ' && this->map->currentMap[m_y - 1][m_x] != 'H')
+			return true;
+	}
+	else {
+		if (this->m_diff_x == (int)gameConfig::Direction::POSITIVE) // going right
+			if ((this->map->currentMap[m_y - 1][m_x] != ' ' && this->map->currentMap[m_y - 1][m_x] != 'H') || ((this->map->currentMap[m_y - 1][m_x+1] != ' ' && this->map->currentMap[m_y - 1][m_x+1] != 'H')))
+				return true;
+		if(this->m_diff_x == (int)gameConfig::Direction::NEGATIVE) // going left
+		if ((this->map->currentMap[m_y - 1][m_x] != ' ' && this->map->currentMap[m_y - 1][m_x] != 'H') || ((this->map->currentMap[m_y - 1][m_x - 1] != ' ' && this->map->currentMap[m_y - 1][m_x - 1] != 'H')))
+			return true;
+	}
 	return false;
 }
 

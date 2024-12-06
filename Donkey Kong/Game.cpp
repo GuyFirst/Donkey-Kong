@@ -32,9 +32,11 @@ int Game::startGame()
 {
     ShowConsoleCursor(false);
     int currLives = (int)gameConfig::Size::START_LIVES;
+
     Barrel arrB[(int)gameConfig::Size::BARREL_MAX] = {};
     int barrelCurr = 0;
-    int counter = 0;
+    int barrelCounter = 0;
+
     Map m;
     m.resetMap();
     m.printMap();
@@ -43,13 +45,12 @@ int Game::startGame()
     mario.map = &m;
     char keyPressed = (char)(gameConfig::eKeys::STAY);
     bool isLocked = false;
+    
 
     while (true) {
         keyPressed = 0;
-       
- 
-        // Get input from the user only if Mario is not locked
-        if (!isLocked && _kbhit()) {
+        
+        if (_kbhit() ) {
             keyPressed = _getch();
 
             // Pause the game if ESC is pressed
@@ -58,8 +59,7 @@ int Game::startGame()
                 m.printMap();
             }
         }
-
-        counter++;
+        barrelCounter++;
         
         // Handle losing a life
         if (currLives != mario.lives) {
@@ -72,9 +72,8 @@ int Game::startGame()
             m.printRemainingLives(currLives);
             mario.resetMario(); // Reset Mario's position and state
             barrelCurr = 0;     // Reset the barrels
-            counter = 0;
+            barrelCounter = 0;
             isLocked = false;   // Unlock Mario after resetting
-            
         }
 
         // Check if Mario has reached Paulina
@@ -90,11 +89,11 @@ int Game::startGame()
             mario.draw('@');
 
         // Spawn new barrels periodically
-        if (counter == 20 && barrelCurr < (int)gameConfig::Size::BARREL_MAX) {
+        if (barrelCounter == 20 && barrelCurr < (int)gameConfig::Size::BARREL_MAX) {
             arrB[barrelCurr].addBarrel(arrB, barrelCurr);
             arrB[barrelCurr].map = &m;
             barrelCurr++;
-            counter = 0;
+            barrelCounter = 0;
         }
 
         // Move all barrels
@@ -106,10 +105,18 @@ int Game::startGame()
 
         Sleep(gameConfig::SLEEP_DURATION);
 
-        // Handle Mario's movement
         if (isLocked) {
-            // If locked, continue the current action
-            mario.move(); // Use the current state without new input
+            // If locked, check for the 's' key to allow stopping on the ladder
+            if (keyPressed == (char)gameConfig::eKeys::STAY &&
+                (mario.state == Mario::State::CLIMBING_UP || mario.state == Mario::State::CLIMBING_DOWN)) {
+                mario.state = Mario::State::STANDING; // Stop Mario on the ladder
+                isLocked = false; // Unlock to allow further movement
+                continue; // Skip the rest of the loop to process the state change
+            }
+            else {
+                // Continue the current action
+                mario.move(); // Use the current state without new input
+            }
         }
         else {
             // If not locked, process the user's input

@@ -135,6 +135,7 @@
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Mario.cpp" />
     <ClCompile Include="menu.cpp" />
+    <ClCompile Include="notes.h" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Barrel.h" />

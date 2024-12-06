@@ -13,8 +13,10 @@ class Mario
 	int m_diff_y = (int)gameConfig::Direction::STAY;
 	int m_countHeight = (int)gameConfig::Size::ZERO_SIZE;
 	int jumpCounter = 0;
+	
 
 public:
+	
 	int lives = (int)gameConfig::Size::START_LIVES;
 	enum class State {JUMPING, CLIMBING_UP, CLIMBING_DOWN, WALKING, STANDING};
 	State state = State::STANDING;
