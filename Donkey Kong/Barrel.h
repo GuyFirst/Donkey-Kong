@@ -10,10 +10,12 @@ class Barrel
 	int m_diff_x = (int)gameConfig::Direction::STAY;
 	int m_diff_y = (int)gameConfig::Direction::POSITIVE;
 	int m_prev_diff_x = 0;
+	int m_fallCounter = 0;
 
 public:
 	Map* map;
-	void move();
+	bool checkFallHeight(); // return 1 if exploded 0 if not
+	void move(Mario* mario);
 	void draw(char ch);
 	bool isOnFloor(char& refFloor);
 	void addBarrel(Barrel barrelArr[(int)numbers::MAX_BARRELS], int size);
@@ -22,5 +24,6 @@ public:
 	bool isNearWall(int dirX);
 	char getMapChar() { return this->map->originalMap[m_y][m_x]; }
 	void reset();
+	bool isMarioNearMe(Point pos);
 };
 

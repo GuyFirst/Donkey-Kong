@@ -35,7 +35,7 @@ int Game::startGame()
     Barrel arrBarrels[(int)gameConfig::Size::BARREL_MAX] = {};           
     int barrelCurr = (int)gameConfig::Size::ZERO_SIZE;
     int barrelCounter = (int)gameConfig::Size::ZERO_SIZE;
-
+    Point explosionPos;
     Map gameBoard;
     gameBoard.resetMap();
     gameBoard.printcurrentMap();

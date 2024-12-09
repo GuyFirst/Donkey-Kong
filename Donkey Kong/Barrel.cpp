@@ -1,17 +1,20 @@
 #include "Barrel.h"
-
-void Barrel::move()
+#include <Windows.h>
+#include "Mario.h"
+#include "Point.h"
+void Barrel::move(Mario* mario)
 {
 	char floor = '\0';
 	char& refFloor = floor;
-	
+
 	// Erase barrel from the current position
-	draw(this->map->currentMap[m_y][m_x]); // Draw the background character at the current position
-	
+	draw(this->map->originalMap[m_y][m_x]); // Draw the background character at the current position
+	bool isExploded = false;
 	if (isOnAir(refFloor))
 	{
 		m_diff_y = (int)gameConfig::Direction::POSITIVE;
 		m_diff_x = 0;
+		m_fallCounter++;
 	}
 	else
 	{
@@ -28,8 +31,9 @@ void Barrel::move()
 
 			break;
 		}
+		isExploded = checkFallHeight();
+		m_fallCounter = 0;
 
-		
 
 
 	}
@@ -41,9 +45,19 @@ void Barrel::move()
 	m_x += m_diff_x;
 	m_y += m_diff_y;
 	// Draw barrel at the new position
-	draw('O'); // Replace 'O' with the character representing a barrel
+	if (isExploded) {
+		draw('*');                                                              // fix the issue when we still be seeing the explosion
+		Point marioPos = { (*mario).getX(), (*mario).getY() };
+		if (isMarioNearMe(marioPos)) //LEMAMESHHHHHHHHHHHHHHHHHHHHHHHHHHHHH
+		{
+			(*mario).m_isNearExplosion = true;
+		}
+		reset();
+	}
+	else {
+		draw('O'); // Replace 'O' with the character representing a barrel
 	m_diff_x = m_prev_diff_x;
-	
+}
 	return;
 }
 
@@ -52,7 +66,7 @@ void Barrel::draw(char ch)
 	gotoxy(m_x, m_y);
 	
 	std::cout << ch;
-
+	map->currentMap[m_y][m_x] = ch;
 }
 
 bool Barrel::isOnAir(char& refFloor)
@@ -101,3 +115,15 @@ void Barrel::addBarrel(Barrel arr[], int size)
 	Barrel b;
 	arr[size] = b;
 }
+
+bool Barrel::checkFallHeight()
+{
+	if (m_fallCounter >= 4)
+	{
+		this->m_fallCounter= 0;
+		return true;
+	}
+	return false;
+
+}
+

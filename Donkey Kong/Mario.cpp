@@ -16,6 +16,11 @@ void Mario::draw(char ch) const
 
 void Mario::move(gameConfig::eKeys key) {
 	// Erase Mario from the current position
+	if (m_isNearExplosion)
+	{
+		lives--;
+		return;
+	}
 	draw(this->map->currentMap[position.getY()][position.getX()]);
 
 	// Handle input keys
