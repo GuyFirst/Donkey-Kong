@@ -92,7 +92,7 @@ int Game::startGame()
             mario.draw('@');
 
         // Spawn new barrels periodically
-        if (barrelCounter == 20 && barrelCurr < (int)gameConfig::Size::BARREL_MAX) {
+        if (barrelCounter == 25 && barrelCurr < (int)gameConfig::Size::BARREL_MAX) {
             arrBarrels[barrelCurr].addBarrel(arrBarrels, barrelCurr);
             arrBarrels[barrelCurr].map = &gameBoard;
             barrelCurr++;
@@ -103,7 +103,7 @@ int Game::startGame()
         for (int i = 0; i < barrelCurr; i++) {
             curr = arrBarrels[i].getMapChar();
             arrBarrels[i].draw('O');
-            arrBarrels[i].move();
+            arrBarrels[i].move(&mario);
         }
 
         Sleep((int)gameConfig::Sleep::GAME_LOOP_SLEEP);

@@ -38,6 +38,6 @@ public:
 	void downLadder();
 	void checkFallHeight();
 	void resetMario();
-	void checkCollision();
+	bool isBarrelHere();
 };
 

@@ -8,7 +8,7 @@ void Barrel::move(Mario* mario)
 	char& refFloor = floor;
 
 	// Erase barrel from the current position
-	draw(this->map->originalMap[m_y][m_x]); // Draw the background character at the current position
+	draw(this->map->originalMap[position.getY()][position.getX()]); // Draw the background character at the current position
 	bool isExploded = false;
 	if (isOnAir(refFloor))
 	{
@@ -42,17 +42,18 @@ void Barrel::move(Mario* mario)
 		reset();
 		return;
 	}
-	m_x += m_diff_x;
-	m_y += m_diff_y;
+	position.setX(position.getX() + m_diff_x);
+	position.setY(position.getY() + m_diff_y);
 	// Draw barrel at the new position
 	if (isExploded) {
-		draw('*');                                                              // fix the issue when we still be seeing the explosion
+		draw('*');  
+		Sleep((int)gameConfig::Sleep::EXPLOSION_SLEEP);
 		Point marioPos = { (*mario).getX(), (*mario).getY() };
-		if (isMarioNearMe(marioPos)) //LEMAMESHHHHHHHHHHHHHHHHHHHHHHHHHHHHH
-		{
+		if (isMarioNearMe(marioPos)) 
 			(*mario).m_isNearExplosion = true;
-		}
+		draw(' ');
 		reset();
+
 	}
 	else {
 		draw('O'); // Replace 'O' with the character representing a barrel
@@ -63,16 +64,16 @@ void Barrel::move(Mario* mario)
 
 void Barrel::draw(char ch)
 {
-	gotoxy(m_x, m_y);
+	gotoxy(position.getX(), position.getY());
 	
 	std::cout << ch;
-	map->currentMap[m_y][m_x] = ch;
+	map->currentMap[position.getY()][position.getX()] = ch;
 }
 
 bool Barrel::isOnAir(char& refFloor)
 {
-	refFloor = this->map->currentMap[m_y + 1][m_x];
-	if (this->map->currentMap[m_y + 1][m_x] == ' ' || this->map->currentMap[m_y + 1][m_x] == 'H')
+	refFloor = this->map->currentMap[position.getY() + 1][position.getX()];
+	if (this->map->currentMap[position.getY() + 1][position.getX()] == ' ' || this->map->currentMap[position.getY() + 1][position.getX()] == 'H')
 		return true;
 	return false;
 }
@@ -81,12 +82,12 @@ bool Barrel::isNearWall(int dirX)
 {
 	if (dirX == (int)gameConfig::Direction::POSITIVE)
 	{
-		if (m_x > gameConfig::GAME_WIDTH - 4)
+		if (this->position.getX() > gameConfig::GAME_WIDTH - 4)
 			return true;
 	}
 	else
 	{
-		if (m_x <= 0)
+		if (this->position.getX() <= 0)
 			return true;
 	}
 	return false;
@@ -94,18 +95,34 @@ bool Barrel::isNearWall(int dirX)
 
 void Barrel::reset()
 {
-    m_x = 5; //first apperance of any barrel
-	m_y = 4;
+	this->position.setX((int)gameConfig::Pos::BARREL_X_START);
+	this->position.setY((int)gameConfig::Pos::BARREL_Y_START);
     m_diff_x = 0;
 	m_diff_y = 1;
 	m_prev_diff_x = 0;
 	return;
 }
 
+bool Barrel::isMarioNearMe(Point marioPos)
+{
+	Point currPosition(this->position.getX()-2,this->position.getY()-2);                //   the function checking if mario is near radius of 2 spaces within the boom
+	for (int col = 0; col < 5; col++) {  		                                        //
+		for (int row = 0; row < 5; row++)                                               //
+		{
+			if (marioPos == currPosition)
+				return true;
+			currPosition.setX(currPosition.getX() + 1);
+		}
+		currPosition.setY(currPosition.getY() + 1);
+		currPosition.setX(this->position.getX() - 2);
+	}
+	return false;
+}
+
 bool Barrel::isOnFloor(char& refFloor)
 {
-	refFloor = this->map->currentMap[m_y + 1][m_x];
-	if (this->map->currentMap[m_y + 1][m_x] != ' ' && this->map->currentMap[m_y][m_x] != 'H')
+	refFloor = this->map->currentMap[this->position.getY() + 1][this->position.getX()];
+	if (this->map->currentMap[this->position.getY() + 1][this->position.getX()] != ' ' && this->map->currentMap[this->position.getY()][this->position.getX()] != 'H')
 		return true;
 	return false;
 }

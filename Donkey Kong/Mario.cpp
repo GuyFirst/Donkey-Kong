@@ -16,11 +16,13 @@ void Mario::draw(char ch) const
 
 void Mario::move(gameConfig::eKeys key) {
 	// Erase Mario from the current position
-	if (m_isNearExplosion)
+	if (m_isNearExplosion || isBarrelHere())
 	{
 		lives--;
+		Sleep((int)gameConfig::Sleep::SCREEN_SLEEP);
 		return;
 	}
+
 	draw(this->map->currentMap[position.getY()][position.getX()]);
 
 	// Handle input keys
@@ -286,13 +288,23 @@ void Mario::checkFallHeight()
 
 void Mario::resetMario()
 {
+
 	 position.setX((int)Map::GAME_WIDTH / 2); //start point in the middle of the floor
 	 position.setY((int)Map::GAME_HEIGHT - 2);//start point one character above the floor
+	 m_isNearExplosion = false;
 	 m_diff_x = 0;
 	 m_diff_y = 0;
 	 m_countHeight = 0;
 	return;
 }
+
+bool Mario::isBarrelHere()
+{
+	if (this->map->currentMap[position.getY()][position.getX()] == 'O')
+		return true;
+	return false;
+}
+
 
 
 
