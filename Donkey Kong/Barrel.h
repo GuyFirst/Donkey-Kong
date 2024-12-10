@@ -7,7 +7,7 @@ class Mario;
 class Barrel
 {
 	Point position;
-	enum class numbers { MAX_BARRELS = 7 };
+	enum class numbers { MAX_BARRELS = 4 };
 	int m_x = (int)gameConfig::Pos::BARREL_X_START; //first apperance of any barrel
 	int m_y = (int)gameConfig::Pos::BARREL_Y_START;
 	int m_diff_x = (int)gameConfig::Direction::STAY;
