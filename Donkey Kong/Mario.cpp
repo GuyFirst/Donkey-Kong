@@ -495,22 +495,18 @@ void Mario::jump() {
     jumpCounter = 0; // Reset jump counter
 }
 
-bool Mario::isCeilingAbove() const {
-    return this->map->currentMap[position.getY() - 1][position.getX()] != ' ' &&
-        this->map->currentMap[position.getY() - 1][position.getX()] != 'H';
-}
+
 
 void Mario::handleCeilingCollision() {
-    m_diff_y = 1; // Begin falling
+    m_diff_y = (int)gameConfig::Direction::POSITIVE; // Begin falling
     position.setY(position.getY() + m_diff_y);
 
     // Update state to WALKING or STANDING depending on horizontal movement
-    if (m_diff_x != 0 && !isNearWall(m_diff_x)) {
+    if (m_diff_x != 0 && !isNearWall(m_diff_x)) 
         state = State::WALKING;
-    }
-    else {
+    
+    else 
         state = State::STANDING;
-    }
 
     jumpCounter = 0; // Reset jump counter
 }
@@ -527,63 +523,6 @@ void Mario::handleLanding() {
         m_diff_y = 0; // Reset vertical movement
         jumpCounter = 0; // Reset jump counter
     }
-}
-
-bool Mario::isNearWall(int dirX) const {
-    if (dirX == (int)gameConfig::Direction::POSITIVE) {
-        return position.getX() > gameConfig::GAME_WIDTH - 4;
-    }
-    else {
-        return position.getX() <= 0;
-    }
-}
-
-bool Mario::isOnFloor() const {
-    return this->map->currentMap[position.getY() + 1][position.getX()] != ' ';
-}
-
-bool Mario::isUnderFloor() const {
-    if (state == State::STANDING) {
-        return this->map->currentMap[position.getY() - 1][position.getX()] != ' ' &&
-            this->map->currentMap[position.getY() - 1][position.getX()] != 'H';
-    }
-    else {
-        return isUnderFloorWhileMoving();
-    }
-}
-
-bool Mario::isUnderFloorWhileMoving() const {
-    if (m_diff_x == (int)gameConfig::Direction::POSITIVE) { // going right
-        return isObstacleAbove(position.getX()) || isObstacleAbove(position.getX() + 1);
-    }
-    else if (m_diff_x == (int)gameConfig::Direction::NEGATIVE) { // going left
-        return isObstacleAbove(position.getX()) || isObstacleAbove(position.getX() - 1);
-    }
-    return false;
-}
-
-bool Mario::isObstacleAbove(int x) const {
-    return this->map->currentMap[position.getY() - 1][x] != ' ' &&
-        this->map->currentMap[position.getY() - 1][x] != 'H';
-}
-
-bool Mario::isNearPaulina() const {
-    return this->map->currentMap[position.getY()][position.getX() + m_diff_x] == '$';
-}
-
-char Mario::getMapChar() const {
-    return this->map->originalMap[position.getY()][position.getX()];
-}
-
-bool Mario::isUnderLadder() const {
-    return this->map->currentMap[position.getY() - 1][position.getX()] == 'H' ||
-        this->map->currentMap[position.getY()][position.getX()] == 'H' ||
-        this->map->currentMap[position.getY() + 1][position.getX()] == 'H';
-}
-
-bool Mario::isOnLadder() const {
-    return this->map->currentMap[position.getY() + 2][position.getX()] == 'H' ||
-        this->map->currentMap[position.getY() + 1][position.getX()] == 'H';
 }
 
 void Mario::climb() {
@@ -624,13 +563,57 @@ void Mario::checkFallHeight() {
 void Mario::resetMario() {
     position.setX((int)Map::GAME_WIDTH / 2); // start point in the middle of the floor
     position.setY((int)Map::GAME_HEIGHT - 2); // start point one character above the floor
-    m_isNearExplosion = false;
-    m_diff_x = 0;
-    m_diff_y = 0;
-    m_countHeight = 0;
+    m_diff_x = m_diff_y = m_countHeight = m_isNearExplosion = 0;
 }
 
-bool Mario::isBarrelHere() const {
-    return this->map->currentMap[position.getY()][position.getX()] == 'O';
+bool Mario::isBarrelHere() const         { return this->map->currentMap[position.getY()][position.getX()] == 'O'; }
+
+bool Mario::isObstacleAbove(int x) const { return this->map->currentMap[position.getY() - 1][x] != ' ' && this->map->currentMap[position.getY() - 1][x] != 'H'; }
+
+bool Mario::isNearPaulina() const        { return this->map->currentMap[position.getY()][position.getX() + m_diff_x] == '$'; }
+
+char Mario::getMapChar() const           { return this->map->originalMap[position.getY()][position.getX()]; }
+
+bool Mario::isOnFloor() const            { return this->map->currentMap[position.getY() + 1][position.getX()] != ' '; }
+
+
+bool Mario::isUnderLadder() const        { return this->map->currentMap[position.getY() - 1][position.getX()] == 'H' ||
+                                                  this->map->currentMap[position.getY()][position.getX()] == 'H'     ||
+                                                  this->map->currentMap[position.getY() + 1][position.getX()] == 'H';   }
+
+bool Mario::isOnLadder() const           { return this->map->currentMap[position.getY() + 2][position.getX()] == 'H' ||
+                                                  this->map->currentMap[position.getY() + 1][position.getX()] == 'H';      }
+
+bool Mario::isCeilingAbove() const       { return this->map->currentMap[position.getY() - 1][position.getX()] != ' ' &&
+                                                  this->map->currentMap[position.getY() - 1][position.getX()] != 'H';
 }
 
+bool Mario::isUnderFloor() const {
+    if (state == State::STANDING) 
+        return this->map->currentMap[position.getY() - 1][position.getX()] != ' ' &&
+               this->map->currentMap[position.getY() - 1][position.getX()] != 'H' ;  
+
+    else 
+        return isUnderFloorWhileMoving(); 
+}
+
+
+
+bool Mario::isUnderFloorWhileMoving() const {
+    if (m_diff_x == (int)gameConfig::Direction::POSITIVE)                                // going right
+        return isObstacleAbove(position.getX()) || isObstacleAbove(position.getX() + 1);
+    else if (m_diff_x == (int)gameConfig::Direction::NEGATIVE)                           // going left
+        return isObstacleAbove(position.getX()) || isObstacleAbove(position.getX() - 1);
+    
+    return false;
+}
+
+
+
+bool Mario::isNearWall(int dirX) const {
+    if (dirX == (int)gameConfig::Direction::POSITIVE) 
+         return position.getX() > gameConfig::GAME_WIDTH - 4;
+    
+    else 
+         return position.getX() <= 0; 
+}

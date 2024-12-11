@@ -241,12 +241,10 @@ bool Barrel::isOnAir(char& refFloor) {
 }
 
 bool Barrel::isNearWall(int dirX) const {
-    if (dirX == (int)gameConfig::Direction::POSITIVE) {
+    if (dirX == (int)gameConfig::Direction::POSITIVE) 
         return this->position.getX() > gameConfig::GAME_WIDTH - 4;
-    }
-    else {
+    else 
         return this->position.getX() <= 0;
-    }
 }
 
 void Barrel::reset() {
