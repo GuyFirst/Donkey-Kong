@@ -31,13 +31,12 @@ int Game::startGame()
 {
     ShowConsoleCursor(false);
 
-    Barrel arrBarrels[(int)gameConfig::Size::BARREL_MAX] = {};           
+    Barrel arrBarrels[(int)gameConfig::Size::BARREL_MAX] = {};
     int barrelCurr = (int)gameConfig::Size::ZERO_SIZE;
     int barrelCounter = (int)gameConfig::Size::ZERO_SIZE;
     Point explosionPos;
     Map gameBoard;
 
-    
     Mario mario(&gameBoard);
 
     int currLives = (int)gameConfig::Size::START_LIVES;
@@ -45,96 +44,114 @@ int Game::startGame()
 
     char keyPressed = (char)(gameConfig::eKeys::STAY);
     bool isMarioLocked = false;
-    
-    //start of the game loop
+
     while (true) {
         keyPressed = (int)gameConfig::eKeys::NONE;
-        
-        if (_kbhit() ) {
+
+        if (_kbhit()) {
             keyPressed = std::tolower(_getch());
 
-            // Pause the game if ESC is pressed
             if (keyPressed == (int)gameConfig::eKeys::ESC) {
                 pause();
                 gameBoard.printcurrentMap();
             }
         }
+
         barrelCounter++;
-        
-        // Handle losing a life
-        if (currLives != mario.lives) {
-            if (currLives == 1)
-               return -1; // End the game if no lives remain
-            loseALife();  
-            gameBoard.resetMap(); 
-            gameBoard.printcurrentMap(); 
-            currLives--; 
-            gameBoard.printRemainingLives(currLives);
-            mario.resetMario(); 
-            barrelCurr = 0;     
-            barrelCounter = 0;
-            isMarioLocked = false;   
+        if (handleLifeLoss(currLives, mario, gameBoard, barrelCurr, barrelCounter, isMarioLocked)) {
+            return -1;
         }
 
-        // Check if Mario has reached Paulina
         if (mario.isNearPaulina()) {
-            return 1;                   // Player wins the game
+            return 1;
         }
 
-        // Draw Mario on the map
-        char curr = mario.getMapChar();
-        if (curr == 'H')
-            mario.draw('#');
-        else
-            mario.draw('@');
+        drawMario(mario);
 
-        // Spawn new barrels periodically
         if (barrelCounter == 25 && barrelCurr < (int)gameConfig::Size::BARREL_MAX) {
-            arrBarrels[barrelCurr].addBarrel(arrBarrels, barrelCurr, &gameBoard);
-            //arrBarrels[barrelCurr].map = &gameBoard;
-            barrelCurr++;
+            spawnBarrel(arrBarrels, barrelCurr, gameBoard);
             barrelCounter = 0;
         }
 
-        // Move all barrels
-        for (int i = 0; i < barrelCurr; i++) {
-            curr = arrBarrels[i].getMapChar();
-            arrBarrels[i].draw('O');
-            arrBarrels[i].move(&mario);
-        }
+        moveBarrels(arrBarrels, barrelCurr, mario);
 
         Sleep((int)gameConfig::Sleep::GAME_LOOP_SLEEP);
 
         if (isMarioLocked) {
-            // If locked, check for the 's' key to allow stopping on the ladder
-            if (keyPressed == (char)gameConfig::eKeys::STAY && (mario.state == Mario::State::CLIMBING_UP || mario.state == Mario::State::CLIMBING_DOWN))
-            {
-                mario.state = Mario::State::STANDING; 
-                isMarioLocked = false; 
-                continue; 
-            }
-            else
-                mario.move(); 
+            handleMarioLocked(keyPressed, mario, isMarioLocked);
         }
-        else 
-        {
+        else {
             mario.move((gameConfig::eKeys)keyPressed);
-            // Lock Mario if a long action starts
-            if (mario.state == Mario::State::JUMPING || mario.state == Mario::State::CLIMBING_UP || mario.state == Mario::State::CLIMBING_DOWN)
-                isMarioLocked = true;
+            isMarioLocked = isMarioInLongAction(mario);
         }
 
-        // Unlock Mario when the action finishes
-        if (mario.state == Mario::State::STANDING || mario.state == Mario::State::WALKING) {
+        if (isMarioInShortAction(mario)) {
             isMarioLocked = false;
         }
 
-        keyPressed = (int)gameConfig::eKeys::NONE; // Reset the input
+        keyPressed = (int)gameConfig::eKeys::NONE;
     }
 
     return 0;
 }
 
+void Game::drawMario(Mario& mario) {
+    char curr = mario.getMapChar();
+    mario.draw(curr == 'H' ? '#' : '@');
+}
+
+bool Game::handleLifeLoss(int& currLives, Mario& mario, Map& gameBoard, int& barrelCurr, int& barrelCounter, bool& isMarioLocked) {
+    if (currLives == mario.lives) return false;
+
+    if (currLives == 1) return true;
+
+    loseALife();
+    gameBoard.resetMap();
+    gameBoard.printcurrentMap();
+    currLives--;
+    gameBoard.printRemainingLives(currLives);
+    mario.resetMario();
+    barrelCurr = 0;
+    barrelCounter = 0;
+    isMarioLocked = false;
+
+    return false;
+}
+
+void Game::spawnBarrel(Barrel arrBarrels[], int& barrelCurr, Map& gameBoard) {
+    arrBarrels[barrelCurr].addBarrel(arrBarrels, barrelCurr, &gameBoard);
+    barrelCurr++;
+}
+
+void Game::moveBarrels(Barrel arrBarrels[], int barrelCurr, Mario& mario) {
+    for (int i = 0; i < barrelCurr; i++) {
+        char curr = arrBarrels[i].getMapChar();
+        arrBarrels[i].draw('O');
+        arrBarrels[i].move(&mario);
+    }
+}
+
+void Game::handleMarioLocked(char keyPressed, Mario& mario, bool& isMarioLocked) {
+    if (keyPressed == (char)gameConfig::eKeys::STAY &&
+        (mario.state == Mario::State::CLIMBING_UP || mario.state == Mario::State::CLIMBING_DOWN)) {
+        mario.state = Mario::State::STANDING;
+        isMarioLocked = false;
+    }
+    else {
+        mario.move();
+    }
+}
+
+bool Game::isMarioInLongAction(Mario& mario) {
+    return mario.state == Mario::State::JUMPING ||
+        mario.state == Mario::State::CLIMBING_UP ||
+        mario.state == Mario::State::CLIMBING_DOWN;
+}
+
+bool Game::isMarioInShortAction(Mario& mario) {
+    return mario.state == Mario::State::STANDING ||
+        mario.state == Mario::State::WALKING;
+}
 
 void Game::pause()
 {
