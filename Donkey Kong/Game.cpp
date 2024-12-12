@@ -13,17 +13,16 @@ void Game::run()
     Point screenStart(0, 0);
     while (true)                                        //
     {                                                   //
-        gotoxy(screenStart.getX(), screenStart.getY());                                   // 
+        gotoxy(screenStart.getX(), screenStart.getY()); // 
         Map menu;                                       // the flags indicates if the player wins, loses, or quiting the game.
         flag = menu.mainMenu();                         //  -1 for deciding to quit (before we entered the game)
-        if (flag == -1)                                 //   1 of the player won
+        if (flag == -1)                                 //   1 if the player won
             return;                                     //  -1 if the player lost
         flag = startGame();                             //
         if (flag == 1)                                  //
             win();                                      //
         else                                            //
             lose();
-
     }
     return;
 }
@@ -37,11 +36,9 @@ int Game::startGame()
     int barrelCounter = (int)gameConfig::Size::ZERO_SIZE;
     Point explosionPos;
     Map gameBoard;
-    gameBoard.resetMap();
-    gameBoard.printcurrentMap();
+
     
-    Mario mario;
-    mario.map = &gameBoard;
+    Mario mario(&gameBoard);
 
     int currLives = (int)gameConfig::Size::START_LIVES;
     gameBoard.printRemainingLives(currLives);
@@ -54,7 +51,7 @@ int Game::startGame()
         keyPressed = (int)gameConfig::eKeys::NONE;
         
         if (_kbhit() ) {
-            keyPressed = _getch();
+            keyPressed = std::tolower(_getch());
 
             // Pause the game if ESC is pressed
             if (keyPressed == (int)gameConfig::eKeys::ESC) {
@@ -71,17 +68,17 @@ int Game::startGame()
             loseALife();  
             gameBoard.resetMap(); 
             gameBoard.printcurrentMap(); 
-            currLives--; // Decrease the remaining lives
+            currLives--; 
             gameBoard.printRemainingLives(currLives);
-            mario.resetMario(); // Reset Mario's position and state
-            barrelCurr = 0;     // Reset the barrels
+            mario.resetMario(); 
+            barrelCurr = 0;     
             barrelCounter = 0;
-            isMarioLocked = false;   // Unlock Mario after resetting
+            isMarioLocked = false;   
         }
 
         // Check if Mario has reached Paulina
         if (mario.isNearPaulina()) {
-            return 1; // Player wins the game
+            return 1;                   // Player wins the game
         }
 
         // Draw Mario on the map
@@ -93,8 +90,8 @@ int Game::startGame()
 
         // Spawn new barrels periodically
         if (barrelCounter == 25 && barrelCurr < (int)gameConfig::Size::BARREL_MAX) {
-            arrBarrels[barrelCurr].addBarrel(arrBarrels, barrelCurr);
-            arrBarrels[barrelCurr].map = &gameBoard;
+            arrBarrels[barrelCurr].addBarrel(arrBarrels, barrelCurr, &gameBoard);
+            //arrBarrels[barrelCurr].map = &gameBoard;
             barrelCurr++;
             barrelCounter = 0;
         }
@@ -163,7 +160,6 @@ void Game::pause()
 
 void Game::loseALife()
 {
-    Sleep((int)gameConfig::Sleep::SCREEN_SLEEP);
     clrsrc();
     gotoxy(40, 10);
     std::cout << "oh no u lose a life oh no";

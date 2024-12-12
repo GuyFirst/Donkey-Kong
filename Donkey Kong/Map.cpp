@@ -7,22 +7,15 @@
 #include <conio.h>
 #include "menu.h"
 #include <Windows.h>
+#include "Point.h"
 
-
-void Map::printcurrentMap()
-{
-    gotoxy(0, 0);
-    for (int i = 0; i < Map::GAME_HEIGHT; ++i)
-    {
-        std::cout << currentMap[i] << '\n';
-    }
-}
 
 void Map::printRemainingLives(int remainingLives)
 {
-    gotoxy(60, 2);
+    Point startOfText(60, 2);
+    gotoxy(startOfText.getX(), startOfText.getY());
     std::cout << "REMAINING LIVES:";
-    gotoxy(64, 3);
+    gotoxy(startOfText.getX() + 4, startOfText.getY() + 1);
     for (int i = 0; i < remainingLives; i++)
         std::cout << "* ";
 
@@ -36,15 +29,11 @@ int Map::mainMenu()
     {
         char keyPressed = '=';
         if (_kbhit())
-        {
             keyPressed = _getch();
-        }
-
 
         if (keyPressed == '9')
-        {
             return flag = exitGame();
-        }
+
         if (keyPressed == '8')
         {
             clrsrc();
@@ -71,13 +60,7 @@ int Map::mainMenu()
     }
 }
 
-void Map::showMenu() {
 
-    for (int i = 0; i < Map::GAME_HEIGHT; ++i)
-        std::cout << this->loginScreen[i] << '\n';
-    return;
-
-}
 
 void Map::showInstructions() {
     gotoxy(0, 0);
@@ -97,10 +80,7 @@ void Map::showInstructions() {
     return;
 }
 
-int Map::exitGame() {
-    std::cout << "Exiting the game. Goodbye!" << std::endl;
-    return -1;
-}
+
 
 void Map::win()
 {
@@ -144,7 +124,7 @@ void Map::win()
     while (message[i] != '\0')
     {
         std::cout << message[i];
-        Sleep(100);
+        Sleep((int)gameConfig::Sleep::TEXT_PRINTING_SLEEP);
         i++;
     }
     Sleep(2000);

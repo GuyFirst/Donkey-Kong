@@ -98,12 +98,24 @@ public:
         for (int i = 0; i < Map::GAME_HEIGHT; ++i)
             memcpy(currentMap[i], originalMap[i], Map::GAME_WIDTH);
     }
-    void printcurrentMap();
+    Map() { resetMap(); printcurrentMap(); }
+    void printcurrentMap() { 
+        gotoxy(0, 0);
+        for (int i = 0; i < Map::GAME_HEIGHT; ++i)
+            std::cout << currentMap[i] << '\n';
+    }
+
     void printRemainingLives(int remainingLives);
     int mainMenu();
-    void showMenu();
+    void showMenu() { 
+        for (int i = 0; i < Map::GAME_HEIGHT; ++i)
+            std::cout << this->loginScreen[i] << '\n';
+    }
     void showInstructions();
-    int exitGame();
+    int exitGame() {
+        std::cout << "Exiting the game. Goodbye!" << std::endl;
+        return -1;
+    }
     void win();
     void lose();
 };

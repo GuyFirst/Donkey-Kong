@@ -276,8 +276,8 @@ bool Barrel::checkFallHeight() {
     return false;
 }
 
-void Barrel::addBarrel(Barrel arr[], int size) {
-    Barrel b;
+void Barrel::addBarrel(Barrel arr[], int size, Map* map) {
+    Barrel b(map);
     arr[size] = b;
 }
 
