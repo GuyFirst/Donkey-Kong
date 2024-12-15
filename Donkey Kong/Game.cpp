@@ -1,6 +1,8 @@
 #include "Game.h"
 #include "gameConfig.h"
 #include <conio.h> //for kbhit_ getch
+#include <ctime>  // For time functions
+#include <cstdlib>  // For rand() and srand()
 #include <Windows.h>
 #include "Barrel.h"
 #include "Map.h"
@@ -9,7 +11,7 @@
 
 void Game::run()
 {
-    int flag = 0;                                  
+    int flag = 0;  
     Point screenStart(0, 0);
     while (true)                                        //
     {                                                   //
@@ -27,7 +29,91 @@ void Game::run()
     return;
 }
 
-int Game::startGame()
+
+
+int Game::startGame() {
+    ShowConsoleCursor(false);
+
+    Barrel arrBarrels[(int)gameConfig::Size::BARREL_MAX] = {};
+    int barrelCurr = (int)gameConfig::Size::ZERO_SIZE;
+    int barrelCounter = (int)gameConfig::Size::ZERO_SIZE;
+    Point explosionPos;
+    Map gameBoard;
+    gameBoard.printcurrentMap();
+    Mario mario(&gameBoard);
+
+    int currLives = (int)gameConfig::Size::START_LIVES;
+    gameBoard.printRemainingLives(currLives);
+
+    char keyPressed = (char)(gameConfig::eKeys::STAY);
+    bool isMarioLocked = false;
+
+    // Initialize the random seed
+    srand((unsigned)time(0));
+
+    // Time variable to track last hole creation
+    time_t lastHoleTime = time(0);
+
+    while (true) {
+        keyPressed = (int)gameConfig::eKeys::NONE;
+
+        if (_kbhit()) {
+            keyPressed = std::tolower(_getch());
+
+            if (keyPressed == (int)gameConfig::eKeys::ESC) {
+                pause();
+                gameBoard.printcurrentMap();
+            }
+        }
+
+        barrelCounter++;
+        if (handleLifeLoss(currLives, mario, gameBoard, barrelCurr, barrelCounter, isMarioLocked)) {
+            return -1;
+        }
+
+        if (mario.isNearPaulina()) {
+            return 1;
+        }
+
+        drawMario(mario);
+
+        if (barrelCounter == (int)gameConfig::Size::BARRREL_COUNTER && barrelCurr < (int)gameConfig::Size::BARREL_MAX) {
+            spawnBarrel(arrBarrels, barrelCurr, gameBoard);
+            barrelCounter = 0;
+        }
+
+        moveBarrels(arrBarrels, barrelCurr, mario);
+
+        Sleep((int)gameConfig::Sleep::GAME_LOOP_SLEEP);
+
+        if (isMarioLocked) {
+            handleMarioLocked(keyPressed, mario, isMarioLocked);
+        }
+        else {
+            mario.move((gameConfig::eKeys)keyPressed);
+            isMarioLocked = isMarioInLongAction(mario);
+        }
+
+        if (isMarioInShortAction(mario)) {
+            isMarioLocked = false;
+        }
+
+        // Check if 10 seconds have passed to create a new hole
+        if (difftime(time(0), lastHoleTime) >= 1) {
+            int x = rand() % 85;  // Random x coordinate between 0 and 84
+            int y = 8 + (rand() % 3) * 3;  // Random y coordinate of 8, 11, or 17
+            gotoxy(x, y);
+            std::cout << ' ';
+            lastHoleTime = time(0);  // Update the last hole creation time
+        }
+
+        keyPressed = (int)gameConfig::eKeys::NONE;
+    }
+
+    return 0;
+}
+
+/*int Game::startGame()
 {
     ShowConsoleCursor(false);
 
@@ -58,17 +144,17 @@ int Game::startGame()
         }
 
         barrelCounter++;
-        if (handleLifeLoss(currLives, mario, gameBoard, barrelCurr, barrelCounter, isMarioLocked)) {
+        if (handleLifeLoss(currLives, mario, gameBoard, barrelCurr, barrelCounter, isMarioLocked)) { //if mario has 0 lives we lose the game
             return -1;
         }
 
-        if (mario.isNearPaulina()) {
+        if (mario.isNearPaulina()) { //if mario reached Paulina we won
             return 1;
         }
 
         drawMario(mario);
 
-        if (barrelCounter == 25 && barrelCurr < (int)gameConfig::Size::BARREL_MAX) {
+        if (barrelCounter == (int)gameConfig::Size::BARRREL_COUNTER && barrelCurr < (int)gameConfig::Size::BARREL_MAX) {
             spawnBarrel(arrBarrels, barrelCurr, gameBoard);
             barrelCounter = 0;
         }
@@ -93,7 +179,7 @@ int Game::startGame()
     }
 
     return 0;
-}
+}*/
 
 void Game::drawMario(Mario& mario) {
     char curr = mario.getMapChar();

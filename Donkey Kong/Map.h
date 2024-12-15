@@ -98,7 +98,7 @@ public:
         for (int i = 0; i < Map::GAME_HEIGHT; ++i)
             memcpy(currentMap[i], originalMap[i], Map::GAME_WIDTH);
     }
-    Map() { resetMap(); printcurrentMap(); }
+    Map() { resetMap(); }
     void printcurrentMap() { 
         gotoxy(0, 0);
         for (int i = 0; i < Map::GAME_HEIGHT; ++i)

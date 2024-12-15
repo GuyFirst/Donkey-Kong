@@ -336,13 +336,10 @@ void Mario::move(gameConfig::eKeys key) {
         return;
     }
 
-    // Handle input keys
     handleInput(key);
 
-    // Execute the current action based on the state
     executeStateAction();
 
-    // Handle falling if not on the floor
     handleFalling();
     
     // Check for collision with barrels after moving

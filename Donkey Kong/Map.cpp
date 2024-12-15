@@ -27,7 +27,7 @@ int Map::mainMenu()
     showMenu();
     while (true)
     {
-        char keyPressed = '=';
+        char keyPressed = '*';
         if (_kbhit())
             keyPressed = _getch();
 
@@ -56,7 +56,7 @@ int Map::mainMenu()
                 Sleep(20);
             }
 
-        }
+        } //a meme
     }
 }
 
@@ -133,7 +133,7 @@ void Map::win()
 
 void Map::lose()
 {
-    const char WinScreen[gameConfig::GAME_HEIGHT][gameConfig::GAME_WIDTH] = {
+    const char LoseScreen[gameConfig::GAME_HEIGHT][gameConfig::GAME_WIDTH] = {
        "                                                                               ", // 1
        "                                                                               ", // 2
        "                                                                               ", // 3
@@ -160,15 +160,15 @@ void Map::lose()
        "                                                                               ", // 24
        "===============================================================================", // 25
     };
-    const char message[] = "Returning to the main menu";
+    const char message[] = "Returning to the main menu...";
     gotoxy(0, 0);
 
     for (int col = 0; col < 25; col++)
     {
-        std::cout << WinScreen[col] << '\n';
+        std::cout << LoseScreen[col] << '\n';
     }
     int i = 0;
-    Sleep(1000);
+    Sleep((int)gameConfig::Sleep::SCREEN_SLEEP);
     gotoxy(28, 22);
     while (message[i] != '\0')
     {
@@ -176,7 +176,16 @@ void Map::lose()
         Sleep(100);
         i++;
     }
-    Sleep(2000);
+    for (int i = 0; i < 3; i++) {
+        gotoxy(28 + strlen(message) - 3, 22);
+        std::cout << "   ";
+        gotoxy(28 + strlen(message) - 3, 22);
+        for (int i = 0; i < 3; i++) {
+            std::cout << '.';
+            Sleep((int)gameConfig::Sleep::WAITING_FOR_MENU_SLEEP);
+        }
+        Sleep((int)gameConfig::Sleep::WAITING_FOR_MENU_SLEEP);
+    }
     return;
 }
 
