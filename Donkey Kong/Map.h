@@ -2,41 +2,13 @@
 #include <iostream>
 #include "general.h"
 #include "gameConfig.h"
+#include <Windows.h>
 
 class Map
 {
 public:
     static constexpr int GAME_WIDTH = 81;
     static constexpr int GAME_HEIGHT = 25;
-    //const char originalMap[Map::GAME_HEIGHT][Map::GAME_WIDTH] = {
-    //   "                                                                               ", // 1
-    //   "     |O|                                                                       ", // 2
-    //   "    |OOO|                                                                      ", // 3
-    //   "   |OOOOO|&  $                                                                 ", // 4
-    //   "   ==  ==========                                                              ", // 5
-    //   "                H                                                              ", // 6
-    //   "                H                                                              ", // 7
-    //   " >>>>>>>>>>>>>>>>>>>>>> ==== ===== ===================================         ", // 8
-    //   "                                                                    H          ", // 9
-    //   "                                                                    H          ", // 10
-    //   "   ========== <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< ", // 11
-    //   "         H                         H                                            ", // 12
-    //   "         H                         H                                           ", // 13
-    //   "         H                         H                                            ", // 14
-    //   "         H                         H                                            ", // 15
-    //   "         H                         H                                            ", // 16
-    //   " >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>         ", // 17
-    //   "                                                  H                H           ", // 18
-    //   "                                                  H                H           ", // 19
-    //   "                                                  H                H           ", // 20
-    //   "                                                 ==                H           ", // 21
-    //   "                                               ==                  H           ", // 22
-    //   "                              ================                     H           ", // 23
-    //   "                                                                   H           ", // 24
-    //   "===============================================================================", // 25
-
-    //};
-
 
 
     const char originalMap[Map::GAME_HEIGHT][Map::GAME_WIDTH] = {
@@ -130,23 +102,21 @@ public:
             memcpy(currentMap[i], originalMap[i], Map::GAME_WIDTH);
     }
     Map() { resetMap(); }
-    void printcurrentMap() { 
-        gotoxy(0, 0);
-        for (int i = 0; i < Map::GAME_HEIGHT; ++i)
-            std::cout << currentMap[i] << '\n';
+    void printcurrentMap() {  gotoxy(0, 0);
+
+        for (int i = 0; i < Map::GAME_HEIGHT; ++i) {
+            std::cout << currentMap[i];
+            if (i != Map::GAME_HEIGHT - 1)
+                std::cout << "\n";
+            Sleep(20);
+        }
     }
 
     void printRemainingLives(int remainingLives);
     int mainMenu();
-    void showMenu() { 
-        for (int i = 0; i < Map::GAME_HEIGHT; ++i)
-            std::cout << this->loginScreen[i] << '\n';
-    }
+    void showMenu();
     void showInstructions();
-    int exitGame() {
-        std::cout << "Exiting the game. Goodbye!" << std::endl;
-        return -1;
-    }
+    int exitGame() { std::cout << "Exiting the game. Goodbye!" << std::endl; return -1; }
     void win();
     void lose();
 };

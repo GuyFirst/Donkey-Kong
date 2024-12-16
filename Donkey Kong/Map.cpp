@@ -20,7 +20,36 @@ void Map::printRemainingLives(int remainingLives)
         std::cout << "* ";
 
 }
+void Map::showMenu() {
+    for (int i = 0; i < Map::GAME_HEIGHT; ++i) {
+        std::cout << this->loginScreen[i];
+        if (i != Map::GAME_HEIGHT - 1)
+            std::cout << "\n";
+        Sleep(20);
+    }
+}
+void Map::showInstructions()
+{
+    gotoxy(0, 0);
+    for (int i = 0; i < Map::GAME_HEIGHT; ++i) {
+        std::cout << this->instructionsScreen[i];
+        if (i != Map::GAME_HEIGHT - 1)
+            std::cout << "\n";
+        Sleep(20);
+    }
+    char key = 0;
+    while (true)
+    {
+        if (_kbhit())
+            key = _getch();
 
+        if (key != (char)gameConfig::eKeys::ESC)
+            continue;
+
+        break;
+    }
+    return;
+}
 int Map::mainMenu()
 {
     int flag = 0;
@@ -47,7 +76,7 @@ int Map::mainMenu()
             clrsrc();
             return 1;
         }
-        if (keyPressed == '0')
+        if (keyPressed == '0') // a mama
         {
             int i = 0;
             while (true) {
@@ -56,29 +85,10 @@ int Map::mainMenu()
                 Sleep(20);
             }
 
-        } //a meme
+        } 
     }
 }
 
-
-
-void Map::showInstructions() {
-    gotoxy(0, 0);
-    for (int i = 0; i < Map::GAME_HEIGHT; ++i)
-        std::cout << this->instructionsScreen[i] << '\n';
-    char key = 0;
-    while (true)
-    {
-        if (_kbhit())
-            key = _getch();
-
-        if (key != (char)gameConfig::eKeys::ESC)
-            continue;
-
-        break;
-    }
-    return;
-}
 
 
 
