@@ -1,3 +1,4 @@
+#include <iostream>
 #include "Game.h"
 #include "gameConfig.h"
 #include <conio.h> //for kbhit_ getch
@@ -8,6 +9,7 @@
 #include "Map.h"
 #include "Mario.h"
 #include "Point.h"
+#include <chrono>
 
 void Game::run()
 {
@@ -31,6 +33,72 @@ void Game::run()
 
 
 
+//int Game::startGame() {
+//    ShowConsoleCursor(false);
+//
+//    Barrel arrBarrels[(int)gameConfig::Size::BARREL_MAX] = {};
+//    int barrelCurr = (int)gameConfig::Size::ZERO_SIZE;
+//    int barrelCounter = (int)gameConfig::Size::ZERO_SIZE;
+//    Point explosionPos;
+//    Map gameBoard;
+//    gameBoard.printcurrentMap();
+//    Mario mario(&gameBoard);
+//
+//    int currLives = (int)gameConfig::Size::START_LIVES;
+//    gameBoard.printRemainingLives(currLives);
+//
+//    char keyPressed = (char)(gameConfig::eKeys::STAY);
+//    bool isMarioLocked = false;
+//
+//    while (true) {
+//        keyPressed = (int)gameConfig::eKeys::NONE;
+//
+//        if (_kbhit()) {
+//            keyPressed = std::tolower(_getch());
+//
+//            if (keyPressed == (int)gameConfig::eKeys::ESC) {
+//                pause();
+//                gameBoard.printcurrentMap();
+//            }
+//        }
+//
+//        barrelCounter++;
+//        if (handleLifeLoss(currLives, mario, gameBoard, barrelCurr, barrelCounter, isMarioLocked)) {
+//            return -1;
+//        }
+//
+//        if (mario.isNearPaulina()) {
+//            return 1;
+//        }
+//
+//        drawMario(mario);
+//
+//        if (barrelCounter == (int)gameConfig::Size::BARRREL_COUNTER && barrelCurr < (int)gameConfig::Size::BARREL_MAX) {
+//            spawnBarrel(arrBarrels, barrelCurr, gameBoard);
+//            barrelCounter = 0;
+//        }
+//
+//        moveBarrels(arrBarrels, barrelCurr, mario);
+//
+//        Sleep((int)gameConfig::Sleep::GAME_LOOP_SLEEP);
+//
+//        if (isMarioLocked) {
+//            handleMarioLocked(keyPressed, mario, isMarioLocked);
+//        }
+//        else {
+//            mario.move((gameConfig::eKeys)keyPressed);
+//            isMarioLocked = isMarioInLongAction(mario);
+//        }
+//
+//        if (isMarioInShortAction(mario)) {
+//            isMarioLocked = false;
+//        }
+//
+//        keyPressed = (int)gameConfig::eKeys::NONE;
+//    }
+//
+//    return 0;
+//}
 int Game::startGame() {
     ShowConsoleCursor(false);
 
@@ -48,11 +116,15 @@ int Game::startGame() {
     char keyPressed = (char)(gameConfig::eKeys::STAY);
     bool isMarioLocked = false;
 
-    // Initialize the random seed
-    srand((unsigned)time(0));
+    auto lastToggleTime = std::chrono::steady_clock::now();
 
-    // Time variable to track last hole creation
-    time_t lastHoleTime = time(0);
+    // Define the points to toggle
+    Point togglePoints[] = {
+        Point(31, 7),
+        Point(55, 10),
+        Point(64, 16),
+        Point(73, 19)
+    };
 
     while (true) {
         keyPressed = (int)gameConfig::eKeys::NONE;
@@ -84,6 +156,17 @@ int Game::startGame() {
 
         moveBarrels(arrBarrels, barrelCurr, mario);
 
+        // Check if 10 seconds have passed for arrow toggling
+        auto currentTime = std::chrono::steady_clock::now();
+        if (std::chrono::duration_cast<std::chrono::seconds>(currentTime - lastToggleTime).count() >= 4) {
+            // Toggle the arrows at the specified points
+            for (const Point& p : togglePoints) {
+                toggleArrow(gameBoard, p);
+            }
+
+            lastToggleTime = currentTime;
+        }
+
         Sleep((int)gameConfig::Sleep::GAME_LOOP_SLEEP);
 
         if (isMarioLocked) {
@@ -96,15 +179,6 @@ int Game::startGame() {
 
         if (isMarioInShortAction(mario)) {
             isMarioLocked = false;
-        }
-
-        // Check if 10 seconds have passed to create a new hole
-        if (difftime(time(0), lastHoleTime) >= 1) {
-            int x = rand() % 85;  // Random x coordinate between 0 and 84
-            int y = 8 + (rand() % 3) * 3;  // Random y coordinate of 8, 11, or 17
-            gotoxy(x, y);
-            std::cout << ' ';
-            lastHoleTime = time(0);  // Update the last hole creation time
         }
 
         keyPressed = (int)gameConfig::eKeys::NONE;
@@ -113,73 +187,20 @@ int Game::startGame() {
     return 0;
 }
 
-/*int Game::startGame()
-{
-    ShowConsoleCursor(false);
-
-    Barrel arrBarrels[(int)gameConfig::Size::BARREL_MAX] = {};
-    int barrelCurr = (int)gameConfig::Size::ZERO_SIZE;
-    int barrelCounter = (int)gameConfig::Size::ZERO_SIZE;
-    Point explosionPos;
-    Map gameBoard;
-
-    Mario mario(&gameBoard);
-
-    int currLives = (int)gameConfig::Size::START_LIVES;
-    gameBoard.printRemainingLives(currLives);
-
-    char keyPressed = (char)(gameConfig::eKeys::STAY);
-    bool isMarioLocked = false;
-
-    while (true) {
-        keyPressed = (int)gameConfig::eKeys::NONE;
-
-        if (_kbhit()) {
-            keyPressed = std::tolower(_getch());
-
-            if (keyPressed == (int)gameConfig::eKeys::ESC) {
-                pause();
-                gameBoard.printcurrentMap();
-            }
-        }
-
-        barrelCounter++;
-        if (handleLifeLoss(currLives, mario, gameBoard, barrelCurr, barrelCounter, isMarioLocked)) { //if mario has 0 lives we lose the game
-            return -1;
-        }
-
-        if (mario.isNearPaulina()) { //if mario reached Paulina we won
-            return 1;
-        }
-
-        drawMario(mario);
-
-        if (barrelCounter == (int)gameConfig::Size::BARRREL_COUNTER && barrelCurr < (int)gameConfig::Size::BARREL_MAX) {
-            spawnBarrel(arrBarrels, barrelCurr, gameBoard);
-            barrelCounter = 0;
-        }
-
-        moveBarrels(arrBarrels, barrelCurr, mario);
-
-        Sleep((int)gameConfig::Sleep::GAME_LOOP_SLEEP);
-
-        if (isMarioLocked) {
-            handleMarioLocked(keyPressed, mario, isMarioLocked);
-        }
-        else {
-            mario.move((gameConfig::eKeys)keyPressed);
-            isMarioLocked = isMarioInLongAction(mario);
-        }
-
-        if (isMarioInShortAction(mario)) {
-            isMarioLocked = false;
-        }
-
-        keyPressed = (int)gameConfig::eKeys::NONE;
+void Game::toggleArrow(Map& gameBoard, const Point& point) {
+    char currentChar = gameBoard.currentMap[point.getY()][point.getX()];
+    if (currentChar == '>') {
+		gameBoard.currentMap[point.getY()][point.getX()] = '<';
+		gotoxy(point.getX(), point.getY());
+		std::cout << '<';
     }
+    else  if (currentChar == '<') {
+        gameBoard.currentMap[point.getY()][point.getX()] = '>';
+        gotoxy(point.getX(), point.getY());
+        std::cout << '>';
+    }
+}
 
-    return 0;
-}*/
 
 void Game::drawMario(Mario& mario) {
     char curr = mario.getMapChar();

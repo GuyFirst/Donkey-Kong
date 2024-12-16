@@ -62,6 +62,6 @@ private:
     bool isOnLadder() const;
     bool checkForCollisions();
 
-  friend class Game;
+	friend class Game; //the game has the ability to change the mario's state
 };
 

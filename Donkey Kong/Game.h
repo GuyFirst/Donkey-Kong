@@ -20,5 +20,6 @@ public:
 	void handleMarioLocked(char keyPressed, Mario& mario, bool& isMarioLocked);
 	bool isMarioInLongAction(Mario& mario);
 	bool isMarioInShortAction(Mario& mario);
+	void toggleArrow(Map& gameBoard, const Point& point);
 };
 
