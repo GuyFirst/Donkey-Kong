@@ -62,7 +62,9 @@ void Mario::handleInput(gameConfig::eKeys key) {
             handleDownKey();
             break;
         case gameConfig::eKeys::STAY:
-            setState(State::STANDING, 0, 0);
+			if (isOnFloor()) {
+				setState(State::STANDING, 0, 0);
+			}
             return;
         }
     }
@@ -254,7 +256,7 @@ bool Mario::isNearPaulina() const        { return this->map->currentMap[position
 
 char Mario::getMapChar() const           { return this->map->originalMap[position.getY()][position.getX()]; }
 
-bool Mario::isOnFloor() const            { return this->map->currentMap[position.getY() + 1][position.getX()] != ' '; }
+bool Mario::isOnFloor() const            { return this->map->currentMap[position.getY() + 1][position.getX()] != ' ' && this->map->currentMap[position.getY() + 1][position.getX()] != 'O'; }
 
 
 bool Mario::isUnderLadder() const        { return this->map->currentMap[position.getY() - 1][position.getX()] == 'H' ||

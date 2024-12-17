@@ -76,7 +76,7 @@ int Map::mainMenu()
             clrsrc();
             return 1;
         }
-        if (keyPressed == '0') // a mama
+        if (keyPressed == '0') // a meme
         {
             int i = 0;
             while (true) {
