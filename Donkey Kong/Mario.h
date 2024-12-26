@@ -30,8 +30,12 @@ public:
     bool isNearPaulina() const;
     char getMapChar() const;
     bool isBarrelHere() const;
+	bool isGohstHere() const;
    
     void setIsNearExplosion(bool isNear) { m_isNearExplosion = isNear; }
+
+
+
 private:
     Point position;
     int m_diff_x = (int)gameConfig::Direction::STAY;
