@@ -1,4 +1,4 @@
-#include <iostream>
+﻿#include <iostream>
 #include "Game.h"
 #include "gameConfig.h"
 #include <conio.h> //for kbhit_ getch
@@ -58,6 +58,10 @@ int Game::startGame() {
         Point(73, 19)
     };
 
+    std::vector<gohst> ghosts;
+    spawnGhosts(ghosts, gameBoard);
+
+
     while (true) {
         keyPressed = (int)gameConfig::eKeys::NONE;
 
@@ -71,7 +75,7 @@ int Game::startGame() {
         }
 
         barrelCounter++;
-        if (handleLifeLoss(currLives, mario, gameBoard, barrelCurr, barrelCounter, isMarioLocked)) {
+        if (handleLifeLoss(currLives, mario, gameBoard, barrelCurr, barrelCounter, isMarioLocked, ghosts)) {
             return -1;
         }
 
@@ -87,7 +91,7 @@ int Game::startGame() {
         }
 
         moveBarrels(arrBarrels, barrelCurr, mario);
-
+        moveGhosts(ghosts);
 
         //        CHAT-GPT code 
         // Check if 10 seconds have passed for arrow toggling                                                  
@@ -141,7 +145,7 @@ void Game::drawMario(Mario& mario) {
     mario.draw(curr == 'H' ? '#' : '@');
 }
 
-bool Game::handleLifeLoss(int& currLives, Mario& mario, Map& gameBoard, int& barrelCurr, int& barrelCounter, bool& isMarioLocked) {
+bool Game::handleLifeLoss(int& currLives, Mario& mario, Map& gameBoard, int& barrelCurr, int& barrelCounter, bool& isMarioLocked, std::vector<gohst>& ghosts) {
     if (currLives == mario.lives) return false;
 
     if (currLives == 1) return true;
@@ -152,6 +156,7 @@ bool Game::handleLifeLoss(int& currLives, Mario& mario, Map& gameBoard, int& bar
     currLives--;
     gameBoard.printRemainingLives(currLives);
     mario.resetMario();
+    resetGhosts(ghosts);
     barrelCurr = 0;
     barrelCounter = 0;
     isMarioLocked = false;
@@ -236,5 +241,25 @@ void Game::lose()
     loseScreen.lose();
 }
 
+//פונקציה זמנית לבדיקת הרוחות
+void Game::spawnGhosts(std::vector<gohst>& ghosts, Map& gameBoard) {
+    ghosts.emplace_back(&gameBoard, Point(50, 18));
+    ghosts.emplace_back(&gameBoard, Point(50, 15));
+    ghosts.emplace_back(&gameBoard, Point(40, 15));
+    ghosts.emplace_back(&gameBoard, Point(50, 12));
+    ghosts.emplace_back(&gameBoard, Point(60, 12));
+}
+
+void Game::moveGhosts(std::vector<gohst>& ghosts) {
+    for (auto& ghost : ghosts) {
+        ghost.move(ghosts);
+    }
+}
+
+void Game::resetGhosts(std::vector<gohst>& ghosts) {
+    for (auto& ghost : ghosts) {
+        ghost.reset(); 
+    }
+}
 
 

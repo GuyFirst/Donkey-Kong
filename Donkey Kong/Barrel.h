@@ -13,7 +13,7 @@ class Barrel {
     int m_fallCounter = 0;
     Map* map;
     // Helper methods
-    void updatePosition();
+    void updatePosition(); // TODO move to entity
     void handleExplosion(Mario* mario);
     bool isOnAir(char& refFloor);
     bool isNearWall(int dirX) const;

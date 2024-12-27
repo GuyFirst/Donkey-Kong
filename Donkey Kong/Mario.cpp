@@ -36,7 +36,7 @@ void Mario::move(gameConfig::eKeys key) {
 
 
 bool Mario::checkForCollisions() {
-    if (m_isNearExplosion || isBarrelHere()) {
+    if (m_isNearExplosion || isBarrelHere() || isGohstHere()) {
         lives--;
         Sleep((int)gameConfig::Sleep::SCREEN_SLEEP);
         resetMario();
@@ -294,8 +294,27 @@ bool Mario::isUnderFloorWhileMoving() const {
 
 bool Mario::isNearWall(int dirX) const {
     if (dirX == (int)gameConfig::Direction::POSITIVE) 
-         return position.getX() > gameConfig::GAME_WIDTH - 4;
+         return position.getX() >= gameConfig::GAME_WIDTH - 4;
     
     else 
          return position.getX() <= 0; 
+}
+
+bool Mario::isGohstHere() const {
+    // Check surrounding positions for ghosts
+    for (int dx = -1; dx <= 1; dx++) {
+        for (int dy = -1; dy <= 1; dy++) {
+            int newX = position.getX() + dx;
+            int newY = position.getY() + dy;
+
+            // Make sure to stay within the game boundaries
+            if (newX >= 0 && newX < gameConfig::GAME_WIDTH &&
+                newY >= 0 && newY < gameConfig::GAME_HEIGHT) {
+                if (map->currentMap[newY][newX] == 'X') { 
+                    return true;
+                }
+            }
+        }
+    }
+    return false;
 }
