@@ -35,9 +35,9 @@ void Game::run()
 int Game::startGame() {
     ShowConsoleCursor(false);
 
-    Barrel arrBarrels[(int)gameConfig::Size::BARREL_MAX] = {};
-    int barrelCurr = (int)gameConfig::Size::ZERO_SIZE;
-    int barrelCounter = (int)gameConfig::Size::ZERO_SIZE;
+    std::vector<Barrel> barrels; 
+    int barrelCurr = 0; // Barrel index
+    int barrelCounter = 0;
     Point explosionPos;
     Map gameBoard;
     gameBoard.printcurrentMap();
@@ -56,7 +56,6 @@ int Game::startGame() {
     std::vector<Ghost> ghosts;
     spawnGhosts(ghosts, gameBoard);
 
-
     while (true) {
         keyPressed = (int)gameConfig::eKeys::NONE;
 
@@ -70,7 +69,7 @@ int Game::startGame() {
         }
 
         barrelCounter++;
-        if (handleLifeLoss(currLives, mario, gameBoard, barrelCurr, barrelCounter, isMarioLocked, ghosts)) {
+        if (handleLifeLoss(currLives, mario, gameBoard, barrelCurr, barrelCounter, isMarioLocked, ghosts, barrels)) {
             return -1;
         }
 
@@ -81,24 +80,22 @@ int Game::startGame() {
         drawMario(mario);
 
         if (barrelCounter == (int)gameConfig::Size::BARRREL_COUNTER && barrelCurr < (int)gameConfig::Size::BARREL_MAX) {
-            spawnBarrel(arrBarrels, barrelCurr, gameBoard);
+            spawnBarrel(barrels, barrelCurr, gameBoard); // Changed to vector
             barrelCounter = 0;
         }
 
-        moveBarrels(arrBarrels, barrelCurr, mario);
+        moveBarrels(barrels, barrelCurr, mario); // Changed to vector
         moveGhosts(ghosts);
 
-        //        CHAT-GPT code 
-        // Check if 10 seconds have passed for arrow toggling                                                  
-        auto currentTime = std::chrono::steady_clock::now();                                                   //this is a code from the help of the pure CHAT-GPT, to help us dealing
-        if (std::chrono::duration_cast<std::chrono::seconds>(currentTime - lastToggleTime).count() >= 4) {     // with libraries we did not learn yet. this function helping us to toggle 
-            // Toggle the arrows at the specified points                                                       // specific floor chars, from '>' to '<' and the oppisite, for every -given time- (in seconds)
-            for (const Point& p : togglePoints)                                                               //
-                toggleArrow(gameBoard, p);   //this is the method that changing the chars. we implemented this method by ourselfs.
-            
+        // Chat-GPT Code
+        auto currentTime = std::chrono::steady_clock::now();
+        if (std::chrono::duration_cast<std::chrono::seconds>(currentTime - lastToggleTime).count() >= 4) {
+            for (const Point& p : togglePoints) {
+                toggleArrow(gameBoard, p);
+            }
+
             lastToggleTime = currentTime;
         }
-        //    end of CHAT-GPT code
         Sleep((int)gameConfig::Sleep::GAME_LOOP_SLEEP);
 
         if (isMarioLocked) {
@@ -140,7 +137,7 @@ void Game::drawMario(Mario& mario) {
     mario.draw(curr == 'H' ? '#' : '@');
 }
 
-bool Game::handleLifeLoss(int& currLives, Mario& mario, Map& gameBoard, int& barrelCurr, int& barrelCounter, bool& isMarioLocked, std::vector<Ghost>& ghosts) {
+bool Game::handleLifeLoss(int& currLives, Mario& mario, Map& gameBoard, int& barrelCurr, int& barrelCounter, bool& isMarioLocked, std::vector<Ghost>& ghosts, std::vector<Barrel>& barrels) {
     if (currLives == mario.lives) return false;
 
     if (currLives == 1) return true;
@@ -155,20 +152,21 @@ bool Game::handleLifeLoss(int& currLives, Mario& mario, Map& gameBoard, int& bar
     barrelCurr = 0;
     barrelCounter = 0;
     isMarioLocked = false;
+    barrels.clear();
 
     return false;
 }
 
-void Game::spawnBarrel(Barrel arrBarrels[], int& barrelCurr, Map& gameBoard) {
-    arrBarrels[barrelCurr].addBarrel(arrBarrels, barrelCurr, &gameBoard);
+void Game::spawnBarrel(std::vector<Barrel>& barrels, int& barrelCurr, Map& gameBoard) {
+    barrels.push_back(Barrel(&gameBoard));  // Add to vector instead of using array index
     barrelCurr++;
 }
 
-void Game::moveBarrels(Barrel arrBarrels[], int barrelCurr, Mario& mario) {
+void Game::moveBarrels(std::vector<Barrel>& barrels, int barrelCurr, Mario& mario) {
     for (int i = 0; i < barrelCurr; i++) {
-        char curr = arrBarrels[i].getMapChar();
-        arrBarrels[i].draw('O');
-        arrBarrels[i].move(&mario);
+        char curr = barrels[i].getMapChar();
+        barrels[i].draw('O');
+        barrels[i].move(&mario);
     }
 }
 

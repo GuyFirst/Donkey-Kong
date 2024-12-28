@@ -87,6 +87,7 @@ void Barrel::reset() {
     m_diff_x = 0;
     m_diff_y = 1;
     m_prev_diff_x = 0;
+    
 }
 
 bool Barrel::isMarioNearMe(Point marioPos) const {
@@ -110,7 +111,6 @@ bool Barrel::checkFallHeight() {
     return false;
 }
 
-void Barrel::addBarrel(Barrel arr[], int size, Map* map) {
-    Barrel b(map);
-    arr[size] = b;
+void Barrel::addBarrel(std::vector<Barrel>& barrels, Map* map) {
+    barrels.push_back(Barrel(map)); // Add a new Barrel to the vector
 }

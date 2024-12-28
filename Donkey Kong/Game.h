@@ -16,9 +16,9 @@ public:
 	void win();
 	void lose();
 	void drawMario(Mario& mario);
-	bool handleLifeLoss(int& currLives, Mario& mario, Map& gameBoard, int& barrelCurr, int& barrelCounter, bool& isMarioLocked, std::vector<Ghost>& ghosts);
-	void spawnBarrel(Barrel arrBarrels[], int& barrelCurr, Map& gameBoard);
-	void moveBarrels(Barrel arrBarrels[], int barrelCurr, Mario& mario);
+	bool handleLifeLoss(int& currLives, Mario& mario, Map& gameBoard, int& barrelCurr, int& barrelCounter, bool& isMarioLocked, std::vector<Ghost>& ghosts, std::vector<Barrel>& barrels);
+	void spawnBarrel(std::vector<Barrel>& barrels, int& barrelCurr, Map& gameBoard);
+	void moveBarrels(std::vector<Barrel>& barrels, int barrelCurr, Mario& mario);
 	void handleMarioLocked(char keyPressed, Mario& mario, bool& isMarioLocked);
 	bool isMarioInLongAction(Mario& mario);
 	bool isMarioInShortAction(Mario& mario);
