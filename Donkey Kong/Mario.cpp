@@ -140,6 +140,42 @@ void Mario::handleFalling() {
 }
 
 void Mario::jump() {
+    // Add horizontal movement during the jump if not near a wall
+    if (!isNearWall(m_diff_x)) {
+        position.setX(position.getX() + m_diff_x);
+    }
+    else {
+        m_diff_x = 0; // Stop horizontal movement if Mario hits a wall
+    }
+
+    // Check for collision with ceiling
+    if (isCeilingAbove()) {
+        handleCeilingCollision();
+        return;
+    }
+
+    // Jumping upwards phase (initial upward movement)
+    if (jumpCounter < 2) {
+        m_diff_y = -1; // Mario moves upwards
+        position.setY(position.getY() + m_diff_y);
+        jumpCounter++; // Track upward motion progress
+    }
+    // Falling phase (after peak)
+    else if (jumpCounter < 2) {
+        m_diff_y = 1; // Mario starts falling down
+        position.setY(position.getY() + m_diff_y);
+        jumpCounter++; // Track downward motion progress
+    }
+
+    // After falling, Mario lands and the jump ends
+    if (jumpCounter >= 2) {
+        state = State::WALKING;  // Switch to walking state
+        m_diff_y = 0;            // Reset vertical movement
+        jumpCounter = 0;         // Reset jump counter
+    }
+}
+
+/*void Mario::jump() {
     // Add horizontal movement during the jump
     if (!isNearWall(m_diff_x)) {
         position.setX(position.getX() + m_diff_x);
@@ -175,7 +211,7 @@ void Mario::jump() {
     state = State::WALKING;
     m_diff_y = 0; // Reset vertical movement
     jumpCounter = 0; // Reset jump counter
-}
+}*/
 
 
 

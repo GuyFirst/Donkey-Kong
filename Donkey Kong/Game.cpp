@@ -58,7 +58,7 @@ int Game::startGame() {
         Point(73, 19)
     };
 
-    std::vector<gohst> ghosts;
+    std::vector<Ghost> ghosts;
     spawnGhosts(ghosts, gameBoard);
 
 
@@ -145,7 +145,7 @@ void Game::drawMario(Mario& mario) {
     mario.draw(curr == 'H' ? '#' : '@');
 }
 
-bool Game::handleLifeLoss(int& currLives, Mario& mario, Map& gameBoard, int& barrelCurr, int& barrelCounter, bool& isMarioLocked, std::vector<gohst>& ghosts) {
+bool Game::handleLifeLoss(int& currLives, Mario& mario, Map& gameBoard, int& barrelCurr, int& barrelCounter, bool& isMarioLocked, std::vector<Ghost>& ghosts) {
     if (currLives == mario.lives) return false;
 
     if (currLives == 1) return true;
@@ -242,21 +242,21 @@ void Game::lose()
 }
 
 //פונקציה זמנית לבדיקת הרוחות
-void Game::spawnGhosts(std::vector<gohst>& ghosts, Map& gameBoard) {
-    ghosts.emplace_back(&gameBoard, Point(50, 18));
-    ghosts.emplace_back(&gameBoard, Point(50, 15));
-    ghosts.emplace_back(&gameBoard, Point(40, 15));
-    ghosts.emplace_back(&gameBoard, Point(50, 12));
-    ghosts.emplace_back(&gameBoard, Point(60, 12));
+void Game::spawnGhosts(std::vector<Ghost>& ghosts, Map& gameBoard) {
+    ghosts.emplace_back(&gameBoard, Point(50, 18), std::rand());
+    ghosts.emplace_back(&gameBoard, Point(50, 15), std::rand());
+    ghosts.emplace_back(&gameBoard, Point(40, 15), std::rand());
+    ghosts.emplace_back(&gameBoard, Point(50, 12), std::rand());
+    ghosts.emplace_back(&gameBoard, Point(60, 12), std::rand());
 }
 
-void Game::moveGhosts(std::vector<gohst>& ghosts) {
+void Game::moveGhosts(std::vector<Ghost>& ghosts) {
     for (auto& ghost : ghosts) {
         ghost.move(ghosts);
     }
 }
 
-void Game::resetGhosts(std::vector<gohst>& ghosts) {
+void Game::resetGhosts(std::vector<Ghost>& ghosts) {
     for (auto& ghost : ghosts) {
         ghost.reset(); 
     }
