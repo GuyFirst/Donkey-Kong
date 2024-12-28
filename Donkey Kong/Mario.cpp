@@ -175,43 +175,6 @@ void Mario::jump() {
     }
 }
 
-/*void Mario::jump() {
-    // Add horizontal movement during the jump
-    if (!isNearWall(m_diff_x)) {
-        position.setX(position.getX() + m_diff_x);
-    }
-    else {
-        m_diff_x = 0; // Stop horizontal movement
-    }
-
-    // Check for collision with a ceiling
-    if (isCeilingAbove()) {
-        handleCeilingCollision();
-        return;
-    }
-
-    // Handle upward movement during the jump
-    if (jumpCounter < 2) {
-        m_diff_y = -1; // Move up
-        position.setY(position.getY() + m_diff_y);
-        state = State::JUMPING;
-        jumpCounter++;
-        return;
-    }
-
-    // Handle downward movement if in the air
-    if (state == State::JUMPING && !isOnFloor()) {
-        m_diff_y = 1; // Move down
-        position.setY(position.getY() + m_diff_y);
-        handleLanding();
-        return;
-    }
-
-    // If Mario landed on upper floor after the jump
-    state = State::WALKING;
-    m_diff_y = 0; // Reset vertical movement
-    jumpCounter = 0; // Reset jump counter
-}*/
 
 
 

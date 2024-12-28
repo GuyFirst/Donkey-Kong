@@ -26,5 +26,6 @@ public:
 	void spawnGhosts(std::vector<Ghost>& ghosts, Map& gameBoard);
 	void moveGhosts(std::vector<Ghost>& ghosts);
 	void resetGhosts(std::vector<Ghost>& ghosts);
+	std::vector<Point> defineFloorsToToggle(Map& map);
 };
 

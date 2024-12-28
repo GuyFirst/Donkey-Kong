@@ -10,6 +10,7 @@
 #include "Mario.h"
 #include "Point.h"
 #include <chrono>
+#include <vector>
 
 void Game::run()
 {
@@ -50,13 +51,7 @@ int Game::startGame() {
 
     auto lastToggleTime = std::chrono::steady_clock::now();
 
-    // Define the points to toggle
-    Point togglePoints[] = {
-        Point(31, 7),
-        Point(55, 10),
-        Point(64, 16),
-        Point(73, 19)
-    };
+    std::vector<Point> togglePoints = defineFloorsToToggle(gameBoard);
 
     std::vector<Ghost> ghosts;
     spawnGhosts(ghosts, gameBoard);
@@ -261,5 +256,23 @@ void Game::resetGhosts(std::vector<Ghost>& ghosts) {
         ghost.reset(); 
     }
 }
+
+std::vector<Point> Game::defineFloorsToToggle(Map& map)
+{
+    std::vector<Point> res;
+    for(int i=0; i< gameConfig::GAME_HEIGHT; i++)
+        for (int j = 0; j < gameConfig::GAME_WIDTH; j++)
+        {
+            if ((map.originalMap[i][j] == '<' && map.originalMap[i][j - 1] == '=' && map.originalMap[i][j + 1] == '=') ||
+                (map.originalMap[i][j] == '>' && map.originalMap[i][j - 1] == '=' && map.originalMap[i][j + 1] == '='))
+            {
+                Point p(j, i);
+                res.push_back(p);
+            }
+               
+        }
+    return res;
+}
+
 
 
