@@ -24,7 +24,7 @@ void Ghost::move(std::vector<Ghost>& ghosts) {
     position.setX(position.getX() + m_diff_x);
 
     // Draw ghost at the new position
-    draw('X');
+    draw('x');
 }
 void Ghost::handleCollision(std::vector<Ghost>& ghosts) {
     for (auto& other : ghosts) {

@@ -14,7 +14,7 @@ public:
         CLIMBING_DOWN
     };
 
-    Mario(Map* map) : position((int)gameConfig::Pos::MARIO_X_START, (int)gameConfig::Pos::MARIO_Y_START), map(map) {}
+    Mario(Map* map) : position((int)gameConfig::Pos::MARIO_X_START, (int)gameConfig::Pos::MARIO_Y_START), map(map), isWithPatish(false) {}
 
     void draw(char ch) const;
     void move(gameConfig::eKeys key = gameConfig::eKeys::NONE);
@@ -30,7 +30,8 @@ public:
     bool isNearPaulina() const;
     char getMapChar() const;
     bool isBarrelHere() const;
-	bool isGohstHere() const;
+	bool isGhostHere() const;
+    bool isNearPatish() const;
    
     void setIsNearExplosion(bool isNear) { m_isNearExplosion = isNear; }
 
@@ -46,6 +47,7 @@ private:
     bool m_isNearExplosion = false;
     State state = State::STANDING;
     Map* map;
+    bool isWithPatish;
 
     void handleInput(gameConfig::eKeys key);
     void handleUpKey();
@@ -64,7 +66,8 @@ private:
     bool isObstacleAbove(int x) const;
     bool isUnderLadder() const;
     bool isOnLadder() const;
-    bool checkForCollisions();
+    bool checkForCollisions(int key);
+  
 
 	friend class Game; //the game has the ability to change the mario's state
 };

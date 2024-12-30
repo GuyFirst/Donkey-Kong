@@ -4,7 +4,7 @@ class gameConfig
 public:
 	static constexpr int GAME_WIDTH = 81;
 	static constexpr int GAME_HEIGHT = 25;
-	enum class eKeys { LEFT = 'a', UP = 'w', RIGHT = 'd', DOWN = 'x', STAY = 's', ESC = 27, NONE };
+	enum class eKeys { LEFT = 'a', UP = 'w', RIGHT = 'd', DOWN = 'x', STAY = 's', PATISH = 'p', ESC = 27, NONE };
 	enum class Direction { POSITIVE = 1, NEGATIVE = -1 , STAY = 0};
 	enum class Size { BARREL_MAX = 5, ZERO_SIZE = 0, START_LIVES = 3, BARRREL_COUNTER = 25};
 	enum class Sleep {GAME_LOOP_SLEEP = 110, SCREEN_SLEEP = 900, EXPLOSION_SLEEP = 35, TEXT_PRINTING_SLEEP = 95, WAITING_FOR_MENU_SLEEP = 150};

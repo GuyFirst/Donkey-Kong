@@ -27,5 +27,6 @@ public:
 	void moveGhosts(std::vector<Ghost>& ghosts);
 	void resetGhosts(std::vector<Ghost>& ghosts);
 	std::vector<Point> defineFloorsToToggle(Map& map);
+	void patishDestroy(std::vector<Barrel>& barrels, std::vector<Ghost>& ghosts, Mario& mario, char key);
 };
 

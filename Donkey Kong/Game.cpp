@@ -36,8 +36,8 @@ int Game::startGame() {
     ShowConsoleCursor(false);
 
     std::vector<Barrel> barrels; 
-    int barrelCurr = 0; // Barrel index
-    int barrelCounter = 0;
+    int barrelCurr = 0; 
+    int barrelSpawnCounter = 0;
     Point explosionPos;
     Map gameBoard;
     gameBoard.printcurrentMap();
@@ -68,8 +68,8 @@ int Game::startGame() {
             }
         }
 
-        barrelCounter++;
-        if (handleLifeLoss(currLives, mario, gameBoard, barrelCurr, barrelCounter, isMarioLocked, ghosts, barrels)) {
+        barrelSpawnCounter++;
+        if (handleLifeLoss(currLives, mario, gameBoard, barrelCurr, barrelSpawnCounter, isMarioLocked, ghosts, barrels)) {
             return -1;
         }
 
@@ -77,14 +77,23 @@ int Game::startGame() {
             return 1;
         }
 
-        drawMario(mario);
-
-        if (barrelCounter == (int)gameConfig::Size::BARRREL_COUNTER && barrelCurr < (int)gameConfig::Size::BARREL_MAX) {
-            spawnBarrel(barrels, barrelCurr, gameBoard); // Changed to vector
-            barrelCounter = 0;
+        if (mario.isNearPatish() && keyPressed == (char)gameConfig::eKeys::PATISH) {
+            mario.isWithPatish = true;
+            gameBoard.currentMap[23][49] = ' '; //HARD CODED CHANGE!!!!!!
         }
+        
+        drawMario(mario);
+        
 
-        moveBarrels(barrels, barrelCurr, mario); // Changed to vector
+        if (barrelSpawnCounter == (int)gameConfig::Size::BARRREL_COUNTER && barrelCurr < (int)gameConfig::Size::BARREL_MAX) {
+            spawnBarrel(barrels, barrelCurr, gameBoard); 
+            barrelSpawnCounter = 0;
+        }
+        
+        
+
+
+        moveBarrels(barrels, barrelCurr, mario); 
         moveGhosts(ghosts);
 
         // Chat-GPT Code
@@ -96,6 +105,8 @@ int Game::startGame() {
 
             lastToggleTime = currentTime;
         }
+
+
         Sleep((int)gameConfig::Sleep::GAME_LOOP_SLEEP);
 
         if (isMarioLocked) {
@@ -116,13 +127,13 @@ int Game::startGame() {
     return 0;
 }
 
-//      OUR impement for the function CHAT-GPT suggested
+//    OUR impement for the function CHAT-GPT suggested
 void Game::toggleArrow(Map& gameBoard, const Point& point) {
-    char currentChar = gameBoard.currentMap[point.getY()][point.getX()];
+;
+		std::cout << '<';    char currentChar = gameBoard.currentMap[point.getY()][point.getX()];
     if (currentChar == '>') {
 		gameBoard.currentMap[point.getY()][point.getX()] = '<';
-		gotoxy(point.getX(), point.getY());
-		std::cout << '<';
+        gotoxy(point.getX(), point.getY());
     }
     else  if (currentChar == '<') {
         gameBoard.currentMap[point.getY()][point.getX()] = '>';
@@ -137,7 +148,7 @@ void Game::drawMario(Mario& mario) {
     mario.draw(curr == 'H' ? '#' : '@');
 }
 
-bool Game::handleLifeLoss(int& currLives, Mario& mario, Map& gameBoard, int& barrelCurr, int& barrelCounter, bool& isMarioLocked, std::vector<Ghost>& ghosts, std::vector<Barrel>& barrels) {
+bool Game::handleLifeLoss(int& currLives, Mario& mario, Map& gameBoard, int& barrelCurr, int& barrelSpawnCounter, bool& isMarioLocked, std::vector<Ghost>& ghosts, std::vector<Barrel>& barrels) {
     if (currLives == mario.lives) return false;
 
     if (currLives == 1) return true;
@@ -150,7 +161,7 @@ bool Game::handleLifeLoss(int& currLives, Mario& mario, Map& gameBoard, int& bar
     mario.resetMario();
     resetGhosts(ghosts);
     barrelCurr = 0;
-    barrelCounter = 0;
+    barrelSpawnCounter = 0;
     isMarioLocked = false;
     barrels.clear();
 
@@ -271,6 +282,16 @@ std::vector<Point> Game::defineFloorsToToggle(Map& map)
         }
     return res;
 }
+
+void Game::patishDestroy(std::vector<Barrel>& barrels, std::vector<Ghost>& ghosts, Mario& mario, char key) {
+    if (mario.isGhostHere() && key == (char)gameConfig::eKeys::PATISH && mario.isWithPatish) {
+        ;
+    }
+    if (mario.isBarrelHere() && key == (char)gameConfig::eKeys::PATISH && mario.isWithPatish) {
+        ;
+    }
+}
+
 
 
 

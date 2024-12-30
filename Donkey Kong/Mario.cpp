@@ -6,8 +6,13 @@
 #include "general.h"
 
 void Mario::draw(char ch) const {
-    gotoxy(position.getX(), position.getY());
-    std::cout << ch;
+        gotoxy(position.getX(), position.getY());
+        std::cout << ch;
+    
+    if(isWithPatish) {
+        gotoxy(position.getX() + m_diff_x, position.getY());
+        std::cout << 'P';
+    }
 }
 
 void Mario::move(gameConfig::eKeys key) {
@@ -15,7 +20,7 @@ void Mario::move(gameConfig::eKeys key) {
     draw(this->map->currentMap[position.getY()][position.getX()]);
 
     // Check for collision with barrels before moving
-    if (checkForCollisions()) {
+    if (checkForCollisions((int)key)) {
         return;
     }
 
@@ -25,24 +30,30 @@ void Mario::move(gameConfig::eKeys key) {
 
     handleFalling();
     
-    // Check for collision with barrels after moving
-    if (checkForCollisions()) {
+    // Check for collision with barrels and ghosts after moving
+    if (checkForCollisions((int)key)) 
         return;
-    }
+    
 
     // Draw Mario at the new position
     draw('@');
 }
 
 
-bool Mario::checkForCollisions() {
-    if (m_isNearExplosion || isBarrelHere() || isGohstHere()) {
+bool Mario::checkForCollisions(int key) {
+    if (m_isNearExplosion) {
         lives--;
         Sleep((int)gameConfig::Sleep::SCREEN_SLEEP);
         resetMario();
         return true;
     }
-    return false;
+    else if ( key != 'p' && (isBarrelHere() || isGhostHere())) {
+        lives--;
+        Sleep((int)gameConfig::Sleep::SCREEN_SLEEP);
+        resetMario();
+        return true;
+    }
+ 
 }
 
 
@@ -299,7 +310,10 @@ bool Mario::isNearWall(int dirX) const {
          return position.getX() <= 0; 
 }
 
-bool Mario::isGohstHere() const {
+bool Mario::isGhostHere() const  { return this->map->currentMap[position.getY()][position.getX()] == 'x'; }
+    
+
+bool Mario::isNearPatish() const {
     // Check surrounding positions for ghosts
     for (int dx = -1; dx <= 1; dx++) {
         for (int dy = -1; dy <= 1; dy++) {
@@ -309,7 +323,7 @@ bool Mario::isGohstHere() const {
             // Make sure to stay within the game boundaries
             if (newX >= 0 && newX < gameConfig::GAME_WIDTH &&
                 newY >= 0 && newY < gameConfig::GAME_HEIGHT) {
-                if (map->currentMap[newY][newX] == 'X') { 
+                if (map->currentMap[newY][newX] == 'P') {
                     return true;
                 }
             }
