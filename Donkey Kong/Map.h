@@ -36,7 +36,7 @@ public:
    "                           ==========================================<==       ", // 21
    "                                H                                              ", // 22
    "                                H                                              ", // 23
-   "                                H                P                             ", // 24
+   "                                H                                              ", // 24
    "==============================================================================="  // 25
     };
 
@@ -103,7 +103,8 @@ public:
             memcpy(currentMap[i], originalMap[i], Map::GAME_WIDTH);
     }
     Map() { resetMap(); }
-    void printcurrentMap() {  gotoxy(0, 0);
+    void printcurrentMap() { 
+        gotoxy(0, 0);
 
         for (int i = 0; i < Map::GAME_HEIGHT; ++i) {
             std::cout << currentMap[i];

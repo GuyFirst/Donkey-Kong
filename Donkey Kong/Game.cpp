@@ -48,6 +48,7 @@ int Game::startGame() {
 
     char keyPressed = (char)(gameConfig::eKeys::STAY);
     bool isMarioLocked = false;
+    bool patishPicked = false; // Track if patish is picked
 
     auto lastToggleTime = std::chrono::steady_clock::now();
 
@@ -55,6 +56,10 @@ int Game::startGame() {
 
     std::vector<Ghost> ghosts;
     spawnGhosts(ghosts, gameBoard);
+
+    gameBoard.currentMap[23][49] = 'P';
+    gotoxy(49, 23);
+    std::cout << 'P';
 
     while (true) {
         keyPressed = (int)gameConfig::eKeys::NONE;
@@ -69,6 +74,7 @@ int Game::startGame() {
         }
 
         barrelSpawnCounter++;
+
         if (handleLifeLoss(currLives, mario, gameBoard, barrelCurr, barrelSpawnCounter, isMarioLocked, ghosts, barrels)) {
             return -1;
         }
@@ -77,26 +83,25 @@ int Game::startGame() {
             return 1;
         }
 
-        if (mario.isNearPatish() && keyPressed == (char)gameConfig::eKeys::PATISH) {
+        if (mario.isNearPatish() && keyPressed == (char)gameConfig::eKeys::PATISH && !patishPicked) {
             mario.isWithPatish = true;
-            gameBoard.currentMap[23][49] = ' '; //HARD CODED CHANGE!!!!!!
+            patishPicked = true; // Mark patish as picked
+            gameBoard.currentMap[23][49] = ' '; // Remove patish from map
+            
         }
         
-        drawMario(mario);
+        patishDestroy(barrels, ghosts, mario, keyPressed);
         
-
         if (barrelSpawnCounter == (int)gameConfig::Size::BARRREL_COUNTER && barrelCurr < (int)gameConfig::Size::BARREL_MAX) {
             spawnBarrel(barrels, barrelCurr, gameBoard); 
             barrelSpawnCounter = 0;
         }
         
-        
-
-
         moveBarrels(barrels, barrelCurr, mario); 
         moveGhosts(ghosts);
 
-        // Chat-GPT Code
+        patishDestroy(barrels, ghosts, mario, keyPressed);
+
         auto currentTime = std::chrono::steady_clock::now();
         if (std::chrono::duration_cast<std::chrono::seconds>(currentTime - lastToggleTime).count() >= 4) {
             for (const Point& p : togglePoints) {
@@ -105,7 +110,6 @@ int Game::startGame() {
 
             lastToggleTime = currentTime;
         }
-
 
         Sleep((int)gameConfig::Sleep::GAME_LOOP_SLEEP);
 
@@ -175,9 +179,11 @@ void Game::spawnBarrel(std::vector<Barrel>& barrels, int& barrelCurr, Map& gameB
 
 void Game::moveBarrels(std::vector<Barrel>& barrels, int barrelCurr, Mario& mario) {
     for (int i = 0; i < barrelCurr; i++) {
-        char curr = barrels[i].getMapChar();
-        barrels[i].draw('O');
-        barrels[i].move(&mario);
+        if (i < barrels.size()) {
+            char curr = barrels[i].getMapChar();
+            barrels[i].draw('O');
+            barrels[i].move(&mario);
+        }
     }
 }
 
@@ -247,7 +253,7 @@ void Game::lose()
 
 //פונקציה זמנית לבדיקת הרוחות
 void Game::spawnGhosts(std::vector<Ghost>& ghosts, Map& gameBoard) {
-    ghosts.emplace_back(&gameBoard, Point(50, 18), std::rand());
+    ghosts.emplace_back(&gameBoard, Point(50, 23), std::rand());
     ghosts.emplace_back(&gameBoard, Point(50, 15), std::rand());
     ghosts.emplace_back(&gameBoard, Point(40, 15), std::rand());
     ghosts.emplace_back(&gameBoard, Point(50, 12), std::rand());
@@ -283,12 +289,29 @@ std::vector<Point> Game::defineFloorsToToggle(Map& map)
     return res;
 }
 
+
+
 void Game::patishDestroy(std::vector<Barrel>& barrels, std::vector<Ghost>& ghosts, Mario& mario, char key) {
-    if (mario.isGhostHere() && key == (char)gameConfig::eKeys::PATISH && mario.isWithPatish) {
-        ;
-    }
-    if (mario.isBarrelHere() && key == (char)gameConfig::eKeys::PATISH && mario.isWithPatish) {
-        ;
+    if (key == (char)gameConfig::eKeys::PATISH && mario.isWithPatish) {
+        for (auto it = ghosts.begin(); it != ghosts.end(); ) {
+            if (it->getPoint() == mario.getPoint()) {
+                it->draw(' ');
+                it = ghosts.erase(it);
+            } else {
+                ++it;
+            }
+        }
+
+        for (auto it = barrels.begin(); it != barrels.end(); ) {
+            if (it->getPoint() == mario.getPoint()) {
+                it->draw(' ');
+                it = barrels.erase(it);
+               
+            } else {
+                ++it;
+            }
+        }
+      
     }
 }
 

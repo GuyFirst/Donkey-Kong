@@ -36,7 +36,7 @@ void Ghost::handleCollision(std::vector<Ghost>& ghosts) {
         // Check if two ghosts are on the same row and are facing each other
         if (this->position.getY() == other.position.getY()) {
             // Two Ghosts are facing each other
-            if (this->position.getX() == other.position.getX()+1  || this->position.getX() == other.position.getX() - 1 ) {
+            if (this->isNearOtherGhosts(ghosts)) {
 
                 this->m_diff_x = -this->m_diff_x;
                 other.m_diff_x = -other.m_diff_x;
@@ -93,4 +93,3 @@ bool Ghost::isOnFloor()
     { return this->map->currentMap[position.getY() + 1][position.getX()+m_diff_x] != ' ' && this->map->currentMap[position.getY() + 1][position.getX()+m_diff_x] != 'O'; }
 }
 
- 

@@ -114,3 +114,4 @@ bool Barrel::checkFallHeight() {
 void Barrel::addBarrel(std::vector<Barrel>& barrels, Map* map) {
     barrels.push_back(Barrel(map)); // Add a new Barrel to the vector
 }
+

@@ -23,7 +23,7 @@ public:
     void downLadder();
     void checkFallHeight();
     void resetMario();
-
+    Point getPoint() const { return position; }
     int getX() const { return position.getX(); }
     int getY() const { return position.getY(); }
 	State getState() const { return state; }

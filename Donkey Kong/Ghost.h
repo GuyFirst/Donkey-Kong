@@ -15,6 +15,7 @@ public:
     void reset();
     bool isOnFloor();
 
+
 private:
     Point position;
     int m_diff_x = (int)gameConfig::Direction::POSITIVE;
