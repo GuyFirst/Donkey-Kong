@@ -11,6 +11,8 @@
 #include "Point.h"
 #include <chrono>
 #include <vector>
+#include <iomanip>      // For std::setw and std::setfill
+#include <thread>       // For sleep_for
 
 void Game::run()
 {
@@ -35,22 +37,27 @@ void Game::run()
 int Game::startGame() {
     ShowConsoleCursor(false);
 
-    std::vector<Barrel> barrels; 
-    int barrelCurr = 0; 
+    std::vector<Barrel> barrels;
+    int barrelCurr = 0;
     int barrelSpawnCounter = 0;
     Point explosionPos;
     Map gameBoard;
     gameBoard.printcurrentMap();
     Mario mario(&gameBoard);
-
+    int score = (int)gameConfig::Score::STARTING_SCORE; 
     int currLives = (int)gameConfig::Size::START_LIVES;
-    gameBoard.printRemainingLives(currLives);
+    gameBoard.printLegend(currLives);
 
     char keyPressed = (char)(gameConfig::eKeys::STAY);
     bool isMarioLocked = false;
-    bool patishPicked = false; // Track if patish is picked
+    bool patishPicked = false;  // Track if patish is picked
+    bool isPaused = false;      // Track if the game is paused
 
     auto lastToggleTime = std::chrono::steady_clock::now();
+    auto gameStartTime = std::chrono::steady_clock::now(); // Track game start time
+    auto currentTime = std::chrono::steady_clock::now();   // Track current time
+    auto pausedTime = std::chrono::steady_clock::duration::zero(); // Duration for paused time
+    auto now = std::chrono::steady_clock::now(); //Track now time
 
     std::vector<Point> togglePoints = defineFloorsToToggle(gameBoard);
 
@@ -61,6 +68,8 @@ int Game::startGame() {
     gotoxy(49, 23);
     std::cout << 'P';
 
+    auto lastScoreUpdateTime = std::chrono::steady_clock::now();  // Track time for score update
+
     while (true) {
         keyPressed = (int)gameConfig::eKeys::NONE;
 
@@ -68,14 +77,15 @@ int Game::startGame() {
             keyPressed = std::tolower(_getch());
 
             if (keyPressed == (int)gameConfig::eKeys::ESC) {
-                pause();
+                pause(isPaused, pausedTime);  // Pass pausedTime to pause
                 gameBoard.printcurrentMap();
+                gameBoard.printLegend(currLives);
             }
         }
 
         barrelSpawnCounter++;
 
-        if (handleLifeLoss(currLives, mario, gameBoard, barrelCurr, barrelSpawnCounter, isMarioLocked, ghosts, barrels)) {
+        if (handleLifeLoss(currLives, mario, gameBoard, barrelCurr, barrelSpawnCounter, isMarioLocked, ghosts, barrels, score)) {
             return -1;
         }
 
@@ -87,28 +97,28 @@ int Game::startGame() {
             mario.isWithPatish = true;
             patishPicked = true; // Mark patish as picked
             gameBoard.currentMap[23][49] = ' '; // Remove patish from map
-            
         }
-        
+
         patishDestroy(barrels, ghosts, mario, keyPressed);
-        
+
         if (barrelSpawnCounter == (int)gameConfig::Size::BARRREL_COUNTER && barrelCurr < (int)gameConfig::Size::BARREL_MAX) {
-            spawnBarrel(barrels, barrelCurr, gameBoard); 
+            spawnBarrel(barrels, barrelCurr, gameBoard);
             barrelSpawnCounter = 0;
         }
-        
-        moveBarrels(barrels, barrelCurr, mario); 
+
+        moveBarrels(barrels, barrelCurr, mario);
         moveGhosts(ghosts);
 
         patishDestroy(barrels, ghosts, mario, keyPressed);
 
-        auto currentTime = std::chrono::steady_clock::now();
-        if (std::chrono::duration_cast<std::chrono::seconds>(currentTime - lastToggleTime).count() >= 4) {
+        now = std::chrono::steady_clock::now();  // Get the current time
+
+        if (std::chrono::duration_cast<std::chrono::seconds>(now - lastToggleTime).count() >= 4) {
             for (const Point& p : togglePoints) {
                 toggleArrow(gameBoard, p);
             }
 
-            lastToggleTime = currentTime;
+            lastToggleTime = now;
         }
 
         Sleep((int)gameConfig::Sleep::GAME_LOOP_SLEEP);
@@ -126,10 +136,30 @@ int Game::startGame() {
         }
 
         keyPressed = (int)gameConfig::eKeys::NONE;
+
+        if (!isPaused) {
+            // Check if 5 seconds have passed since the last score update
+            if (std::chrono::duration_cast<std::chrono::seconds>(now - lastScoreUpdateTime).count() >= 5) {
+                score -= 100;  // Decrease score by 100 every 5 seconds
+                lastScoreUpdateTime = now;  // Update the last score update time
+            }
+
+            // Display the updated score on the game board
+            gotoxy(gameBoard.legendTopLeft.getX() + 7, gameBoard.legendTopLeft.getY() + 2);
+            std::cout << score;
+        }
+
+        // Calculate the elapsed time as the difference between currentTime and gameStartTime
+        auto elapsedTime = std::chrono::duration_cast<std::chrono::seconds>(now - gameStartTime - pausedTime);
+        gotoxy(gameBoard.legendTopLeft.getX() + 13, gameBoard.legendTopLeft.getY() + 1);
+        updateClock(elapsedTime);  // Update clock with the elapsed time
     }
 
     return 0;
 }
+
+
+
 
 //    OUR impement for the function CHAT-GPT suggested
 void Game::toggleArrow(Map& gameBoard, const Point& point) {
@@ -152,16 +182,16 @@ void Game::drawMario(Mario& mario) {
     mario.draw(curr == 'H' ? '#' : '@');
 }
 
-bool Game::handleLifeLoss(int& currLives, Mario& mario, Map& gameBoard, int& barrelCurr, int& barrelSpawnCounter, bool& isMarioLocked, std::vector<Ghost>& ghosts, std::vector<Barrel>& barrels) {
+bool Game::handleLifeLoss(int& currLives, Mario& mario, Map& gameBoard, int& barrelCurr, int& barrelSpawnCounter, bool& isMarioLocked, std::vector<Ghost>& ghosts, std::vector<Barrel>& barrels, int& score) {
     if (currLives == mario.lives) return false;
 
     if (currLives == 1) return true;
-
+    score -= (int)gameConfig::Score::LIFE_LOSS;
     loseALife();
     gameBoard.resetMap();
     gameBoard.printcurrentMap();
     currLives--;
-    gameBoard.printRemainingLives(currLives);
+    gameBoard.printLegend(currLives);
     mario.resetMario();
     resetGhosts(ghosts);
     barrelCurr = 0;
@@ -198,38 +228,54 @@ void Game::handleMarioLocked(char keyPressed, Mario& mario, bool& isMarioLocked)
     }
 }
 
-bool Game::isMarioInLongAction(Mario& mario) {
+bool Game::isMarioInLongAction(Mario& mario) const {
     return mario.state == Mario::State::JUMPING ||
         mario.state == Mario::State::CLIMBING_UP ||
         mario.state == Mario::State::CLIMBING_DOWN;
 }
 
-bool Game::isMarioInShortAction(Mario& mario) {
+bool Game::isMarioInShortAction(Mario& mario) const {
     return mario.state == Mario::State::STANDING ||
         mario.state == Mario::State::WALKING;
 }
 
-void Game::pause()
+
+void Game::pause(bool& isPaused, std::chrono::steady_clock::duration& pausedTime)
 {
     clrsrc();
     gotoxy(20, 10);
     std::cout << "Game paused, press ESC again to continue.";
     gotoxy(20, 12);
-    std::cout<<"But it is not mandatory to present such a message.";
+    std::cout << "But it is not mandatory to present such a message.";
+
+    // Set the pause flag to true
+    isPaused = true;
+
+    auto pauseStartTime = std::chrono::steady_clock::now();  // Record when the game is paused
+
     char keyPressed = 0;
-   
     while (true) {
         if (_kbhit()) {
             keyPressed = _getch();
             if (keyPressed == (char)gameConfig::eKeys::ESC) {
+                // When ESC is pressed, unpause the game
                 clrsrc();
                 gotoxy(0, 0);
+
+                // Calculate how much time has passed during the pause and add it to the paused time
+                auto pauseDuration = std::chrono::steady_clock::now() - pauseStartTime;
+                pausedTime += pauseDuration;  // Update the paused time
+
+                // Set the pause flag to false to resume the game
+                isPaused = false;
                 return;
             }
-
         }
     }
 }
+
+
+
 
 
 void Game::loseALife()
@@ -240,12 +286,12 @@ void Game::loseALife()
     Sleep((int)gameConfig::Sleep::SCREEN_SLEEP);
 }
 
-void Game::win()
+void Game::win() const
 {
     Map winScreen;
     winScreen.win();
 }
-void Game::lose()
+void Game::lose() const
 {
     Map loseScreen;
     loseScreen.lose();
@@ -315,6 +361,17 @@ void Game::patishDestroy(std::vector<Barrel>& barrels, std::vector<Ghost>& ghost
     }
 }
 
+void Game::updateClock(const std::chrono::seconds& elapsedTime)
+{
+    // Calculate minutes and seconds from total elapsed seconds
+    int secondsElapsed = elapsedTime.count();
+    int minutes = secondsElapsed / 60;
+    int seconds = secondsElapsed % 60;
+   
 
+    // Print the clock with zero padding (e.g., 01:05 for 1 minute and 5 seconds)
+    std::cout << std::setw(2) << std::setfill('0') << minutes << ":"
+        << std::setw(2) << std::setfill('0') << seconds;
+}
 
 

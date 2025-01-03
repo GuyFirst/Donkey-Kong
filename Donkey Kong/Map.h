@@ -3,18 +3,21 @@
 #include "general.h"
 #include "gameConfig.h"
 #include <Windows.h>
+#include "Point.h"
 
 class Map
 {
 public:
     static constexpr int GAME_WIDTH = 81;
+
     static constexpr int GAME_HEIGHT = 25;
+    Point legendTopLeft;
 
 
     const char originalMap[Map::GAME_HEIGHT][Map::GAME_WIDTH] = {
 
    "                                                                               ", // 1
-   "                               |O|                   L                         ", // 2
+   "                               |O|                                             ", // 2
    "                              |OOO|                                            ", // 3
    "                             |OOOOO| & $                                       ", // 4
    "                             ==  ==========                                    ", // 5
@@ -102,7 +105,7 @@ public:
         for (int i = 0; i < Map::GAME_HEIGHT; ++i)
             memcpy(currentMap[i], originalMap[i], Map::GAME_WIDTH);
     }
-    Map() { resetMap(); }
+    Map() : legendTopLeft(50,1) { resetMap(); }
     void printcurrentMap() { 
         gotoxy(0, 0);
 
@@ -114,12 +117,13 @@ public:
         }
     }
 
-    void printRemainingLives(int remainingLives);
+    void printLegend(int remainingLives);
     int mainMenu();
     void showMenu();
     void showInstructions();
     int exitGame() { std::cout << "Exiting the game. Goodbye!" << std::endl; return -1; }
     void win();
     void lose();
+    void printClock(int& secondsElapsed);
 };
 

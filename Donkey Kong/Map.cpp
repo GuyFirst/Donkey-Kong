@@ -10,14 +10,20 @@
 #include "Point.h"
 
 
-void Map::printRemainingLives(int remainingLives)
+
+void Map::printLegend(int remainingLives)
 {
-    Point startOfText(60, 2);
-    gotoxy(startOfText.getX(), startOfText.getY());
-    std::cout << "REMAINING LIVES:";
-    gotoxy(startOfText.getX() + 4, startOfText.getY() + 1);
+
+    gotoxy(legendTopLeft.getX(), legendTopLeft.getY());
+    std::cout << "REMAINING LIVES: ";
+   // gotoxy(legendTopLeft.getX() + 4, legendTopLeft.getY() + 1);
     for (int i = 0; i < remainingLives; i++)
-        std::cout << "* ";
+        std::cout << "*";
+    gotoxy(legendTopLeft.getX(), legendTopLeft.getY()+1);
+    std::cout << "TIME PASSED: ";
+    gotoxy(legendTopLeft.getX(), legendTopLeft.getY() + 2);
+    std::cout << "SCORE: ";
+
 
 }
 void Map::showMenu() {
@@ -197,5 +203,9 @@ void Map::lose()
         Sleep((int)gameConfig::Sleep::WAITING_FOR_MENU_SLEEP);
     }
     return;
+}
+
+void Map::printClock(int& secondsElapsed)
+{
 }
 

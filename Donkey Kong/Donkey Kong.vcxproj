@@ -145,6 +145,7 @@
     <ClInclude Include="gameConfig.h" />
     <ClInclude Include="Mario.h" />
     <ClInclude Include="Point.h" />
+    <ClInclude Include="readme.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

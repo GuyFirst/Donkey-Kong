@@ -9,6 +9,7 @@
 void Ghost::draw(char ch) const {
     gotoxy(position.getX(), position.getY());
     std::cout << ch;
+    //bug of disappearing P - will be esiear to take care of when we will implement the files taking
     map->currentMap[position.getY()][position.getX()] = ch;
 }
 
