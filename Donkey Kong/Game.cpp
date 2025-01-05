@@ -38,8 +38,8 @@ int Game::startGame() {
     ShowConsoleCursor(false);
 
     std::vector<Barrel> barrels;
-    int barrelCurr = 0;
-    int barrelSpawnCounter = 0;
+   // int barrelCurr = 0;
+    //int barrelSpawnCounter = 0;
     Point explosionPos;
     Map gameBoard;
     gameBoard.printcurrentMap();
@@ -50,17 +50,18 @@ int Game::startGame() {
 
     char keyPressed = (char)(gameConfig::eKeys::STAY);
     bool isMarioLocked = false;
-    bool patishPicked = false;  // Track if patish is picked
-    bool isPaused = false;      // Track if the game is paused
+    bool patishPicked = false;  
+    bool isGamePaused = false;      
 
-    auto lastToggleTime = std::chrono::steady_clock::now();
-    auto gameStartTime = std::chrono::steady_clock::now(); // Track game start time
-    auto currentTime = std::chrono::steady_clock::now();   // Track current time
+    // time initilization
+    auto lastToggleTime = std::chrono::steady_clock::now();        //Track toggle time
+    auto gameStartTime = std::chrono::steady_clock::now();         // Track game start time
+    auto currentTime = std::chrono::steady_clock::now();           // Track current time
     auto pausedTime = std::chrono::steady_clock::duration::zero(); // Duration for paused time
-    auto now = std::chrono::steady_clock::now(); //Track now time
+    auto now = std::chrono::steady_clock::now();                   //Track now time
+
 
     std::vector<Point> togglePoints = defineFloorsToToggle(gameBoard);
-
     std::vector<Ghost> ghosts;
     spawnGhosts(ghosts, gameBoard);
 
@@ -77,15 +78,15 @@ int Game::startGame() {
             keyPressed = std::tolower(_getch());
 
             if (keyPressed == (int)gameConfig::eKeys::ESC) {
-                pause(isPaused, pausedTime);  // Pass pausedTime to pause
+                pause(isGamePaused, pausedTime);  // Pass pausedTime to pause
                 gameBoard.printcurrentMap();
                 gameBoard.printLegend(currLives);
             }
         }
 
-        barrelSpawnCounter++;
-
-        if (handleLifeLoss(currLives, mario, gameBoard, barrelCurr, barrelSpawnCounter, isMarioLocked, ghosts, barrels, score)) {
+        Barrel::barrelSpawnCounter++;
+      
+        if (handleLifeLoss(currLives, mario, gameBoard, Barrel::barrelCurr, Barrel::barrelSpawnCounter, isMarioLocked, ghosts, barrels, score)) {
             return -1;
         }
 
@@ -101,12 +102,14 @@ int Game::startGame() {
 
         patishDestroy(barrels, ghosts, mario, keyPressed);
 
-        if (barrelSpawnCounter == (int)gameConfig::Size::BARRREL_COUNTER && barrelCurr < (int)gameConfig::Size::BARREL_MAX) {
-            spawnBarrel(barrels, barrelCurr, gameBoard);
-            barrelSpawnCounter = 0;
+        
+        if (Barrel::barrelSpawnCounter == (int)gameConfig::Size::BARRREL_COUNTER && Barrel::barrelCurr < (int)gameConfig::Size::BARREL_MAX) {
+            spawnBarrel(barrels, Barrel::barrelCurr, gameBoard);
+            Barrel::resetBarrelSpawnCounter();  // Reset the static spawn counter
         }
 
-        moveBarrels(barrels, barrelCurr, mario);
+
+        moveBarrels(barrels, Barrel::barrelCurr, mario);
         moveGhosts(ghosts);
 
         patishDestroy(barrels, ghosts, mario, keyPressed);
@@ -133,13 +136,12 @@ int Game::startGame() {
             isMarioLocked = isMarioInLongAction(mario);
         }
 
-        if (isMarioInShortAction(mario)) {
+        if (isMarioInShortAction(mario)) 
             isMarioLocked = false;
-        }
 
         keyPressed = (int)gameConfig::eKeys::NONE;
 
-        if (!isPaused) {
+        if (!isGamePaused) {
             // Check if 5 seconds have passed since the last score update
             if (std::chrono::duration_cast<std::chrono::seconds>(now - lastScoreUpdateTime).count() >= 5) {
                 score -= 100;  // Decrease score by 100 every 5 seconds
@@ -243,7 +245,7 @@ bool Game::isMarioInShortAction(Mario& mario) const {
 }
 
 
-void Game::pause(bool& isPaused, std::chrono::steady_clock::duration& pausedTime)
+void Game::pause(bool& isGamePaused, std::chrono::steady_clock::duration& pausedTime)
 {
     clrsrc();
     gotoxy(20, 10);
@@ -252,7 +254,7 @@ void Game::pause(bool& isPaused, std::chrono::steady_clock::duration& pausedTime
     std::cout << "But it is not mandatory to present such a message.";
 
     // Set the pause flag to true
-    isPaused = true;
+    isGamePaused = true;
 
     auto pauseStartTime = std::chrono::steady_clock::now();  // Record when the game is paused
 
@@ -270,7 +272,7 @@ void Game::pause(bool& isPaused, std::chrono::steady_clock::duration& pausedTime
                 pausedTime += pauseDuration;  // Update the paused time
 
                 // Set the pause flag to false to resume the game
-                isPaused = false;
+                isGamePaused = false;
                 return;
             }
         }
@@ -281,7 +283,7 @@ void Game::pause(bool& isPaused, std::chrono::steady_clock::duration& pausedTime
 
 
 
-void Game::loseALife()
+void Game::loseALife() const
 {
     clrsrc();
     gotoxy(40, 10);

@@ -19,7 +19,7 @@ public:
     void draw(char ch = 'x') const;
     void move(std::vector<Ghost>& Ghosts);
     void reset();
-    bool isOnFloor();
+    bool isOnFloor() const;
 
 private:
     int m_id; 

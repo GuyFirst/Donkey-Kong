@@ -3,6 +3,10 @@
 #include "Mario.h"
 #include "Point.h"
 
+int Barrel::barrelCurr = 0;
+
+int Barrel::barrelSpawnCounter = 0;
+
 void Barrel::move(Mario* mario) {
     char floor = '\0';
     char& refFloor = floor;
@@ -40,7 +44,7 @@ void Barrel::move(Mario* mario) {
     }
     else {
         updatePosition();
-        // Draw barrel at the new position
+        
         draw('O'); // Replace 'O' with the character representing a barrel
         m_diff_x = m_prev_diff_x;
     }
