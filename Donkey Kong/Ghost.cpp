@@ -14,19 +14,20 @@ void Ghost::draw(char ch) const {
 }
 
 void Ghost::move(std::vector<Ghost>& ghosts) {
-    // Erase ghost from the current position
+    // Erase the ghost from the current position
     draw(map->originalMap[position.getY()][position.getX()]);
 
     // Handle potential collisions or direction changes
     handleCollision(ghosts);
     handleDirectionChange();
 
-    // Update position
+    // Update position (only move horizontally along the x-axis)
     position.setX(position.getX() + m_diff_x);
 
     // Draw ghost at the new position
     draw('x');
 }
+
 void Ghost::handleCollision(std::vector<Ghost>& ghosts) {
     for (auto& other : ghosts) {
         // Skip checking collision with itself
@@ -38,7 +39,7 @@ void Ghost::handleCollision(std::vector<Ghost>& ghosts) {
         if (this->position.getY() == other.position.getY()) {
             // Two Ghosts are facing each other
             if (this->isNearOtherGhosts(ghosts)) {
-
+                // Reverse direction of movement for both ghosts
                 this->m_diff_x = -this->m_diff_x;
                 other.m_diff_x = -other.m_diff_x;
             }
@@ -46,20 +47,19 @@ void Ghost::handleCollision(std::vector<Ghost>& ghosts) {
     }
 
     // Handle boundary collision (if ghost reaches the boundary, reverse direction)
-        if (isNearBoundary()) {
-            m_diff_x = -m_diff_x;
-        }
-   
+    if (isNearBoundary()) {
+        m_diff_x = -m_diff_x;
+    }
 }
 
 
+
 void Ghost::handleDirectionChange() {
-    
     int random = ((std::rand() + m_id) % 100) + 1; // number between 1 and 100
 
-
     if (random <= 5 || !isOnFloor()) {
-        m_diff_x = -m_diff_x; 
+        // Randomly reverse direction
+        m_diff_x = -m_diff_x;
     }
 }
 
@@ -86,7 +86,7 @@ bool Ghost::isNearOtherGhosts(const std::vector<Ghost>& ghosts) const {
 }
 
 void Ghost::reset() {
-    position = startPosition; // Reset to the initial position
+    position = startingPosition; // Reset to the initial position
 }
 
 bool Ghost::isOnFloor()

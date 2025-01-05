@@ -2,16 +2,13 @@
 #include "gameConfig.h"
 #include "Map.h"
 #include "Point.h"
-#include <vector>  
+#include <vector>
+#include "Entity.h"
 class Mario;
 
-class Barrel {
-    Point position;
-    int m_diff_x = (int)gameConfig::Direction::STAY;
-    int m_diff_y = (int)gameConfig::Direction::POSITIVE;
+class Barrel : public Entity {
     int m_prev_diff_x = 0;
     int m_fallCounter = 0;
-    Map* map;
 
     // Helper methods
     void updatePosition();
@@ -22,13 +19,21 @@ class Barrel {
     bool isMarioNearMe(Point marioPos) const;
 
 public:
-    Barrel(Map* map) : position((int)gameConfig::Pos::BARREL_X_START, (int)gameConfig::Pos::BARREL_Y_START), map(map) {}
-    Barrel() : position((int)gameConfig::Pos::BARREL_X_START, (int)gameConfig::Pos::BARREL_Y_START) {}
-    Point getPoint() const { return position; }
+    Barrel(Map* map) : Entity((int)gameConfig::Pos::BARREL_X_START, (int)gameConfig::Pos::BARREL_Y_START, 'O',
+        (int)gameConfig::Direction::STAY, (int)gameConfig::Direction::POSITIVE, map) {
+    }
+
+    Barrel() : Entity((int)gameConfig::Pos::MARIO_X_START, (int)gameConfig::Pos::MARIO_Y_START, 'O',
+        (int)gameConfig::Direction::STAY, (int)gameConfig::Direction::POSITIVE, nullptr) {
+    }
+
     void move(Mario* mario);
     void draw(char ch) const;
     void reset();
     void addBarrel(std::vector<Barrel>& barrels, Map* map);  // Change to vector reference
-    char getMapChar() const { return this->map->originalMap[position.getY()][position.getX()]; }
-   
+
+    // Overridden or inherited method
+    char getMapChar() const {
+        return this->getMap()->originalMap[position.getY()][position.getX()];
+    }
 };

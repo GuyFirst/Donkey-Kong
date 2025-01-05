@@ -114,10 +114,12 @@ int Game::startGame() {
         now = std::chrono::steady_clock::now();  // Get the current time
 
         if (std::chrono::duration_cast<std::chrono::seconds>(now - lastToggleTime).count() >= 4) {
+            // Toggle arrows for each point in togglePoints
             for (const Point& p : togglePoints) {
                 toggleArrow(gameBoard, p);
             }
 
+            // Update the lastToggleTime after toggling
             lastToggleTime = now;
         }
 
@@ -164,10 +166,11 @@ int Game::startGame() {
 //    OUR impement for the function CHAT-GPT suggested
 void Game::toggleArrow(Map& gameBoard, const Point& point) {
 ;
-		std::cout << '<';    char currentChar = gameBoard.currentMap[point.getY()][point.getX()];
+   char currentChar = gameBoard.currentMap[point.getY()][point.getX()];
     if (currentChar == '>') {
 		gameBoard.currentMap[point.getY()][point.getX()] = '<';
         gotoxy(point.getX(), point.getY());
+        std::cout << '<';
     }
     else  if (currentChar == '<') {
         gameBoard.currentMap[point.getY()][point.getX()] = '>';
@@ -299,12 +302,13 @@ void Game::lose() const
 
 //פונקציה זמנית לבדיקת הרוחות
 void Game::spawnGhosts(std::vector<Ghost>& ghosts, Map& gameBoard) {
-    ghosts.emplace_back(&gameBoard, Point(50, 23), std::rand());
-    ghosts.emplace_back(&gameBoard, Point(50, 15), std::rand());
-    ghosts.emplace_back(&gameBoard, Point(40, 15), std::rand());
-    ghosts.emplace_back(&gameBoard, Point(50, 12), std::rand());
-    ghosts.emplace_back(&gameBoard, Point(60, 12), std::rand());
+    ghosts.emplace_back(&gameBoard, std::rand(), Point(50, 23)); // Pass map, random ID, and Point
+    ghosts.emplace_back(&gameBoard, std::rand(), Point(50, 15));
+    ghosts.emplace_back(&gameBoard, std::rand(), Point(40, 15));
+    ghosts.emplace_back(&gameBoard, std::rand(), Point(50, 12));
+    ghosts.emplace_back(&gameBoard, std::rand(), Point(60, 12));
 }
+
 
 void Game::moveGhosts(std::vector<Ghost>& ghosts) {
     for (auto& ghost : ghosts) {
@@ -340,7 +344,7 @@ std::vector<Point> Game::defineFloorsToToggle(Map& map)
 void Game::patishDestroy(std::vector<Barrel>& barrels, std::vector<Ghost>& ghosts, Mario& mario, char key) {
     if (key == (char)gameConfig::eKeys::PATISH && mario.isWithPatish) {
         for (auto it = ghosts.begin(); it != ghosts.end(); ) {
-            if (it->getPoint() == mario.getPoint()) {
+            if (it->getPoint() == mario.getPoint() ) {
                 it->draw(' ');
                 it = ghosts.erase(it);
             } else {

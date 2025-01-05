@@ -1,28 +1,29 @@
 #pragma once
-#include<vector>
+#include <vector>
 #include "Point.h"
 #include "Map.h"
 #include "gameConfig.h"
 #include <iostream>
+#include "Entity.h"
 
-
-class Ghost {
+class Ghost : public Entity {
 public:
-    Ghost(Map* map, Point start, int m_id)  : map(map), position(start), startPosition(start), m_id(m_id) { }
+    Ghost(Map* map, int m_id, Point startingPosition)
+        : Entity(startingPosition.getX(), startingPosition.getY(), 'x', 
+            (int)gameConfig::Direction::POSITIVE, (int)gameConfig::Direction::STAY, map), 
+        m_id(m_id), 
+        startingPosition(startingPosition) {
+    } 
+
+
     void draw(char ch = 'x') const;
     void move(std::vector<Ghost>& Ghosts);
-    Point getPoint() const { return position; }
     void reset();
     bool isOnFloor();
 
-
 private:
-    Point position;
-    int m_diff_x = (int)gameConfig::Direction::POSITIVE;
-    Map* map;
-    Point startPosition;
-    int m_id;
-
+    int m_id; 
+    Point startingPosition; 
     void handleCollision(std::vector<Ghost>& Ghosts);
     void handleDirectionChange();
     bool isNearBoundary() const;

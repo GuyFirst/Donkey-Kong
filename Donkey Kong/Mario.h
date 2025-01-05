@@ -3,8 +3,9 @@
 #include "Point.h"
 #include "Map.h"
 #include "gameConfig.h"
+#include "Entity.h"
 
-class Mario {
+class Mario : public Entity {
 public:
     enum class State {
         STANDING,
@@ -14,7 +15,12 @@ public:
         CLIMBING_DOWN
     };
 
-    Mario(Map* map) : position((int)gameConfig::Pos::MARIO_X_START, (int)gameConfig::Pos::MARIO_Y_START), map(map), isWithPatish(false) {}
+    Mario(Map* map)
+        : Entity((int)gameConfig::Pos::MARIO_X_START, (int)gameConfig::Pos::MARIO_Y_START, '@',
+           (int)gameConfig::Direction::STAY, (int)gameConfig::Direction::STAY, map),
+        isWithPatish(false) {
+    }
+
 
     void draw(char ch) const;
     void move(gameConfig::eKeys key = gameConfig::eKeys::NONE);
@@ -23,30 +29,22 @@ public:
     void downLadder();
     void checkFallHeight();
     void resetMario();
-    Point getPoint() const { return position; }
-    int getX() const { return position.getX(); }
-    int getY() const { return position.getY(); }
 	State getState() const { return state; }
     bool isNearPaulina() const;
     char getMapChar() const;
     bool isBarrelHere() const;
 	bool isGhostHere() const;
     bool isNearPatish() const;
-   
     void setIsNearExplosion(bool isNear) { m_isNearExplosion = isNear; }
 
 
 
 private:
-    Point position;
-    int m_diff_x = (int)gameConfig::Direction::STAY;
-    int m_diff_y = (int)gameConfig::Direction::STAY;
     int m_countHeight = (int)gameConfig::Size::ZERO_SIZE;
     int jumpCounter = 0;
     int lives = (int)gameConfig::Size::START_LIVES;
     bool m_isNearExplosion = false;
     State state = State::STANDING;
-    Map* map;
     bool isWithPatish;
 
     void handleInput(gameConfig::eKeys key);
