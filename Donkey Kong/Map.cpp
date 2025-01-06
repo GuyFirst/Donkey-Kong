@@ -8,8 +8,32 @@
 #include "menu.h"
 #include <Windows.h>
 #include "Point.h"
+#include <vector>
+#include <string>
 
 
+
+char Map::chooseScreens(std::vector<std::string> vec_to_fill)
+{
+    clrsrc();
+    gotoxy(0, 0);
+    std::cout << "choose screen to start with:\n";
+    int num = 1;
+    for (auto& it : vec_to_fill)
+    {
+        std::cout << num << "." << it << "\n";
+        num++;
+    }
+    char key;
+    while (true)
+        if (_kbhit()){
+             key = _getch();
+             return key;
+}
+    
+
+    
+}
 
 void Map::printLegend(int remainingLives)
 {
@@ -56,7 +80,7 @@ void Map::showInstructions()
     }
     return;
 }
-int Map::mainMenu()
+int Map::mainMenu(std::vector<std::string> vec_to_fill)
 {
     int flag = 0;
     showMenu();
@@ -79,8 +103,9 @@ int Map::mainMenu()
         }
         if (keyPressed == '1')
         {
+            char key = chooseScreens(vec_to_fill);
             clrsrc();
-            return 1;
+            return key;
         }
         if (keyPressed == '0') // a meme
         {

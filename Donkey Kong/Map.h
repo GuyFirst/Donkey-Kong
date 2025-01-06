@@ -4,6 +4,8 @@
 #include "gameConfig.h"
 #include <Windows.h>
 #include "Point.h"
+#include <string>
+#include <vector>
 
 class Map
 {
@@ -14,34 +16,7 @@ public:
     Point legendTopLeft;
 
 
-    const char originalMap[Map::GAME_HEIGHT][Map::GAME_WIDTH] = {
-
-   "                                                                               ", // 1
-   "                               |O|                                             ", // 2
-   "                              |OOO|                                            ", // 3
-   "                             |OOOOO| & $                                       ", // 4
-   "                             ==  ==========                                    ", // 5
-   "                                         H                                     ", // 6
-   "                                         H                                     ", // 7
-   "                  =============<=======================                        ", // 8
-   "                   H                                                           ", // 9
-   "                   H                                                           ", // 10
-   "   ========== ============<==================== =======<=== ===========        ", // 11
-   "         H                                                            H        ", // 12
-   "         H                                                            H        ", // 13
-   "         H                                 ==============================      ", // 14
-   "         H                                           H                         ", // 15
-   "         H                                           H                         ", // 16
-   "  ==============================================================>========      ", // 17
-   "                                                                   H           ", // 18
-   "                                                                   H           ", // 19
-   "                                                                   H           ", // 20
-   "                           ==========================================<==       ", // 21
-   "                                H                                              ", // 22
-   "                                H                                              ", // 23
-   "                                H                                              ", // 24
-   "==============================================================================="  // 25
-    };
+    char originalMap[Map::GAME_HEIGHT][Map::GAME_WIDTH];
 
     const char loginScreen[Map::GAME_HEIGHT][Map::GAME_WIDTH] = {
 
@@ -105,7 +80,9 @@ public:
         for (int i = 0; i < Map::GAME_HEIGHT; ++i)
             memcpy(currentMap[i], originalMap[i], Map::GAME_WIDTH);
     }
-    Map() : legendTopLeft(50,1) { resetMap(); }
+
+
+    Map() : legendTopLeft(50, 1) { resetMap(); }
     void printcurrentMap() { 
         gotoxy(0, 0);
 
@@ -116,14 +93,47 @@ public:
             Sleep(20);
         }
     }
+    
 
+    char chooseScreens(std::vector<std::string> vec_to_fill);
     void printLegend(int remainingLives);
-    int mainMenu();
+    int mainMenu(std::vector<std::string> vec_to_fill);
     void showMenu();
     void showInstructions();
     int exitGame() { std::cout << "Exiting the game. Goodbye!" << std::endl; return -1; }
     void win();
     void lose();
     void printClock(int& secondsElapsed);
+    Map* copyScreenFromFile();
 };
 
+//
+//const char originalMap[Map::GAME_HEIGHT][Map::GAME_WIDTH] = {
+//
+//  "                                                                               ", // 1
+//  "                               |O|                                             ", // 2
+//  "                              |OOO|                                            ", // 3
+//  "                             |OOOOO| & $                                       ", // 4
+//  "                             ==  ==========                                    ", // 5
+//  "                                         H                                     ", // 6
+//  "                                         H                                     ", // 7
+//  "                  =============<=======================                        ", // 8
+//  "                   H                                                           ", // 9
+//  "                   H                                                           ", // 10
+//  "   ========== ============<==================== =======<=== ===========        ", // 11
+//  "         H                                                            H        ", // 12
+//  "         H                                                            H        ", // 13
+//  "         H                                 ==============================      ", // 14
+//  "         H                                           H                         ", // 15
+//  "         H                                           H                         ", // 16
+//  "  ==============================================================>========      ", // 17
+//  "                                                                   H           ", // 18
+//  "                                                                   H           ", // 19
+//  "                                                                   H           ", // 20
+//  "                           ==========================================<==       ", // 21
+//  "                                H                                              ", // 22
+//  "                                H                                              ", // 23
+//  "                                H                                              ", // 24
+//  "==============================================================================="  // 25
+//};
+//

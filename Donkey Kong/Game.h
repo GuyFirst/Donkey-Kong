@@ -7,12 +7,13 @@
 #include "Barrel.h"
 #include <iomanip>      
 #include <thread> 
+#include <string>
 
 class Game
 {
 public:
 	void run();
-	int startGame();
+	int startGame(std::vector<std::string>, int index);
 	void pause(bool& isPaused, std::chrono::steady_clock::duration& pausedTime);
 	void loseALife() const;
 	void win() const;
@@ -31,5 +32,7 @@ public:
 	std::vector<Point> defineFloorsToToggle(Map& map);
 	void patishDestroy(std::vector<Barrel>& barrels, std::vector<Ghost>& ghosts, Mario& mario, char key);
 	void updateClock(const std::chrono::seconds& elapsedTime);
+	void getAllBoardFileNames(std::vector<std::string>& vec_to_fill);
+		
 };
 

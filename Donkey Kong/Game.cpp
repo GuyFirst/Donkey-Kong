@@ -13,19 +13,25 @@
 #include <vector>
 #include <iomanip>      // For std::setw and std::setfill
 #include <thread>       // For sleep_for
+#include <filesystem>
+#include <algorithm>
+
 
 void Game::run()
 {
+    std::vector<std::string> vec_to_fill;
+    getAllBoardFileNames(vec_to_fill);
+
     int flag = 0;  
     Point screenStart(0, 0);
     while (true)                                        //
     {                                                   //
         gotoxy(screenStart.getX(), screenStart.getY()); // 
         Map menu;                                       // the flags indicates if the player wins, loses, or quiting the game.
-        flag = menu.mainMenu();                         //  -1 for deciding to quit (before we entered the game)
+        flag = menu.mainMenu(vec_to_fill);                         //  -1 for deciding to quit (before we entered the game)
         if (flag == -1)                                 //   1 if the player won
             return;                                     //  -1 if the player lost
-        flag = startGame();                             //
+        flag = startGame(vec_to_fill,flag - 49);                             //
         if (flag == 1)                                  //
             win();                                      //
         else                                            //
@@ -34,7 +40,20 @@ void Game::run()
     return;
 }
 
-int Game::startGame() {
+void Game::getAllBoardFileNames(std::vector<std::string>& vec_to_fill) {
+    namespace fs = std::filesystem;
+    for (const auto& entry : fs::directory_iterator(fs::current_path())) {
+        auto filename = entry.path().filename();
+        auto filenameStr = filename.string();
+        if (filenameStr.substr(0, 5) == "dkong" && filename.extension() == ".screen") {
+            std::cout << " ^ added!!\n";
+            vec_to_fill.push_back(filenameStr);
+        }
+    }
+    std::sort(vec_to_fill.begin(), vec_to_fill.end());
+}
+
+int Game::startGame(std::vector<std::string> fileNames, int index) {
     ShowConsoleCursor(false);
 
     std::vector<Barrel> barrels;
