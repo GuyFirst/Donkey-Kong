@@ -256,6 +256,7 @@ void Map::load(const std::string& filename) {
     bool foundLegend = false;
     std::vector<Point> ghostStartPositions;
 
+
     while (!screen_file.get(c).eof()) {
         if (c == '\n') {
             if (curr_col > Map::GAME_WIDTH) {
@@ -321,7 +322,10 @@ void Map::load(const std::string& filename) {
                 break;
             }
         }
+      
     }
+   
+
 
     if (!foundMario) {
         throw std::runtime_error("Mario is missing from the map.");
@@ -344,7 +348,16 @@ void Map::load(const std::string& filename) {
             originalMap[row][col] = ' ';
         }
     }
-
     this->ghostStartPositions = ghostStartPositions;  // Update ghost positions in the class
+    gotoxy(0, 0);
+    for (int i = 0; i < Map::GAME_HEIGHT; ++i) {
+        std::cout << originalMap[i];
+        if (i != Map::GAME_HEIGHT - 1)
+            std::cout << "\n";
+        Sleep(20);
+    }
+ 
+
+
 }
 

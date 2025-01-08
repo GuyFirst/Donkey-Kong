@@ -29,7 +29,7 @@ public:
     const std::vector<Point>& getGhostStartPositions() const { return ghostStartPositions; }
 
 
-    char originalMap[Map::GAME_HEIGHT][Map::GAME_WIDTH];
+    char originalMap[Map::GAME_HEIGHT][Map::GAME_WIDTH] = {};
 
     const char loginScreen[Map::GAME_HEIGHT][Map::GAME_WIDTH] = {
 
@@ -95,8 +95,6 @@ public:
             memcpy(currentMap[i], originalMap[i], Map::GAME_WIDTH);
     }
 
-
-    Map() : legendTopLeft(50, 1) { resetMap(); }
     
     void printcurrentMap() { 
         gotoxy(0, 0);

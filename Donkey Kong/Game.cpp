@@ -189,8 +189,9 @@ int Game::startGame(std::vector<std::string> fileNames, int index) {
 
     // Initialize game board
     Map gameBoard;
+    gameBoard.load(fileNames[0]);
+    gameBoard.resetMap();
     gameBoard.printcurrentMap();
-
     // Initialize Mario
     Mario mario(&gameBoard, gameBoard.getMarioStartPos());
 
