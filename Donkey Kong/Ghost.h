@@ -9,7 +9,7 @@
 class Ghost : public Entity {
 public:
     Ghost(Map* map, int m_id, Point startingPosition)
-        : Entity(startingPosition.getX(), startingPosition.getY(), 'x', 
+        : Entity(startingPosition, 'x', 
             (int)gameConfig::Direction::POSITIVE, (int)gameConfig::Direction::STAY, map), 
         m_id(m_id), 
         startingPosition(startingPosition) {

@@ -5,6 +5,7 @@
 class Map;
 class Entity {
 protected:  
+    Point startingPosition;
     Point position;
     char me;
     int m_diff_x;
@@ -12,8 +13,8 @@ protected:
     Map* map;
 
 public:
-    Entity(int x, int y, char me, int m_diff_x, int m_diff_y, Map* map)
-        : position(x, y), me(me), m_diff_x(m_diff_x), m_diff_y(m_diff_y), map(map) {
+    Entity(Point startingPosition, char me, int m_diff_x, int m_diff_y, Map* map)
+        : startingPosition(startingPosition), position(startingPosition), me(me), m_diff_x(m_diff_x), m_diff_y(m_diff_y), map(map) {
     }
     
 

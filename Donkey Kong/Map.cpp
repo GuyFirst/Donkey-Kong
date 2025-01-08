@@ -10,6 +10,10 @@
 #include "Point.h"
 #include <vector>
 #include <string>
+#include <fstream>
+#include <stdexcept>
+#include <cstring>
+
 
 
 
@@ -232,5 +236,115 @@ void Map::lose()
 
 void Map::printClock(int& secondsElapsed)
 {
+}
+
+
+
+void Map::load(const std::string& filename) {
+    std::ifstream screen_file(filename);
+    if (!screen_file.is_open()) {
+        throw std::runtime_error("Failed to open the file: " + filename);
+    }
+
+    int curr_row = 0;
+    int curr_col = 0;
+    char c;
+
+    bool foundMario = false;
+    bool foundPauline = false;
+    bool foundDonkey = false;
+    bool foundLegend = false;
+    std::vector<Point> ghostStartPositions;
+
+    while (!screen_file.get(c).eof()) {
+        if (c == '\n') {
+            if (curr_col > Map::GAME_WIDTH) {
+                throw std::runtime_error("Row exceeds maximum width: " + std::to_string(Map::GAME_WIDTH));
+            }
+            ++curr_row;
+            curr_col = 0;
+            if (curr_row > Map::GAME_HEIGHT) {
+                throw std::runtime_error("Number of rows exceeds maximum height: " + std::to_string(Map::GAME_HEIGHT));
+            }
+            continue;
+        }
+
+        if (curr_col < Map::GAME_WIDTH && curr_row < Map::GAME_HEIGHT) {
+            switch (c) {
+            case '@':  // Mario
+                if (foundMario) {
+                    throw std::runtime_error("Multiple Mario characters found in the map.");
+                }
+                foundMario = true;
+                marioStartPos = { curr_col, curr_row };
+                originalMap[curr_row][curr_col++] = ' ';  // Replace with space
+                break;
+
+            case '$':  // Pauline
+                if (foundPauline) {
+                    throw std::runtime_error("Multiple Pauline characters found in the map.");
+                }
+                foundPauline = true;
+                originalMap[curr_row][curr_col++] = '$';
+                break;
+
+            case '&':  // Donkey Kong
+                if (foundDonkey) {
+                    throw std::runtime_error("Multiple Donkey Kong characters found in the map.");
+                }
+                foundDonkey = true;
+                barrelStartPoint = { curr_col, curr_row };
+                originalMap[curr_row][curr_col++] = '&';
+                break;
+
+            case 'x':  // Ghost
+                ghostStartPositions.emplace_back(curr_col, curr_row);
+                originalMap[curr_row][curr_col++] = ' ';  // Replace with space
+                break;
+
+            case 'L':  // Legend
+                if (foundLegend) {
+                    throw std::runtime_error("Multiple Legend characters found in the map.");
+                }
+                foundLegend = true;
+                legendPosition = { curr_col, curr_row };
+                originalMap[curr_row][curr_col++] = ' ';  // Replace with space
+                break;
+
+            case 'P':  // Patish
+                patishPosition = { curr_col, curr_row };
+                originalMap[curr_row][curr_col++] = ' ';  // Replace with space
+                break;
+
+            default:
+                originalMap[curr_row][curr_col++] = c;  // Regular character
+                break;
+            }
+        }
+    }
+
+    if (!foundMario) {
+        throw std::runtime_error("Mario is missing from the map.");
+    }
+    if (!foundPauline) {
+        throw std::runtime_error("Pauline is missing from the map.");
+    }
+    if (!foundDonkey) {
+        throw std::runtime_error("Donkey Kong is missing from the map.");
+    }
+
+    // If Legend is not found, set to default position
+    if (!foundLegend) {
+        legendPosition = { 0, 0 };  // Default legend position
+    }
+
+    // Fill the unused part of the map with spaces
+    for (int row = curr_row; row < Map::GAME_HEIGHT; ++row) {
+        for (int col = curr_col; col < Map::GAME_WIDTH; ++col) {
+            originalMap[row][col] = ' ';
+        }
+    }
+
+    this->ghostStartPositions = ghostStartPositions;  // Update ghost positions in the class
 }
 

@@ -25,13 +25,13 @@ public:
     static int barrelCurr;
     static int barrelSpawnCounter;
 
-    Barrel(Map* map) : Entity((int)gameConfig::Pos::BARREL_X_START, (int)gameConfig::Pos::BARREL_Y_START, 'O',
-        (int)gameConfig::Direction::STAY, (int)gameConfig::Direction::POSITIVE, map) {
+    Barrel(Map* map, Point startingPosition)
+        : Entity(startingPosition, 'O', (int)gameConfig::Direction::POSITIVE, (int)gameConfig::Direction::STAY, map) {
     }
 
-    Barrel() : Entity((int)gameConfig::Pos::MARIO_X_START, (int)gameConfig::Pos::MARIO_Y_START, 'O',
-        (int)gameConfig::Direction::STAY, (int)gameConfig::Direction::POSITIVE, nullptr) {
+    Barrel() : Entity(Point(0, 0), 'O', (int)gameConfig::Direction::POSITIVE, (int)gameConfig::Direction::STAY, nullptr) {
     }
+
 
     void move(Mario* mario);
     void draw(char ch) const;

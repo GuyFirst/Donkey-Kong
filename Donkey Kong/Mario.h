@@ -15,8 +15,8 @@ public:
         CLIMBING_DOWN
     };
 
-    Mario(Map* map)
-        : Entity((int)gameConfig::Pos::MARIO_X_START, (int)gameConfig::Pos::MARIO_Y_START, '@',
+    Mario(Map* map, Point startingPoint)
+        : Entity(startingPoint, '@',
            (int)gameConfig::Direction::STAY, (int)gameConfig::Direction::STAY, map),
         isWithPatish(false) {
     }

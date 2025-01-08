@@ -86,8 +86,7 @@ bool Barrel::isNearWall(int dirX) const {
 }
 
 void Barrel::reset() {
-    this->position.setX((int)gameConfig::Pos::BARREL_X_START);
-    this->position.setY((int)gameConfig::Pos::BARREL_Y_START);
+    this->position = startingPosition;
     m_diff_x = 0;
     m_diff_y = 1;
     m_prev_diff_x = 0;
@@ -116,6 +115,6 @@ bool Barrel::checkFallHeight() {
 }
 
 void Barrel::addBarrel(std::vector<Barrel>& barrels, Map* map) {
-    barrels.push_back(Barrel(map)); // Add a new Barrel to the vector
+    barrels.push_back(Barrel(map, startingPosition)); // Add a new Barrel to the vector
 }
 

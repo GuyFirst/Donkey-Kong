@@ -9,11 +9,24 @@
 
 class Map
 {
+
+private: 
+    Point marioStartPos;
+    Point barrelStartPoint;
+    Point legendPosition;
+    Point patishPosition;
+    std::vector<Point> ghostStartPositions;
+
+
 public:
     static constexpr int GAME_WIDTH = 81;
-
     static constexpr int GAME_HEIGHT = 25;
     Point legendTopLeft;
+   
+    Point getMarioStartPos() const { return marioStartPos; }
+    Point getBarrelStartPoint() const { return barrelStartPoint; }
+    Point getLegendPosition() const { return legendPosition; }
+    const std::vector<Point>& getGhostStartPositions() const { return ghostStartPositions; }
 
 
     char originalMap[Map::GAME_HEIGHT][Map::GAME_WIDTH];
@@ -76,6 +89,7 @@ public:
 
     };
     char currentMap[Map::GAME_HEIGHT][Map::GAME_WIDTH] = {};
+   
     void resetMap() {
         for (int i = 0; i < Map::GAME_HEIGHT; ++i)
             memcpy(currentMap[i], originalMap[i], Map::GAME_WIDTH);
@@ -83,6 +97,7 @@ public:
 
 
     Map() : legendTopLeft(50, 1) { resetMap(); }
+    
     void printcurrentMap() { 
         gotoxy(0, 0);
 
@@ -104,7 +119,9 @@ public:
     void win();
     void lose();
     void printClock(int& secondsElapsed);
-    Map* copyScreenFromFile();
+    void load(const std::string& filename);
+
+   
 };
 
 //
