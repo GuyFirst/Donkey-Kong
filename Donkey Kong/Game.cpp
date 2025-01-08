@@ -268,7 +268,7 @@ int Game::startGame(std::vector<std::string> fileNames, int index) {
         }
 
         // Move barrels and ghosts
-        moveBarrels(barrels, Barrel::barrelCurr, mario);
+        moveBarrels(barrels, mario);
         moveGhosts(ghosts);
 
         // Destroy barrels or ghosts if Patish is used
@@ -369,8 +369,8 @@ void Game::spawnBarrel(std::vector<Barrel>& barrels, int& barrelCurr, Map& gameB
     barrelCurr++;
 }
 
-void Game::moveBarrels(std::vector<Barrel>& barrels, int barrelCurr, Mario& mario) {
-    for (int i = 0; i < barrelCurr; i++) {
+void Game::moveBarrels(std::vector<Barrel>& barrels, Mario& mario) { 
+    for (int i = 0; i < Barrel::barrelCurr; i++) {
         if (i < barrels.size()) {
             char curr = barrels[i].getMapChar();
             barrels[i].draw('O');

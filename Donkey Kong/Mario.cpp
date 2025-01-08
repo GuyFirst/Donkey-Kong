@@ -313,12 +313,11 @@ bool Mario::isUnderFloorWhileMoving() const {
 
 
 
-bool Mario::isNearWall(int dirX) const {
+bool Mario::isNearWall(int dirX) const {      //add the Q checking
     if (dirX == (int)gameConfig::Direction::POSITIVE) 
-         return position.getX() >= gameConfig::GAME_WIDTH - 4;
-    
+         return position.getX() >= gameConfig::GAME_WIDTH - 2;
     else 
-         return position.getX() <= 0; 
+         return position.getX() <= 0 ; 
 }
 
     

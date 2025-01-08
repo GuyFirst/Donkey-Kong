@@ -40,7 +40,6 @@ public:
 
    
     static int getBarrelCurr() {  return barrelCurr;  }
-
     static int getBarrelSpawnCounter() { return barrelSpawnCounter; }
 
     static void incrementBarrelCurr() {barrelCurr++; }
