@@ -14,7 +14,7 @@ class Barrel : public Entity {
 
     // Helper methods
     void updatePosition();
-    void handleExplosion(Mario* mario);
+    void handleExplosion(std::vector<Barrel>& barrels,Mario* mario);
     bool isOnAir(char& refFloor);
     bool isNearWall(int dirX) const;
     bool checkFallHeight();
@@ -33,7 +33,7 @@ public:
     }
 
 
-    void move(Mario* mario);
+    void move(std::vector<Barrel>& barrels,Mario* mario);
     void draw(char ch) const;
     void reset();
     void addBarrel(std::vector<Barrel>& barrels, Map* map);  
@@ -44,9 +44,12 @@ public:
     static int getBarrelSpawnCounter() { return barrelSpawnCounter; }
 
     static void incrementBarrelCurr() {barrelCurr++; }
-
+	static void decrementBarrelCurr() { barrelCurr--; }
     static void resetBarrelSpawnCounter() { barrelSpawnCounter = 0; }
 
-   
+    bool operator==(const Barrel& other) const { return position == other.position; }
+
+	bool operator!=(const Barrel& other) const {return !(*this == other);}
+
     char getMapChar() const { return this->getMap()->originalMap[position.getY()][position.getX()]; }
 };

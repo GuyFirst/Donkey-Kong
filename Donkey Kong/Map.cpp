@@ -41,15 +41,15 @@ char Map::chooseScreens(std::vector<std::string> vec_to_fill)
 
 void Map::printLegend(int remainingLives)
 {
-
-    gotoxy(legendTopLeft.getX(), legendTopLeft.getY());
+	Point  LegendPosition = getLegendPosition();
+    gotoxy(LegendPosition.getX(), LegendPosition.getY());
     std::cout << "REMAINING LIVES: ";
-   // gotoxy(legendTopLeft.getX() + 4, legendTopLeft.getY() + 1);
+   // gotoxy(LegendPosition.getX() + 4, LegendPosition.getY() + 1);
     for (int i = 0; i < remainingLives; i++)
         std::cout << "*";
-    gotoxy(legendTopLeft.getX(), legendTopLeft.getY()+1);
+    gotoxy(LegendPosition.getX(), LegendPosition.getY()+1);
     std::cout << "TIME PASSED: ";
-    gotoxy(legendTopLeft.getX(), legendTopLeft.getY() + 2);
+    gotoxy(LegendPosition.getX(), LegendPosition.getY() + 2);
     std::cout << "SCORE: ";
 
 
@@ -256,17 +256,21 @@ void Map::load(const std::string& filename) {
     bool foundLegend = false;
     std::vector<Point> ghostStartPositions;
 
-
+   
     while (!screen_file.get(c).eof()) {
         if (c == '\n') {
             if (curr_col > Map::GAME_WIDTH) {
                 throw std::runtime_error("Row exceeds maximum width: " + std::to_string(Map::GAME_WIDTH));
             }
+            originalMap[curr_row][curr_col++] = c;
+            originalMap[curr_row][curr_col] = '\0';
+          
             ++curr_row;
             curr_col = 0;
             if (curr_row > Map::GAME_HEIGHT) {
                 throw std::runtime_error("Number of rows exceeds maximum height: " + std::to_string(Map::GAME_HEIGHT));
             }
+			
             continue;
         }
 
@@ -294,7 +298,7 @@ void Map::load(const std::string& filename) {
                     throw std::runtime_error("Multiple Donkey Kong characters found in the map.");
                 }
                 foundDonkey = true;
-                barrelStartPoint = { curr_col, curr_row };
+                barrelStartPoint = { curr_col, curr_row + 1 };
                 originalMap[curr_row][curr_col++] = '&';
                 break;
 
@@ -325,7 +329,7 @@ void Map::load(const std::string& filename) {
       
     }
    
-
+	originalMap[curr_row][curr_col] = '\0';  // Null-terminate the last row
 
     if (!foundMario) {
         throw std::runtime_error("Mario is missing from the map.");
@@ -342,22 +346,8 @@ void Map::load(const std::string& filename) {
         legendPosition = { 0, 0 };  // Default legend position
     }
 
-    // Fill the unused part of the map with spaces
-    for (int row = curr_row; row < Map::GAME_HEIGHT; ++row) {
-        for (int col = curr_col; col < Map::GAME_WIDTH; ++col) {
-            originalMap[row][col] = ' ';
-        }
-    }
+    
     this->ghostStartPositions = ghostStartPositions;  // Update ghost positions in the class
-    gotoxy(0, 0);
-    for (int i = 0; i < Map::GAME_HEIGHT; ++i) {
-        std::cout << originalMap[i];
-        if (i != Map::GAME_HEIGHT - 1)
-            std::cout << "\n";
-        Sleep(20);
-    }
  
-
-
 }
 

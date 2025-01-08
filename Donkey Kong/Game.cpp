@@ -206,8 +206,8 @@ int Game::startGame(std::vector<std::string> fileNames, int index) {
     }
 
     // Place the hammer on the map
-    Point hammerPos = gameBoard.getLegendPosition(); // Assuming hammer position is stored as legend position
-    gameBoard.currentMap[hammerPos.getY()][hammerPos.getX()] = 'P';
+    Point hammerPos = gameBoard.getPatishPosition();
+	gameBoard.currentMap[hammerPos.getY()][hammerPos.getX()] = 'P';
     gotoxy(hammerPos.getX(), hammerPos.getY());
     std::cout << 'P';
 
@@ -264,6 +264,7 @@ int Game::startGame(std::vector<std::string> fileNames, int index) {
         if (Barrel::barrelSpawnCounter == (int)gameConfig::Size::BARRREL_COUNTER && Barrel::barrelCurr < (int)gameConfig::Size::BARREL_MAX) {
             barrels.emplace_back(&gameBoard, gameBoard.getBarrelStartPoint());
             Barrel::resetBarrelSpawnCounter();
+			Barrel::incrementBarrelCurr();  // Increment the static barrel counter
         }
 
         // Move barrels and ghosts
@@ -303,14 +304,14 @@ int Game::startGame(std::vector<std::string> fileNames, int index) {
             score -= 100;
             lastScoreUpdateTime = now;
         }
-
+		Point LegendPosition = gameBoard.getLegendPosition();
         // Display updated score
-        gotoxy(gameBoard.legendTopLeft.getX() + 7, gameBoard.legendTopLeft.getY() + 2);
+        gotoxy(LegendPosition.getX() + 7, LegendPosition.getY() + 2);
         std::cout << score;
 
         // Update elapsed time
         auto elapsedTime = std::chrono::duration_cast<std::chrono::seconds>(now - gameStartTime - pausedTime);
-        gotoxy(gameBoard.legendTopLeft.getX() + 13, gameBoard.legendTopLeft.getY() + 1);
+        gotoxy(LegendPosition.getX() + 13, LegendPosition.getY() + 1);
         updateClock(elapsedTime);
     }
 
@@ -373,7 +374,7 @@ void Game::moveBarrels(std::vector<Barrel>& barrels, int barrelCurr, Mario& mari
         if (i < barrels.size()) {
             char curr = barrels[i].getMapChar();
             barrels[i].draw('O');
-            barrels[i].move(&mario);
+            barrels[i].move(barrels, &mario);
         }
     }
 }
@@ -458,15 +459,6 @@ void Game::lose() const
     loseScreen.lose();
 }
 
-//פונקציה זמנית לבדיקת הרוחות
-void Game::spawnGhosts(std::vector<Ghost>& ghosts, Map& gameBoard) {
-    ghosts.emplace_back(&gameBoard, std::rand(), Point(50, 23)); // Pass map, random ID, and Point
-    ghosts.emplace_back(&gameBoard, std::rand(), Point(50, 15));
-    ghosts.emplace_back(&gameBoard, std::rand(), Point(40, 15));
-    ghosts.emplace_back(&gameBoard, std::rand(), Point(50, 12));
-    ghosts.emplace_back(&gameBoard, std::rand(), Point(60, 12));
-}
-
 
 void Game::moveGhosts(std::vector<Ghost>& ghosts) {
     for (auto& ghost : ghosts) {
@@ -514,7 +506,7 @@ void Game::patishDestroy(std::vector<Barrel>& barrels, std::vector<Ghost>& ghost
             if (it->getPoint() == mario.getPoint()) {
                 it->draw(' ');
                 it = barrels.erase(it);
-               
+				Barrel::barrelCurr--;
             } else {
                 ++it;
             }

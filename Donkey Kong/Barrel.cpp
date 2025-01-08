@@ -7,7 +7,7 @@ int Barrel::barrelCurr = 0;
 
 int Barrel::barrelSpawnCounter = 0;
 
-void Barrel::move(Mario* mario) {
+void Barrel::move(std::vector<Barrel>& barrels,Mario* mario) {
     char floor = '\0';
     char& refFloor = floor;
 
@@ -40,7 +40,7 @@ void Barrel::move(Mario* mario) {
     }
 
     if (isExploded) {
-        handleExplosion(mario);
+        handleExplosion(barrels,mario);
     }
     else {
         updatePosition();
@@ -55,16 +55,24 @@ void Barrel::updatePosition() {
     position.setY(position.getY() + m_diff_y);
 }
 
-void Barrel::handleExplosion(Mario* mario) {
+
+void Barrel::handleExplosion(std::vector<Barrel>& barrels, Mario* mario) {
     draw('*');
     Sleep((int)gameConfig::Sleep::EXPLOSION_SLEEP);
     Point marioPos = { mario->getX(), mario->getY() };
+
+    // Check if the explosion is near Mario
     if (isMarioNearMe(marioPos)) {
         mario->setIsNearExplosion(true);
     }
     draw(' '); // Clear the explosion
-    reset();
+    // Remove this barrel from the vector
+    auto it = std::find(barrels.begin(), barrels.end(), *this);
+    if (it != barrels.end()) { barrels.erase(it); }
+    Barrel::decrementBarrelCurr();
+    Barrel::resetBarrelSpawnCounter();
 }
+
 
 void Barrel::draw(char ch) const {
     gotoxy(position.getX(), position.getY());

@@ -19,10 +19,10 @@ private:
 
 
 public:
-    static constexpr int GAME_WIDTH = 81;
+    static constexpr int GAME_WIDTH = 82;
     static constexpr int GAME_HEIGHT = 25;
     Point legendTopLeft;
-   
+	Point getPatishPosition() const { return patishPosition; }
     Point getMarioStartPos() const { return marioStartPos; }
     Point getBarrelStartPoint() const { return barrelStartPoint; }
     Point getLegendPosition() const { return legendPosition; }
@@ -98,11 +98,9 @@ public:
     
     void printcurrentMap() { 
         gotoxy(0, 0);
-
         for (int i = 0; i < Map::GAME_HEIGHT; ++i) {
             std::cout << currentMap[i];
             if (i != Map::GAME_HEIGHT - 1)
-                std::cout << "\n";
             Sleep(20);
         }
     }
@@ -122,33 +120,3 @@ public:
    
 };
 
-//
-//const char originalMap[Map::GAME_HEIGHT][Map::GAME_WIDTH] = {
-//
-//  "                                                                               ", // 1
-//  "                               |O|                                             ", // 2
-//  "                              |OOO|                                            ", // 3
-//  "                             |OOOOO| & $                                       ", // 4
-//  "                             ==  ==========                                    ", // 5
-//  "                                         H                                     ", // 6
-//  "                                         H                                     ", // 7
-//  "                  =============<=======================                        ", // 8
-//  "                   H                                                           ", // 9
-//  "                   H                                                           ", // 10
-//  "   ========== ============<==================== =======<=== ===========        ", // 11
-//  "         H                                                            H        ", // 12
-//  "         H                                                            H        ", // 13
-//  "         H                                 ==============================      ", // 14
-//  "         H                                           H                         ", // 15
-//  "         H                                           H                         ", // 16
-//  "  ==============================================================>========      ", // 17
-//  "                                                                   H           ", // 18
-//  "                                                                   H           ", // 19
-//  "                                                                   H           ", // 20
-//  "                           ==========================================<==       ", // 21
-//  "                                H                                              ", // 22
-//  "                                H                                              ", // 23
-//  "                                H                                              ", // 24
-//  "==============================================================================="  // 25
-//};
-//

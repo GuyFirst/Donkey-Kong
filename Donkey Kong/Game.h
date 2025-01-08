@@ -26,7 +26,6 @@ public:
 	bool isMarioInLongAction(Mario& mario) const;
 	bool isMarioInShortAction(Mario& mario) const;
 	void toggleArrow(Map& gameBoard, const Point& point);
-	void spawnGhosts(std::vector<Ghost>& ghosts, Map& gameBoard);
 	void moveGhosts(std::vector<Ghost>& ghosts);
 	void resetGhosts(std::vector<Ghost>& ghosts);
 	std::vector<Point> defineFloorsToToggle(Map& map);
