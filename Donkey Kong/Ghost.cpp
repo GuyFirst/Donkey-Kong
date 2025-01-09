@@ -9,7 +9,7 @@
 void Ghost::draw(char ch) const {
     gotoxy(position.getX(), position.getY());
     std::cout << ch;
-    //bug of disappearing P - will be esiear to take care of when we will implement the files taking
+    //bug of disappearing P 
     map->currentMap[position.getY()][position.getX()] = ch;
 }
 
@@ -61,7 +61,9 @@ void Ghost::handleDirectionChange() {
 
 
 
-bool Ghost::isNearBoundary() const  { return position.getX() <= 0 || position.getX() >= gameConfig::GAME_WIDTH - 3 ;}
+bool Ghost::isNearBoundary() const  { 
+    return (position.getX() <= 0 || position.getX() >= gameConfig::GAME_WIDTH - 2 || position.getX()+1 == 'Q' || position.getX() - 1 == 'Q');
+}
 
 bool Ghost::isNearOtherGhosts(const std::vector<Ghost>& ghosts) const {
     for (const auto& other : ghosts) {

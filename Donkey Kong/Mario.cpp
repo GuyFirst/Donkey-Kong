@@ -16,9 +16,7 @@ void Mario::move(gameConfig::eKeys key) {
 
 
     // Check for collision with barrels before moving
-    if (checkForCollisions((int)key)) {
-        return;
-    }
+    if (checkForCollisions((int)key)) {  return; }
 
     handleInput(key);
 
@@ -32,15 +30,11 @@ void Mario::move(gameConfig::eKeys key) {
 
     // Determine the character to draw
     char marioChar;
-    if (this->map->currentMap[position.getY()][position.getX()] == 'H') {
-        marioChar = '#'; // Mario is climbing
-    }
-    else if (isWithPatish) {
-        marioChar = 'P'; // Mario has the hammer
-    }
-    else {
-        marioChar = '@'; // Default Mario
-    }
+    if (this->map->currentMap[position.getY()][position.getX()] == 'H') { marioChar = '#'; } // Mario is climbing 
+
+    else if (isWithPatish) {  marioChar = 'P'; }// Mario has the hammer
+    
+    else { marioChar = '@'; }// Default Mario
 
     // Draw Mario at the new position
     draw(marioChar);
@@ -262,8 +256,7 @@ void Mario::checkFallHeight() {
 
 void Mario::resetMario() {
     isWithPatish = false;
-    position.setX((int)Map::GAME_WIDTH / 2); // start point in the middle of the floor
-    position.setY((int)Map::GAME_HEIGHT - 2); // start point one character above the floor
+	position = this->map->getMarioStartPos();
     m_diff_x = m_diff_y = m_countHeight = m_isNearExplosion = 0;
 }
 
@@ -314,10 +307,11 @@ bool Mario::isUnderFloorWhileMoving() const {
 
 
 bool Mario::isNearWall(int dirX) const {      //add the Q checking
-    if (dirX == (int)gameConfig::Direction::POSITIVE) 
-         return position.getX() >= gameConfig::GAME_WIDTH - 2;
-    else 
-         return position.getX() <= 0 ; 
+    if (dirX == (int)gameConfig::Direction::POSITIVE)
+        return position.getX() >= gameConfig::GAME_WIDTH - 2;
+    else
+		return (position.getX() <= 0);
+
 }
 
     

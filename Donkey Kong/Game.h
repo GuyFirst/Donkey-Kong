@@ -14,7 +14,7 @@ class Game
 public:
 	void run();
 	int startGame(std::vector<std::string>, int index);
-	void pause(bool& isPaused, std::chrono::steady_clock::duration& pausedTime);
+	void pause();
 	void loseALife() const;
 	void win() const;
 	void lose() const;

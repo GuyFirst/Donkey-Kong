@@ -21,7 +21,6 @@ private:
 public:
     static constexpr int GAME_WIDTH = 82;
     static constexpr int GAME_HEIGHT = 25;
-    Point legendTopLeft;
 	Point getPatishPosition() const { return patishPosition; }
     Point getMarioStartPos() const { return marioStartPos; }
     Point getBarrelStartPoint() const { return barrelStartPoint; }

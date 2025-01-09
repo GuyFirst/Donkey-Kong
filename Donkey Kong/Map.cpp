@@ -254,13 +254,18 @@ void Map::load(const std::string& filename) {
     bool foundPauline = false;
     bool foundDonkey = false;
     bool foundLegend = false;
+	bool isQCurrRow = false;
     std::vector<Point> ghostStartPositions;
 
    
     while (!screen_file.get(c).eof()) {
         if (c == '\n') {
-            if (curr_col > Map::GAME_WIDTH) {
-                throw std::runtime_error("Row exceeds maximum width: " + std::to_string(Map::GAME_WIDTH));
+            if (curr_col < Map::GAME_WIDTH && !isQCurrRow) 
+                   for (; curr_col < Map::GAME_WIDTH-2; ++curr_col) 
+                       originalMap[curr_row][curr_col] = ' ';   // Fill the remaining space with ' ' (spaces)
+            
+            else if (curr_col > Map::GAME_WIDTH) {
+				//not good return with a proper message and ignore the screen
             }
             originalMap[curr_row][curr_col++] = c;
             originalMap[curr_row][curr_col] = '\0';
@@ -277,26 +282,22 @@ void Map::load(const std::string& filename) {
         if (curr_col < Map::GAME_WIDTH && curr_row < Map::GAME_HEIGHT) {
             switch (c) {
             case '@':  // Mario
-                if (foundMario) {
-                    throw std::runtime_error("Multiple Mario characters found in the map.");
-                }
+                if (foundMario) { originalMap[curr_row][curr_col++] = ' '; break; } //from the second mario (if there is), ignore him
+
                 foundMario = true;
                 marioStartPos = { curr_col, curr_row };
                 originalMap[curr_row][curr_col++] = ' ';  // Replace with space
                 break;
 
             case '$':  // Pauline
-                if (foundPauline) {
-                    throw std::runtime_error("Multiple Pauline characters found in the map.");
-                }
+                if (foundPauline) { originalMap[curr_row][curr_col++] = ' '; break; }//from the second Pauline (if there is), ignore her
+               
                 foundPauline = true;
                 originalMap[curr_row][curr_col++] = '$';
                 break;
 
             case '&':  // Donkey Kong
-                if (foundDonkey) {
-                    throw std::runtime_error("Multiple Donkey Kong characters found in the map.");
-                }
+				if (foundDonkey) { originalMap[curr_row][curr_col++] = ' '; break; }//from the second Donkey Kong (if there is), ignore him
                 foundDonkey = true;
                 barrelStartPoint = { curr_col, curr_row + 1 };
                 originalMap[curr_row][curr_col++] = '&';
@@ -309,8 +310,7 @@ void Map::load(const std::string& filename) {
 
             case 'L':  // Legend
                 if (foundLegend) {
-                    throw std::runtime_error("Multiple Legend characters found in the map.");
-                }
+                    originalMap[curr_row][curr_col++] = ' '; break;  }//from the second Legend (if there is), ignore it 
                 foundLegend = true;
                 legendPosition = { curr_col, curr_row };
                 originalMap[curr_row][curr_col++] = ' ';  // Replace with space
@@ -318,7 +318,12 @@ void Map::load(const std::string& filename) {
 
             case 'P':  // Patish
                 patishPosition = { curr_col, curr_row };
-                originalMap[curr_row][curr_col++] = ' ';  // Replace with space
+                originalMap[curr_row][curr_col++] = 'P';  
+                break;
+
+            case 'Q':  // border
+                originalMap[curr_row][curr_col++] = 'Q';
+				isQCurrRow = true;
                 break;
 
             default:
@@ -331,20 +336,14 @@ void Map::load(const std::string& filename) {
    
 	originalMap[curr_row][curr_col] = '\0';  // Null-terminate the last row
 
-    if (!foundMario) {
-        throw std::runtime_error("Mario is missing from the map.");
-    }
-    if (!foundPauline) {
-        throw std::runtime_error("Pauline is missing from the map.");
-    }
-    if (!foundDonkey) {
-        throw std::runtime_error("Donkey Kong is missing from the map.");
-    }
 
-    // If Legend is not found, set to default position
-    if (!foundLegend) {
-        legendPosition = { 0, 0 };  // Default legend position
-    }
+
+    if (!foundMario) {} // not good, return int, a proper message, and ignore the screen 
+    if (!foundPauline) {} //not good, return int, a proper message, and ignore the screen 
+    if (!foundDonkey) {} // not good, return int, a proper message, and ignore the screen 
+
+    
+    if (!foundLegend) {} // not good, return int, a proper message, and ignore the screen 
 
     
     this->ghostStartPositions = ghostStartPositions;  // Update ghost positions in the class

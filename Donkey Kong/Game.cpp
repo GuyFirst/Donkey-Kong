@@ -11,8 +11,6 @@
 #include "Point.h"
 #include <chrono>
 #include <vector>
-#include <iomanip>      // For std::setw and std::setfill
-#include <thread>       // For sleep_for
 #include <filesystem>
 #include <algorithm>
 
@@ -53,268 +51,128 @@ void Game::getAllBoardFileNames(std::vector<std::string>& vec_to_fill) {
     std::sort(vec_to_fill.begin(), vec_to_fill.end());
 }
 
-//
-//int Game::startGame(std::vector<std::string> fileNames, int index) {
-//    ShowConsoleCursor(false);
-//
-//
-//    std::vector<Barrel> barrels;
-//   // int barrelCurr = 0;
-//    //int barrelSpawnCounter = 0;
-//    Point explosionPos;
-//    Map gameBoard;
-//    gameBoard.printcurrentMap();
-//    Mario mario(&gameBoard, gameBoard.getMarioStartPos());
-//    int score = (int)gameConfig::Score::STARTING_SCORE; 
-//    int currLives = (int)gameConfig::Size::START_LIVES;
-//    gameBoard.printLegend(currLives);
-//
-//    char keyPressed = (char)(gameConfig::eKeys::STAY);
-//    bool isMarioLocked = false;
-//    bool patishPicked = false;  
-//    bool isGamePaused = false;      
-//
-//    // time initilization
-//    auto lastToggleTime = std::chrono::steady_clock::now();        //Track toggle time
-//    auto gameStartTime = std::chrono::steady_clock::now();         // Track game start time
-//    auto currentTime = std::chrono::steady_clock::now();           // Track current time
-//    auto pausedTime = std::chrono::steady_clock::duration::zero(); // Duration for paused time
-//    auto now = std::chrono::steady_clock::now();                   //Track now time
-//
-//
-//    std::vector<Point> togglePoints = defineFloorsToToggle(gameBoard);
-//    std::vector<Ghost> ghosts;
-//    spawnGhosts(ghosts, gameBoard);
-//
-//    // add printing of a hammer
-//    gameBoard.currentMap[23][49] = 'P';
-//    gotoxy(49, 23);
-//    std::cout << 'P';
-//
-//    auto lastScoreUpdateTime = std::chrono::steady_clock::now();  // Track time for score update
-//
-//    while (true) {
-//        keyPressed = (int)gameConfig::eKeys::NONE;
-//
-//        if (_kbhit()) {
-//            keyPressed = std::tolower(_getch());
-//
-//            if (keyPressed == (int)gameConfig::eKeys::ESC) {
-//                pause(isGamePaused, pausedTime);  // Pass pausedTime to pause
-//                gameBoard.printcurrentMap();
-//                gameBoard.printLegend(currLives);
-//            }
-//        }
-//
-//        Barrel::barrelSpawnCounter++;
-//      
-//        if (handleLifeLoss(currLives, mario, gameBoard, Barrel::barrelCurr, Barrel::barrelSpawnCounter, isMarioLocked, ghosts, barrels, score)) {
-//            return -1;
-//        }
-//
-//        if (mario.isNearPaulina()) {
-//            return 1;
-//        }
-//
-//        if (mario.isNearPatish() && keyPressed == (char)gameConfig::eKeys::PATISH && !patishPicked) {
-//            mario.isWithPatish = true;
-//            patishPicked = true; // Mark patish as picked
-//            gameBoard.currentMap[23][49] = ' '; // Remove patish from map
-//        }
-//
-//        patishDestroy(barrels, ghosts, mario, keyPressed);
-//
-//        
-//        if (Barrel::barrelSpawnCounter == (int)gameConfig::Size::BARRREL_COUNTER && Barrel::barrelCurr < (int)gameConfig::Size::BARREL_MAX) {
-//            spawnBarrel(barrels, Barrel::barrelCurr, gameBoard);
-//            Barrel::resetBarrelSpawnCounter();  // Reset the static spawn counter
-//        }
-//
-//
-//        moveBarrels(barrels, Barrel::barrelCurr, mario);
-//        moveGhosts(ghosts);
-//
-//        patishDestroy(barrels, ghosts, mario, keyPressed);
-//
-//        now = std::chrono::steady_clock::now();  // Get the current time
-//
-//        if (std::chrono::duration_cast<std::chrono::seconds>(now - lastToggleTime).count() >= 4) {
-//            // Toggle arrows for each point in togglePoints
-//            for (const Point& p : togglePoints) {
-//                toggleArrow(gameBoard, p);
-//            }
-//
-//            // Update the lastToggleTime after toggling
-//            lastToggleTime = now;
-//        }
-//
-//        Sleep((int)gameConfig::Sleep::GAME_LOOP_SLEEP);
-//
-//        if (isMarioLocked) {
-//            handleMarioLocked(keyPressed, mario, isMarioLocked);
-//        }
-//        else {
-//            mario.move((gameConfig::eKeys)keyPressed);
-//            isMarioLocked = isMarioInLongAction(mario);
-//        }
-//
-//        if (isMarioInShortAction(mario)) 
-//            isMarioLocked = false;
-//
-//        keyPressed = (int)gameConfig::eKeys::NONE;
-//
-//        if (!isGamePaused) {
-//            // Check if 5 seconds have passed since the last score update
-//            if (std::chrono::duration_cast<std::chrono::seconds>(now - lastScoreUpdateTime).count() >= 5) {
-//                score -= 100;  // Decrease score by 100 every 5 seconds
-//                lastScoreUpdateTime = now;  // Update the last score update time
-//            }
-//
-//            // Display the updated score on the game board
-//            gotoxy(gameBoard.legendTopLeft.getX() + 7, gameBoard.legendTopLeft.getY() + 2);
-//            std::cout << score;
-//        }
-//
-//        // Calculate the elapsed time as the difference between currentTime and gameStartTime
-//        auto elapsedTime = std::chrono::duration_cast<std::chrono::seconds>(now - gameStartTime - pausedTime);
-//        gotoxy(gameBoard.legendTopLeft.getX() + 13, gameBoard.legendTopLeft.getY() + 1);
-//        updateClock(elapsedTime);  // Update clock with the elapsed time
-//    }
-//
-//    return 0;
-//}
 
 int Game::startGame(std::vector<std::string> fileNames, int index) {
-    ShowConsoleCursor(false);
 
-    // Initialize game board
-    Map gameBoard;
-    gameBoard.load(fileNames[0]);
-    gameBoard.resetMap();
-    gameBoard.printcurrentMap();
-    // Initialize Mario
-    Mario mario(&gameBoard, gameBoard.getMarioStartPos());
+	for (int i = index; i < fileNames.size(); i++)
+	{
+        ShowConsoleCursor(false);
+        // Initialize game board
+        Map gameBoard;
+        gameBoard.load(fileNames[i]);
+        gameBoard.resetMap();
+        gameBoard.printcurrentMap();
+        // Initialize Mario
+        Mario mario(&gameBoard, gameBoard.getMarioStartPos());
 
-    // Initialize barrels
-    std::vector<Barrel> barrels;
-    barrels.emplace_back(&gameBoard, gameBoard.getBarrelStartPoint());
+        // Initialize barrels
+        std::vector<Barrel> barrels;
+        barrels.emplace_back(&gameBoard, gameBoard.getBarrelStartPoint());
 
-    // Initialize ghosts
-    std::vector<Ghost> ghosts;
-    for (const Point& ghostPos : gameBoard.getGhostStartPositions()) {
-        ghosts.emplace_back(&gameBoard, ghosts.size(), ghostPos);
-    }
+        // Initialize ghosts
+        std::vector<Ghost> ghosts;
+        for (const Point& ghostPos : gameBoard.getGhostStartPositions()) {
+            ghosts.emplace_back(&gameBoard, ghosts.size(), ghostPos);
+        }
+ 
 
-    // Place the hammer on the map
-    Point hammerPos = gameBoard.getPatishPosition();
-	gameBoard.currentMap[hammerPos.getY()][hammerPos.getX()] = 'P';
-    gotoxy(hammerPos.getX(), hammerPos.getY());
-    std::cout << 'P';
+        // Game state variables
+        int score = (int)gameConfig::Score::STARTING_SCORE;
+        int currLives = (int)gameConfig::Size::START_LIVES;
+        gameBoard.printLegend(currLives);
 
-    // Game state variables
-    int score = (int)gameConfig::Score::STARTING_SCORE;
-    int currLives = (int)gameConfig::Size::START_LIVES;
-    gameBoard.printLegend(currLives);
+        char keyPressed = (char)gameConfig::eKeys::STAY;
+        bool isMarioLocked = false;
+        bool patishPicked = false;
+        bool isGamePaused = false;
 
-    char keyPressed = (char)gameConfig::eKeys::STAY;
-    bool isMarioLocked = false;
-    bool patishPicked = false;
-    bool isGamePaused = false;
+        auto lastToggleTime = std::chrono::steady_clock::now();
+       
 
-    auto lastToggleTime = std::chrono::steady_clock::now();
-    auto gameStartTime = std::chrono::steady_clock::now();
-    auto pausedTime = std::chrono::steady_clock::duration::zero();
-    auto lastScoreUpdateTime = std::chrono::steady_clock::now();
+        // Toggle points for arrows
+        std::vector<Point> togglePoints = defineFloorsToToggle(gameBoard);
 
-    // Toggle points for arrows
-    std::vector<Point> togglePoints = defineFloorsToToggle(gameBoard);
+        while (true) {
+            keyPressed = (int)gameConfig::eKeys::NONE;
 
-    while (true) {
-        keyPressed = (int)gameConfig::eKeys::NONE;
-
-        // Handle user input
-        if (_kbhit()) {
-            keyPressed = std::tolower(_getch());
-            if (keyPressed == (int)gameConfig::eKeys::ESC) {
-                pause(isGamePaused, pausedTime);
-                gameBoard.printcurrentMap();
-                gameBoard.printLegend(currLives);
+            // Handle user input
+            if (_kbhit()) {
+                keyPressed = std::tolower(_getch());
+                if (keyPressed == (int)gameConfig::eKeys::ESC) {
+                    pause();
+                    gameBoard.printcurrentMap();
+                    gameBoard.printLegend(currLives);
+                }
             }
-        }
 
-        // Handle Mario's interaction with Patish
-        if (mario.isNearPatish() && keyPressed == (char)gameConfig::eKeys::PATISH && !patishPicked) {
-            mario.isWithPatish = true;
-            patishPicked = true;
-            gameBoard.currentMap[hammerPos.getY()][hammerPos.getX()] = ' '; // Remove patish
-        }
-
-        // Handle life loss
-        if (handleLifeLoss(currLives, mario, gameBoard, Barrel::barrelCurr, Barrel::barrelSpawnCounter, isMarioLocked, ghosts, barrels, score)) {
-            return -1;
-        }
-
-        // Check if Mario reached Pauline
-        if (mario.isNearPaulina()) {
-            return 1;
-        }
-
-        // Handle barrel spawning
-        Barrel::barrelSpawnCounter++;
-        if (Barrel::barrelSpawnCounter == (int)gameConfig::Size::BARRREL_COUNTER && Barrel::barrelCurr < (int)gameConfig::Size::BARREL_MAX) {
-            barrels.emplace_back(&gameBoard, gameBoard.getBarrelStartPoint());
-            Barrel::resetBarrelSpawnCounter();
-			Barrel::incrementBarrelCurr();  // Increment the static barrel counter
-        }
-
-        // Move barrels and ghosts
-        moveBarrels(barrels, mario);
-        moveGhosts(ghosts);
-
-        // Destroy barrels or ghosts if Patish is used
-        patishDestroy(barrels, ghosts, mario, keyPressed);
-
-        // Toggle arrows on map
-        auto now = std::chrono::steady_clock::now();
-        if (std::chrono::duration_cast<std::chrono::seconds>(now - lastToggleTime).count() >= 4) {
-            for (const Point& p : togglePoints) {
-                toggleArrow(gameBoard, p);
+            // Handle Mario's interaction with Patish
+            if (mario.isNearPatish() && keyPressed == (char)gameConfig::eKeys::PATISH && !patishPicked) {
+                mario.isWithPatish = true;
+                patishPicked = true;
+                Point hammerPos = gameBoard.getPatishPosition();
+                gameBoard.currentMap[hammerPos.getY()][hammerPos.getX()] = ' '; // Remove patish from irignal and current
+                gameBoard.originalMap[hammerPos.getY()][hammerPos.getX()] = ' ';
             }
-            lastToggleTime = now;
+            // Handle life loss
+            if (handleLifeLoss(currLives, mario, gameBoard, Barrel::barrelCurr, Barrel::barrelSpawnCounter, isMarioLocked, ghosts, barrels, score)) {
+                return -1;
+            }
+
+            // Check if Mario reached Pauline
+            if (mario.isNearPaulina()) {
+                break;
+            }
+
+            // Handle barrel spawning
+            Barrel::barrelSpawnCounter++;
+            if (Barrel::barrelSpawnCounter == (int)gameConfig::Size::BARRREL_COUNTER && Barrel::barrelCurr < (int)gameConfig::Size::BARREL_MAX) {
+                barrels.emplace_back(&gameBoard, gameBoard.getBarrelStartPoint());
+                Barrel::resetBarrelSpawnCounter();
+                Barrel::incrementBarrelCurr();  // Increment the static barrel counter
+            }
+
+            // Move barrels and ghosts
+            moveBarrels(barrels, mario);
+            moveGhosts(ghosts);
+
+            // Destroy barrels or ghosts if Patish is used
+            patishDestroy(barrels, ghosts, mario, keyPressed);
+
+            // Toggle arrows on map
+            auto now = std::chrono::steady_clock::now();
+            if (std::chrono::duration_cast<std::chrono::seconds>(now - lastToggleTime).count() >= 4) {
+                for (const Point& p : togglePoints) {
+                    toggleArrow(gameBoard, p);
+                }
+                lastToggleTime = now;
+            }
+
+            // Sleep to control game speed
+            Sleep((int)gameConfig::Sleep::GAME_LOOP_SLEEP);
+
+            // Handle Mario movement
+            if (isMarioLocked) {
+                handleMarioLocked(keyPressed, mario, isMarioLocked);
+            }
+            else {
+                mario.move((gameConfig::eKeys)keyPressed);
+                isMarioLocked = isMarioInLongAction(mario);
+            }
+
+            if (isMarioInShortAction(mario)) {
+                isMarioLocked = false;
+            }
+
+            Point LegendPosition = gameBoard.getLegendPosition();
+            // Display updated score
+            gotoxy(LegendPosition.getX() + 7, LegendPosition.getY() + 2);
+            std::cout << score;
+
+            
         }
 
-        // Sleep to control game speed
-        Sleep((int)gameConfig::Sleep::GAME_LOOP_SLEEP);
-
-        // Handle Mario movement
-        if (isMarioLocked) {
-            handleMarioLocked(keyPressed, mario, isMarioLocked);
-        }
-        else {
-            mario.move((gameConfig::eKeys)keyPressed);
-            isMarioLocked = isMarioInLongAction(mario);
-        }
-
-        if (isMarioInShortAction(mario)) {
-            isMarioLocked = false;
-        }
-
-        // Update score every 5 seconds
-        if (!isGamePaused && std::chrono::duration_cast<std::chrono::seconds>(now - lastScoreUpdateTime).count() >= 5) {
-            score -= 100;
-            lastScoreUpdateTime = now;
-        }
-		Point LegendPosition = gameBoard.getLegendPosition();
-        // Display updated score
-        gotoxy(LegendPosition.getX() + 7, LegendPosition.getY() + 2);
-        std::cout << score;
-
-        // Update elapsed time
-        auto elapsedTime = std::chrono::duration_cast<std::chrono::seconds>(now - gameStartTime - pausedTime);
-        gotoxy(LegendPosition.getX() + 13, LegendPosition.getY() + 1);
-        updateClock(elapsedTime);
-    }
-
+        //here implement a screen that says you finished the i'th screen
+	}
     return 0;
 }
 
@@ -402,7 +260,7 @@ bool Game::isMarioInShortAction(Mario& mario) const {
 }
 
 
-void Game::pause(bool& isGamePaused, std::chrono::steady_clock::duration& pausedTime)
+void Game::pause()
 {
     clrsrc();
     gotoxy(20, 10);
@@ -410,10 +268,6 @@ void Game::pause(bool& isGamePaused, std::chrono::steady_clock::duration& paused
     gotoxy(20, 12);
     std::cout << "But it is not mandatory to present such a message.";
 
-    // Set the pause flag to true
-    isGamePaused = true;
-
-    auto pauseStartTime = std::chrono::steady_clock::now();  // Record when the game is paused
 
     char keyPressed = 0;
     while (true) {
@@ -423,13 +277,6 @@ void Game::pause(bool& isGamePaused, std::chrono::steady_clock::duration& paused
                 // When ESC is pressed, unpause the game
                 clrsrc();
                 gotoxy(0, 0);
-
-                // Calculate how much time has passed during the pause and add it to the paused time
-                auto pauseDuration = std::chrono::steady_clock::now() - pauseStartTime;
-                pausedTime += pauseDuration;  // Update the paused time
-
-                // Set the pause flag to false to resume the game
-                isGamePaused = false;
                 return;
             }
         }
@@ -493,26 +340,31 @@ std::vector<Point> Game::defineFloorsToToggle(Map& map)
 
 void Game::patishDestroy(std::vector<Barrel>& barrels, std::vector<Ghost>& ghosts, Mario& mario, char key) {
     if (key == (char)gameConfig::eKeys::PATISH && mario.isWithPatish) {
-        for (auto it = ghosts.begin(); it != ghosts.end(); ) {
-            if (it->getPoint() == mario.getPoint() ) {
-                it->draw(' ');
-                it = ghosts.erase(it);
-            } else {
-                ++it;
-            }
-        }
-
-        for (auto it = barrels.begin(); it != barrels.end(); ) {
-            if (it->getPoint() == mario.getPoint()) {
-                it->draw(' ');
-                it = barrels.erase(it);
+		Point marioPos1 = mario.getPoint();  
+		Point marioPos2 = mario.getPoint();
+		marioPos1.setX(marioPos1.getX() + 1);
+		marioPos2.setX(marioPos1.getX() - 1);
+		for (auto it = ghosts.begin(); it != ghosts.end(); ) {
+			if (it->getPoint() == mario.getPoint() || it->getPoint() == marioPos1 || it->getPoint() == marioPos2) {
+				it->draw(' ');
+				it = ghosts.erase(it);
+			}
+			else {
+				++it;
+			}
+		}
+		for (auto it = barrels.begin(); it != barrels.end(); ) {
+			if (it->getPoint() == mario.getPoint() || it->getPoint() == marioPos1 || it->getPoint() == marioPos2) {
+				it->draw(' ');
+				it = barrels.erase(it);
 				Barrel::barrelCurr--;
-            } else {
-                ++it;
-            }
-        }
-      
-    }
+			}
+			else {
+				++it;
+			}
+		}
+
+	}
 }
 
 void Game::updateClock(const std::chrono::seconds& elapsedTime)
