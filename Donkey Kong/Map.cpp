@@ -32,7 +32,8 @@ char Map::chooseScreens(std::vector<std::string> vec_to_fill)
     while (true)
         if (_kbhit()){
              key = _getch();
-             return key;
+			 if (key >= '1' && key <= '9')
+                 return key;
 }
     
 
@@ -154,7 +155,7 @@ void Map::win()
         "                                                                               ", // 22
         "                                                                               ", // 23
         "                                                                               ", // 24
-        "===============================================================================", // 25
+        "                                                                               ", // 25
     };
     const char message[] = "Returning to the main menu";
     gotoxy(0, 0);
@@ -203,7 +204,7 @@ void Map::lose()
        "                                                                               ", // 22
        "                                                                               ", // 23
        "                                                                               ", // 24
-       "===============================================================================", // 25
+       "                                                                               ", // 25
     };
     const char message[] = "Returning to the main menu...";
     gotoxy(0, 0);
