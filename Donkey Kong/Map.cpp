@@ -268,8 +268,7 @@ int Map::load(const std::string& filename) {
             else if (curr_col > Map::GAME_WIDTH) {
 				//not good return with a proper message and ignore the screen
             }
-            curr_col++;
-            originalMap[curr_row][curr_col] = '\0';
+            //originalMap[curr_row][++curr_col] = '\0';
           
             ++curr_row;
             curr_col = 0;
@@ -317,9 +316,9 @@ int Map::load(const std::string& filename) {
                 originalMap[curr_row][curr_col++] = ' ';  // Replace with space
                 break;
 
-            case 'P':  // Patish
+            case 'p':  // Patish
                 patishPosition = { curr_col, curr_row };
-                originalMap[curr_row][curr_col++] = 'P';  
+                originalMap[curr_row][curr_col++] = 'p';  
                 break;
 
             case 'Q':  // border
@@ -332,9 +331,9 @@ int Map::load(const std::string& filename) {
                 break;
             }
         }
-      
+        
     }
-   
+    
 	originalMap[curr_row][curr_col] = '\0';  // Null-terminate the last row
 
 

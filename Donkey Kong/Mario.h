@@ -12,7 +12,8 @@ public:
         WALKING,
         JUMPING,
         CLIMBING_UP,
-        CLIMBING_DOWN
+        CLIMBING_DOWN,
+        FALLING
     };
 
     Mario(Map* map, Point startingPoint)
@@ -45,7 +46,7 @@ private:
     int jumpCounter = 0;
     int lives = (int)gameConfig::Size::START_LIVES;
     bool m_isNearExplosion = false;
-    State state = State::STANDING;
+    State state = State::WALKING;
     bool isWithPatish;
 
     void handleInput(gameConfig::eKeys key);

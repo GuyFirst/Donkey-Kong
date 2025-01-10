@@ -21,7 +21,7 @@ void Ghost::move(std::vector<Ghost>& ghosts) {
 
     // Handle potential collisions or direction changes
     handleCollision(ghosts);
-  //  handleDirectionChange();
+    handleDirectionChange();
 
     // Update position 
     position.setX(position.getX() + m_diff_x);

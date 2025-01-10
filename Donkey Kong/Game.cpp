@@ -112,7 +112,7 @@ int Game::startGame(std::vector<std::string> fileNames, int index) {
         int currLives = (int)gameConfig::Size::START_LIVES;
         gameBoard.printLegend(currLives);
 
-        char keyPressed = (char)gameConfig::eKeys::STAY;
+        char keyPressed;
         bool isMarioLocked = false;
         bool patishPicked = false;
         bool isGamePaused = false;
@@ -123,6 +123,7 @@ int Game::startGame(std::vector<std::string> fileNames, int index) {
         // Toggle points for arrows
         std::vector<Point> togglePoints = defineFloorsToToggle(gameBoard);
 
+       
         while (true) {
             keyPressed = (int)gameConfig::eKeys::NONE;
 
@@ -135,9 +136,9 @@ int Game::startGame(std::vector<std::string> fileNames, int index) {
                     gameBoard.printLegend(currLives);
                 }
             }
-
+            
             // Handle Mario's interaction with Patish
-            if (mario.isNearPatish() && keyPressed == (char)gameConfig::eKeys::PATISH && !patishPicked) {
+            if (mario.isNearPatish() && !patishPicked) {
                 mario.isWithPatish = true;
                 patishPicked = true;
                 Point hammerPos = gameBoard.getPatishPosition();
@@ -204,7 +205,7 @@ int Game::startGame(std::vector<std::string> fileNames, int index) {
 
         //here implement a screen that says you finished the i'th screen
 	}
-    return 0;
+    return 1;
 }
 
 

@@ -122,12 +122,14 @@ void Mario::executeStateAction() {
         downLadder();
         break;
     case State::WALKING:
-        walk();
+    case State::FALLING:
+        walk();  // Handle both WALKING and FALLING states by calling walk()
         break;
     case State::STANDING:
         break;
     }
 }
+
 
 void Mario::walk() {
     if (isNearBoundry()) {
@@ -323,10 +325,10 @@ bool Mario::isNearPatish() const {
             int newX = position.getX() + dx;
             int newY = position.getY() + dy;
 
-            // Make sure to stay within the game boundaries
+          
             if (newX >= 0 && newX < gameConfig::GAME_WIDTH &&
                 newY >= 0 && newY < gameConfig::GAME_HEIGHT) {
-                if (map->currentMap[newY][newX] == 'P') {
+                if (map->currentMap[newY][newX] == 'p') {
                     return true;
                 }
             }
