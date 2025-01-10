@@ -130,7 +130,7 @@ void Mario::executeStateAction() {
 }
 
 void Mario::walk() {
-    if (isNearWall(m_diff_x)) {
+    if (isNearBoundry()) {
         m_diff_x = 0; // Stop horizontal movement
         if (isOnFloor()) {
             state = State::STANDING; // Reset to STANDING if on the floor
@@ -154,7 +154,7 @@ void Mario::handleFalling() {
 
 void Mario::jump() {
     // Add horizontal movement during the jump if not near a wall
-    if (!isNearWall(m_diff_x)) {
+    if (!isNearBoundry()) {
         position.setX(position.getX() + m_diff_x);
     }
     else {
@@ -196,7 +196,7 @@ void Mario::handleCeilingCollision() {
     position.setY(position.getY() + m_diff_y);
 
     // Update state to WALKING or STANDING depending on horizontal movement
-    if (m_diff_x != 0 && !isNearWall(m_diff_x)) 
+    if (m_diff_x != 0 && !isNearBoundry()) 
         state = State::WALKING;
     
     else 
@@ -208,7 +208,7 @@ void Mario::handleCeilingCollision() {
 void Mario::handleLanding() {
     if (isOnFloor()) {
         // Update state to WALKING or STANDING depending on horizontal movement
-        if (m_diff_x != 0 && !isNearWall(m_diff_x)) {
+        if (m_diff_x != 0 && !isNearBoundry()) {
             state = State::WALKING;
         }
         else {
@@ -303,6 +303,7 @@ bool Mario::isUnderFloorWhileMoving() const {
     
     return false;
 }
+
 
 
 

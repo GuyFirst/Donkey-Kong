@@ -32,6 +32,6 @@ public:
 	void patishDestroy(std::vector<Barrel>& barrels, std::vector<Ghost>& ghosts, Mario& mario, char key);
 	void updateClock(const std::chrono::seconds& elapsedTime);
 	void getAllBoardFileNames(std::vector<std::string>& vec_to_fill);
-		
+	void handleErrors(int& flag);
 };
 

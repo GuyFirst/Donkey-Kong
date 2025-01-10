@@ -51,6 +51,34 @@ void Game::getAllBoardFileNames(std::vector<std::string>& vec_to_fill) {
     std::sort(vec_to_fill.begin(), vec_to_fill.end());
 }
 
+void Game::handleErrors(int& flag)
+{
+    clrsrc();
+    switch (flag) {
+    case 1 :
+        std::cout << "The provided file does not meet the game settings,\n as Mario does not appear in the file.";
+        flag = 0;
+        Sleep((int)gameConfig::Sleep::SCREEN_SLEEP*2);
+        break;
+    case 2:
+        std::cout << "The provided file does not meet the game settings,\nas Pauline dose not appear in the file and you can not win.";
+        flag = 0;
+        Sleep(((int)gameConfig::Sleep::SCREEN_SLEEP)*3);
+        break;
+    case 3:
+        std::cout << "The provided file does not meet the game settings,\nas Donkey does not appear in the file.";
+        flag = 0;
+        Sleep(((int)gameConfig::Sleep::SCREEN_SLEEP) * 3);
+        break;
+    case 4:
+        std::cout << "The provided file does not meet the game settings,\nas the Legend must appear in the file.";
+        flag = 0;
+        Sleep(((int)gameConfig::Sleep::SCREEN_SLEEP) * 3);
+        break;
+    }
+    
+}
+
 
 int Game::startGame(std::vector<std::string> fileNames, int index) {
 
@@ -59,7 +87,10 @@ int Game::startGame(std::vector<std::string> fileNames, int index) {
         ShowConsoleCursor(false);
         // Initialize game board
         Map gameBoard;
-        gameBoard.load(fileNames[i]);
+        int flag = gameBoard.load(fileNames[i]);
+        handleErrors(flag);
+        if (!flag)
+            continue;
         gameBoard.resetMap();
         gameBoard.printcurrentMap();
         // Initialize Mario

@@ -101,6 +101,7 @@ public:
             std::cout << currentMap[i];
             if (i != Map::GAME_HEIGHT - 1)
             Sleep(20);
+            
         }
     }
     
@@ -114,7 +115,7 @@ public:
     void win();
     void lose();
     void printClock(int& secondsElapsed);
-    void load(const std::string& filename);
+    int load(const std::string& filename);
 
    
 };

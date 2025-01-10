@@ -7,11 +7,13 @@
 #include "gameConfig.h"
 
 void Ghost::draw(char ch) const {
+    if (position.getX() == 77)
+       gotoxy(0,0) ;
     gotoxy(position.getX(), position.getY());
     std::cout << ch;
-    //bug of disappearing P 
     map->currentMap[position.getY()][position.getX()] = ch;
-}
+  
+}    
 
 void Ghost::move(std::vector<Ghost>& ghosts) {
     
@@ -19,7 +21,7 @@ void Ghost::move(std::vector<Ghost>& ghosts) {
 
     // Handle potential collisions or direction changes
     handleCollision(ghosts);
-    handleDirectionChange();
+  //  handleDirectionChange();
 
     // Update position 
     position.setX(position.getX() + m_diff_x);
@@ -47,7 +49,7 @@ void Ghost::handleCollision(std::vector<Ghost>& ghosts) {
     }
 
     // Handle boundary collision 
-    if (isNearBoundary()) {  m_diff_x = -m_diff_x; }
+    if (isNearBoundry()) {  m_diff_x = -m_diff_x; }
 }
 
 
@@ -61,9 +63,9 @@ void Ghost::handleDirectionChange() {
 
 
 
-bool Ghost::isNearBoundary() const  { 
-    return (position.getX() <= 0 || position.getX() >= gameConfig::GAME_WIDTH - 2 || position.getX()+1 == 'Q' || position.getX() - 1 == 'Q');
-}
+//bool Ghost::isNearBoundary() const  { 
+//    return (position.getX() <= 0 || position.getX() >= gameConfig::GAME_WIDTH - 2 || position.getX()+1 == 'Q' || position.getX() - 1 == 'Q');
+//}
 
 bool Ghost::isNearOtherGhosts(const std::vector<Ghost>& ghosts) const {
     for (const auto& other : ghosts) {

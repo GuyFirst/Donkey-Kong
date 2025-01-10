@@ -4,6 +4,7 @@
 
 class Map;
 class Entity {
+
 protected:  
     Point startingPosition;
     Point position;
@@ -11,6 +12,9 @@ protected:
     int m_diff_x;
     int m_diff_y;
     Map* map;
+    
+
+    bool isNearBoundry();
 
 public:
     Entity(Point startingPosition, char me, int m_diff_x, int m_diff_y, Map* map)

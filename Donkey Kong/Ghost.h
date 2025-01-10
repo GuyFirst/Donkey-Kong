@@ -26,6 +26,6 @@ private:
     Point startingPosition; 
     void handleCollision(std::vector<Ghost>& Ghosts);
     void handleDirectionChange();
-    bool isNearBoundary() const;
+    //bool isNearBoundary() const;
     bool isNearOtherGhosts(const std::vector<Ghost>& Ghosts) const;
 };

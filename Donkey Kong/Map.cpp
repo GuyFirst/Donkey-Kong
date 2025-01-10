@@ -241,7 +241,7 @@ void Map::printClock(int& secondsElapsed)
 
 
 
-void Map::load(const std::string& filename) {
+int Map::load(const std::string& filename) {
     std::ifstream screen_file(filename);
     if (!screen_file.is_open()) {
         throw std::runtime_error("Failed to open the file: " + filename);
@@ -268,7 +268,7 @@ void Map::load(const std::string& filename) {
             else if (curr_col > Map::GAME_WIDTH) {
 				//not good return with a proper message and ignore the screen
             }
-            originalMap[curr_row][curr_col++] = c;
+            curr_col++;
             originalMap[curr_row][curr_col] = '\0';
           
             ++curr_row;
@@ -339,15 +339,13 @@ void Map::load(const std::string& filename) {
 
 
 
-    if (!foundMario) {} // not good, return int, a proper message, and ignore the screen 
-    if (!foundPauline) {} //not good, return int, a proper message, and ignore the screen 
-    if (!foundDonkey) {} // not good, return int, a proper message, and ignore the screen 
-
-    
-    if (!foundLegend) {} // not good, return int, a proper message, and ignore the screen 
+    if (!foundMario) { return 1; } // not good, return int, a proper message, and ignore the screen 
+    if (!foundPauline) { return 2; } //not good, return int, a proper message, and ignore the screen 
+    if (!foundDonkey) { return 3; } // not good, return int, a proper message, and ignore the screen 
+    if (!foundLegend) { return 4; } // not good, return int, a proper message, and ignore the screen 
 
     
     this->ghostStartPositions = ghostStartPositions;  // Update ghost positions in the class
- 
+    return -1;
 }
 
