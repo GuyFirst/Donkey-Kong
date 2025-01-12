@@ -6,15 +6,6 @@
 #include "general.h"
 #include "gameConfig.h"
 
-void Ghost::draw(char ch) const {
-    if (position.getX() == 77)
-       gotoxy(0,0) ;
-    gotoxy(position.getX(), position.getY());
-    std::cout << ch;
-    map->currentMap[position.getY()][position.getX()] = ch;
-  
-}    
-
 void Ghost::move(std::vector<Ghost>& ghosts) {
     
     draw(map->originalMap[position.getY()][position.getX()]);
@@ -62,11 +53,6 @@ void Ghost::handleDirectionChange() {
 
 
 
-
-//bool Ghost::isNearBoundary() const  { 
-//    return (position.getX() <= 0 || position.getX() >= gameConfig::GAME_WIDTH - 2 || position.getX()+1 == 'Q' || position.getX() - 1 == 'Q');
-//}
-
 bool Ghost::isNearOtherGhosts(const std::vector<Ghost>& ghosts) const {
     for (const auto& other : ghosts) {
         // Skip checking collision with itself
@@ -85,6 +71,5 @@ bool Ghost::isNearOtherGhosts(const std::vector<Ghost>& ghosts) const {
 }
 void Ghost::reset() { position = startingPosition;}
 
-bool Ghost::isOnFloor() const  { return this->map->currentMap[position.getY() + 1][position.getX()+m_diff_x] != ' ' && this->map->currentMap[position.getY() + 1][position.getX()+m_diff_x] != 'O'; }
 
 

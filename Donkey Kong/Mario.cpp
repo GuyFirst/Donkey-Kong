@@ -5,14 +5,10 @@
 #include "gameConfig.h"
 #include "general.h"
 
-void Mario::draw(char ch) const {
-        gotoxy(position.getX(), position.getY());
-        std::cout << ch;
-}
 
 void Mario::move(gameConfig::eKeys key) {
     // Erase Mario from the current position
-    draw(this->map->currentMap[position.getY()][position.getX()]);
+    draw(this->map->originalMap[position.getY()][position.getX()]);
 
 
     // Check for collision with barrels before moving
@@ -55,11 +51,15 @@ bool Mario::checkForCollisions(int key) {
         resetMario();
         return true;
     }
+    return false;
  
 }
 
-
 void Mario::handleInput(gameConfig::eKeys key) {
+    if (isFalling) {
+        return;
+    }
+
     if (key != gameConfig::eKeys::NONE) {
         switch (key) {
         case gameConfig::eKeys::LEFT:
@@ -75,13 +75,14 @@ void Mario::handleInput(gameConfig::eKeys key) {
             handleDownKey();
             break;
         case gameConfig::eKeys::STAY:
-			if (isOnFloor()) {
-				setState(State::STANDING, 0, 0);
-			}
+            if (isOnFloor()) {
+                setState(State::STANDING, 0, 0);
+            }
             return;
         }
     }
 }
+
 
 void Mario::handleUpKey() {
     if (isUnderFloor()) {
@@ -104,11 +105,19 @@ void Mario::handleDownKey() {
     }
 }
 
+
+
 void Mario::setState(State newState, int diffX, int diffY) {
-    state = newState;
-    m_diff_x = diffX;
+    if (state == State::FALLING) {
+        m_diff_x = 0; 
+    }
+    else {
+        m_diff_x = diffX;
+    }
     m_diff_y = diffY;
+    state = newState;
 }
+
 
 void Mario::executeStateAction() {
     switch (state) {
@@ -142,17 +151,21 @@ void Mario::walk() {
     position.setY(position.getY() + m_diff_y);
 }
 
+
 void Mario::handleFalling() {
     if (!isOnFloor()) {
-        m_diff_y = 1; // Simulate gravity
+        m_diff_y = 1; 
         m_countHeight++;
+        isFalling = true; 
     }
     else {
-        m_diff_y = 0; // Reset vertical movement
-        checkFallHeight(); // Check for fall damage
+        m_diff_y = 0;
+        checkFallHeight(); 
         m_countHeight = 0;
+        isFalling = false; 
     }
 }
+
 
 void Mario::jump() {
     // Add horizontal movement during the jump if not near a wall

@@ -20,7 +20,7 @@ void Game::run()
     std::vector<std::string> vec_to_fill;
     getAllBoardFileNames(vec_to_fill);
 
-    int flag = 0;  
+    int flag = 0;
     Point screenStart(0, 0);
     while (true)                                        //
     {                                                   //
@@ -29,7 +29,7 @@ void Game::run()
         flag = menu.mainMenu(vec_to_fill);                         //  -1 for deciding to quit (before we entered the game)
         if (flag == -1)                                 //   1 if the player won
             return;                                     //  -1 if the player lost
-        flag = startGame(vec_to_fill,flag - 49);                             //
+        flag = startGame(vec_to_fill, flag - 49);                             //
         if (flag == 1)                                  //
             win();                                      //
         else                                            //
@@ -55,15 +55,15 @@ void Game::handleErrors(int& flag)
 {
     clrsrc();
     switch (flag) {
-    case 1 :
+    case 1:
         std::cout << "The provided file does not meet the game settings,\n as Mario does not appear in the file.";
         flag = 0;
-        Sleep((int)gameConfig::Sleep::SCREEN_SLEEP*2);
+        Sleep((int)gameConfig::Sleep::SCREEN_SLEEP * 2);
         break;
     case 2:
         std::cout << "The provided file does not meet the game settings,\nas Pauline dose not appear in the file and you can not win.";
         flag = 0;
-        Sleep(((int)gameConfig::Sleep::SCREEN_SLEEP)*3);
+        Sleep(((int)gameConfig::Sleep::SCREEN_SLEEP) * 3);
         break;
     case 3:
         std::cout << "The provided file does not meet the game settings,\nas Donkey does not appear in the file.";
@@ -76,14 +76,14 @@ void Game::handleErrors(int& flag)
         Sleep(((int)gameConfig::Sleep::SCREEN_SLEEP) * 3);
         break;
     }
-    
+
 }
 
 
 int Game::startGame(std::vector<std::string> fileNames, int index) {
 
-	for (int i = index; i < fileNames.size(); i++)
-	{
+    for (int i = index; i < fileNames.size(); i++)
+    {
         ShowConsoleCursor(false);
         // Initialize game board
         Map gameBoard;
@@ -105,7 +105,7 @@ int Game::startGame(std::vector<std::string> fileNames, int index) {
         for (const Point& ghostPos : gameBoard.getGhostStartPositions()) {
             ghosts.emplace_back(&gameBoard, ghosts.size(), ghostPos);
         }
- 
+
 
         // Game state variables
         int score = (int)gameConfig::Score::STARTING_SCORE;
@@ -118,12 +118,12 @@ int Game::startGame(std::vector<std::string> fileNames, int index) {
         bool isGamePaused = false;
 
         auto lastToggleTime = std::chrono::steady_clock::now();
-       
+
 
         // Toggle points for arrows
         std::vector<Point> togglePoints = defineFloorsToToggle(gameBoard);
 
-       
+
         while (true) {
             keyPressed = (int)gameConfig::eKeys::NONE;
 
@@ -136,7 +136,7 @@ int Game::startGame(std::vector<std::string> fileNames, int index) {
                     gameBoard.printLegend(currLives);
                 }
             }
-            
+
             // Handle Mario's interaction with Patish
             if (mario.isNearPatish() && !patishPicked) {
                 mario.isWithPatish = true;
@@ -200,11 +200,11 @@ int Game::startGame(std::vector<std::string> fileNames, int index) {
             gotoxy(LegendPosition.getX() + 7, LegendPosition.getY() + 2);
             std::cout << score;
 
-            
+
         }
 
         //here implement a screen that says you finished the i'th screen
-	}
+    }
     return 1;
 }
 
@@ -214,10 +214,10 @@ int Game::startGame(std::vector<std::string> fileNames, int index) {
 
 //    OUR impement for the function CHAT-GPT suggested
 void Game::toggleArrow(Map& gameBoard, const Point& point) {
-;
-   char currentChar = gameBoard.currentMap[point.getY()][point.getX()];
+    ;
+    char currentChar = gameBoard.currentMap[point.getY()][point.getX()];
     if (currentChar == '>') {
-		gameBoard.currentMap[point.getY()][point.getX()] = '<';
+        gameBoard.currentMap[point.getY()][point.getX()] = '<';
         gotoxy(point.getX(), point.getY());
         std::cout << '<';
     }
@@ -259,7 +259,7 @@ void Game::spawnBarrel(std::vector<Barrel>& barrels, int& barrelCurr, Map& gameB
     barrelCurr++;
 }
 
-void Game::moveBarrels(std::vector<Barrel>& barrels, Mario& mario) { 
+void Game::moveBarrels(std::vector<Barrel>& barrels, Mario& mario) {
     for (int i = 0; i < Barrel::barrelCurr; i++) {
         if (i < barrels.size()) {
             char curr = barrels[i].getMapChar();
@@ -347,14 +347,14 @@ void Game::moveGhosts(std::vector<Ghost>& ghosts) {
 
 void Game::resetGhosts(std::vector<Ghost>& ghosts) {
     for (auto& ghost : ghosts) {
-        ghost.reset(); 
+        ghost.reset();
     }
 }
 
 std::vector<Point> Game::defineFloorsToToggle(Map& map)
 {
     std::vector<Point> res;
-    for(int i=0; i< gameConfig::GAME_HEIGHT; i++)
+    for (int i = 0; i < gameConfig::GAME_HEIGHT; i++)
         for (int j = 0; j < gameConfig::GAME_WIDTH; j++)
         {
             if ((map.originalMap[i][j] == '<' && map.originalMap[i][j - 1] == '=' && map.originalMap[i][j + 1] == '=') ||
@@ -363,7 +363,7 @@ std::vector<Point> Game::defineFloorsToToggle(Map& map)
                 Point p(j, i);
                 res.push_back(p);
             }
-               
+
         }
     return res;
 }
@@ -372,31 +372,31 @@ std::vector<Point> Game::defineFloorsToToggle(Map& map)
 
 void Game::patishDestroy(std::vector<Barrel>& barrels, std::vector<Ghost>& ghosts, Mario& mario, char key) {
     if (key == (char)gameConfig::eKeys::PATISH && mario.isWithPatish) {
-		Point marioPos1 = mario.getPoint();  
-		Point marioPos2 = mario.getPoint();
-		marioPos1.setX(marioPos1.getX() + 1);
-		marioPos2.setX(marioPos1.getX() - 1);
-		for (auto it = ghosts.begin(); it != ghosts.end(); ) {
-			if (it->getPoint() == mario.getPoint() || it->getPoint() == marioPos1 || it->getPoint() == marioPos2) {
-				it->draw(' ');
-				it = ghosts.erase(it);
-			}
-			else {
-				++it;
-			}
-		}
-		for (auto it = barrels.begin(); it != barrels.end(); ) {
-			if (it->getPoint() == mario.getPoint() || it->getPoint() == marioPos1 || it->getPoint() == marioPos2) {
-				it->draw(' ');
-				it = barrels.erase(it);
-				Barrel::barrelCurr--;
-			}
-			else {
-				++it;
-			}
-		}
+        Point marioPos1 = mario.getPoint();
+        Point marioPos2 = mario.getPoint();
+        marioPos1.setX(marioPos1.getX() + 1);
+        marioPos2.setX(marioPos1.getX() - 1);
+        for (auto it = ghosts.begin(); it != ghosts.end(); ) {
+            if (it->getPoint() == mario.getPoint() || it->getPoint() == marioPos1 || it->getPoint() == marioPos2) {
+                it->draw(' ');
+                it = ghosts.erase(it);
+            }
+            else {
+                ++it;
+            }
+        }
+        for (auto it = barrels.begin(); it != barrels.end(); ) {
+            if (it->getPoint() == mario.getPoint() || it->getPoint() == marioPos1 || it->getPoint() == marioPos2) {
+                it->draw(' ');
+                it = barrels.erase(it);
+                Barrel::barrelCurr--;
+            }
+            else {
+                ++it;
+            }
+        }
 
-	}
+    }
 }
 
 void Game::updateClock(const std::chrono::seconds& elapsedTime)
@@ -405,11 +405,10 @@ void Game::updateClock(const std::chrono::seconds& elapsedTime)
     int secondsElapsed = elapsedTime.count();
     int minutes = secondsElapsed / 60;
     int seconds = secondsElapsed % 60;
-   
+
 
     // Print the clock with zero padding (e.g., 01:05 for 1 minute and 5 seconds)
     std::cout << std::setw(2) << std::setfill('0') << minutes << ":"
         << std::setw(2) << std::setfill('0') << seconds;
 }
-
 

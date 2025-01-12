@@ -23,8 +23,6 @@ public:
     }
 
 
-    void draw(char ch) const;
-    void draw() const;
     void move(gameConfig::eKeys key = gameConfig::eKeys::NONE);
     void jump();
     void climb();
@@ -48,6 +46,7 @@ private:
     bool m_isNearExplosion = false;
     State state = State::WALKING;
     bool isWithPatish;
+    bool isFalling = false;
 
     void handleInput(gameConfig::eKeys key);
     void handleUpKey();

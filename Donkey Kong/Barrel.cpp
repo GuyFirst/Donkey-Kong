@@ -73,12 +73,6 @@ void Barrel::handleExplosion(std::vector<Barrel>& barrels, Mario* mario) {
 }
 
 
-void Barrel::draw(char ch) const {
-    gotoxy(position.getX(), position.getY());
-    std::cout << ch;
-    map->currentMap[position.getY()][position.getX()] = ch;
-}
-
 bool Barrel::isOnAir(char& refFloor) {
     // Check the floor one position below the current position
     refFloor = this->map->currentMap[position.getY() + 1][position.getX()];

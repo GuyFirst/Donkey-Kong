@@ -34,7 +34,6 @@ public:
 
 
     void move(std::vector<Barrel>& barrels,Mario* mario);
-    void draw(char ch) const;
     void reset();
     void addBarrel(std::vector<Barrel>& barrels, Map* map);  
 
