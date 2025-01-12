@@ -17,6 +17,16 @@
 
 
 
+void Map::printcurrentMap()
+{
+    gotoxy(0, 0);
+    for (int i = 0; i < Map::GAME_HEIGHT; ++i) {
+        std::cout << currentMap[i];
+        if (i != Map::GAME_HEIGHT - 1)
+            Sleep(20);
+    }
+}
+
 char Map::chooseScreens(std::vector<std::string> vec_to_fill)
 {
     clrsrc();
@@ -235,9 +245,7 @@ void Map::lose()
     return;
 }
 
-void Map::printClock(int& secondsElapsed)
-{
-}
+
 
 
 
@@ -336,8 +344,13 @@ int Map::load(const std::string& filename) {
     
 	originalMap[curr_row][curr_col] = '\0';  // Null-terminate the last row
 
-
-
+    for (int i = 0; i < ghostStartPositions.size(); i++) //reverse the vector to get the ghosts in the right order
+    {
+        if (originalMap[ghostStartPositions[i].getY() + 1][ghostStartPositions[i].getX()] != '=' && 
+            originalMap[ghostStartPositions[i].getY() + 1][ghostStartPositions[i].getX()] != '<' && 
+            originalMap[ghostStartPositions[i].getY() + 1][ghostStartPositions[i].getX()] != '>')
+             ghostStartPositions.erase(ghostStartPositions.begin() + i--);
+    }
     if (!foundMario) { return 1; } // not good, return int, a proper message, and ignore the screen 
     if (!foundPauline) { return 2; } //not good, return int, a proper message, and ignore the screen 
     if (!foundDonkey) { return 3; } // not good, return int, a proper message, and ignore the screen 

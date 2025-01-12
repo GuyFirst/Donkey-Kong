@@ -2,7 +2,7 @@
 #include <windows.h> // for gotoxy
 #include <process.h> // for system
 #include <iostream>
-#include "general.h"
+#include <conio.h>
 
 
 void gotoxy(int x, int y) {
@@ -30,4 +30,10 @@ void ShowConsoleCursor(bool showFlag)
 	GetConsoleCursorInfo(out, &cursorInfo);
 	cursorInfo.bVisible = showFlag; // set the cursor visibility
 	SetConsoleCursorInfo(out, &cursorInfo);
+}
+
+void clearBuffer()
+{
+	while (_kbhit())
+		char garbage = _getch();
 }

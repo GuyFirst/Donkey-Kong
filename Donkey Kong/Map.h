@@ -95,17 +95,7 @@ public:
     }
 
     
-    void printcurrentMap() { 
-        gotoxy(0, 0);
-        for (int i = 0; i < Map::GAME_HEIGHT; ++i) {
-            std::cout << currentMap[i];
-            if (i != Map::GAME_HEIGHT - 1)
-            Sleep(20);
-            
-        }
-    }
-    
-
+    void printcurrentMap();    
     char chooseScreens(std::vector<std::string> vec_to_fill);
     void printLegend(int remainingLives);
     int mainMenu(std::vector<std::string> vec_to_fill);
@@ -114,7 +104,6 @@ public:
     int exitGame() { std::cout << "Exiting the game. Goodbye!" << std::endl; return -1; }
     void win();
     void lose();
-    void printClock(int& secondsElapsed);
     int load(const std::string& filename);
 
    

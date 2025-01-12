@@ -103,7 +103,7 @@ int Game::startGame(std::vector<std::string> fileNames, int index) {
         // Initialize ghosts
         std::vector<Ghost> ghosts;
         for (const Point& ghostPos : gameBoard.getGhostStartPositions()) {
-            ghosts.emplace_back(&gameBoard, ghosts.size(), ghostPos);
+            ghosts.emplace_back(&gameBoard, std::rand(), ghostPos);
         }
 
 
@@ -250,7 +250,7 @@ bool Game::handleLifeLoss(int& currLives, Mario& mario, Map& gameBoard, int& bar
     barrelSpawnCounter = 0;
     isMarioLocked = false;
     barrels.clear();
-
+    clearBuffer();
     return false;
 }
 
