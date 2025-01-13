@@ -44,7 +44,6 @@ void Game::getAllBoardFileNames(std::vector<std::string>& vec_to_fill) {
         auto filename = entry.path().filename();
         auto filenameStr = filename.string();
         if (filenameStr.substr(0, 5) == "dkong" && filename.extension() == ".screen") {
-            std::cout << " ^ added!!\n";
             vec_to_fill.push_back(filenameStr);
         }
     }

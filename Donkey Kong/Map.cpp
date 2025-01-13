@@ -341,7 +341,8 @@ int Map::load(const std::string& filename) {
         }
         
     }
-    
+    for (; curr_col < Map::GAME_WIDTH - 2; ++curr_col)
+        originalMap[curr_row][curr_col] = ' ';   // Fill the remaining space with ' ' (spaces)
 	originalMap[curr_row][curr_col] = '\0';  // Null-terminate the last row
 
     for (int i = 0; i < ghostStartPositions.size(); i++) //reverse the vector to get the ghosts in the right order
