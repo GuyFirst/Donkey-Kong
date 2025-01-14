@@ -13,8 +13,7 @@
 #include <fstream>
 #include <stdexcept>
 #include <cstring>
-
-
+#include "Note.h"
 
 
 void Map::printcurrentMap()
@@ -101,6 +100,7 @@ int Map::mainMenu(std::vector<std::string> vec_to_fill)
     showMenu();
     while (true)
     {
+        playMarioTheme();
         char keyPressed = '*';
         if (_kbhit())
             keyPressed = _getch();

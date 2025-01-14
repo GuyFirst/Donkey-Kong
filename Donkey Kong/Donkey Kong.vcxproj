@@ -145,6 +145,7 @@
     <ClInclude Include="Map.h" />
     <ClInclude Include="gameConfig.h" />
     <ClInclude Include="Mario.h" />
+    <ClInclude Include="Note.h" />
     <ClInclude Include="Point.h" />
     <ClInclude Include="readme.h" />
   </ItemGroup>

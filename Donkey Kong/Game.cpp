@@ -15,6 +15,8 @@
 #include <algorithm>
 
 
+
+
 void Game::run()
 {
     std::vector<std::string> vec_to_fill;
@@ -122,7 +124,7 @@ int Game::startGame(std::vector<std::string> fileNames, int index) {
         // Toggle points for arrows
         std::vector<Point> togglePoints = defineFloorsToToggle(gameBoard);
 
-
+	
         while (true) {
             keyPressed = (int)gameConfig::eKeys::NONE;
 

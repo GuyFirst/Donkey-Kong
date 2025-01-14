@@ -68,5 +68,8 @@
     <ClInclude Include="readme.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Note.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
