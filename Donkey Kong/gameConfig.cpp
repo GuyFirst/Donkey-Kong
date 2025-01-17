@@ -37,3 +37,4 @@ void clearBuffer()
 	while (_kbhit())
 		char garbage = _getch();
 }
+

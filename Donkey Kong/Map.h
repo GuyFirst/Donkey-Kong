@@ -1,6 +1,5 @@
 #pragma once
 #include <iostream>
-#include "general.h"
 #include "gameConfig.h"
 #include <Windows.h>
 #include "Point.h"
@@ -50,12 +49,12 @@ public:
        "                        \\ \\  \\\\ \\  \\ \\  \\\\\\  \\ \\  \\\\ \\  \\ \\  \\|\\  \\ ", 
        "                         \\ \\__\\\\ \\__\\ \\_______\\ \\__\\\\ \\__\\ \\_______\\  ", 
        "                          \\|__| \\|__|\\|_______|\\|__| \\|__|\\|_______|",
-       "                                                                               ",
-       "                             Please press the following keys to:               ", 
-       "                               1. Start Game                                   ", 
-       "                               8. Show Instructions                            ",
-       "                               9. Exit                                         ", 
-       "                                                                               ", 
+       "                      Please press the following keys to:                      ",
+       "          1. start Game                                                        ", 
+       "          2. Start Game From a Specific Screen            ", 
+       "          8. Show Instructions                            ",
+       "          9. Exit                                         ", 
+       "          0.Play Mario Theme                              ", 
 
     };
 

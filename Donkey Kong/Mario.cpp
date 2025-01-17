@@ -1,9 +1,8 @@
-﻿
-#include <iostream>
+﻿#include <iostream>
 #include <Windows.h>
 #include "Mario.h"
 #include "gameConfig.h"
-#include "general.h"
+
 
 
 void Mario::draw(char ch) const

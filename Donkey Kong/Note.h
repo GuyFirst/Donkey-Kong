@@ -92,19 +92,20 @@ Note marioTheme[] = {
     { static_cast<DWORD>(NOTES::C4), static_cast<DWORD>(DURATION_IN_MILLISECONDS::EIGHTH_NOTE) },
     { static_cast<DWORD>(NOTES::E4), static_cast<DWORD>(DURATION_IN_MILLISECONDS::QUARTER_NOTE) },
     { static_cast<DWORD>(NOTES::BREAK), static_cast<DWORD>(DURATION_IN_MILLISECONDS::SIXTEENTH_NOTE) },
-    { static_cast<DWORD>(NOTES::G4), static_cast<DWORD>(DURATION_IN_MILLISECONDS::DOTTED_HALF_NOTE) },
+    { static_cast<DWORD>(NOTES::G4), static_cast<DWORD>(DURATION_IN_MILLISECONDS::HALF_NOTE) },
      { static_cast<DWORD>(NOTES::BREAK), static_cast<DWORD>(DURATION_IN_MILLISECONDS::QUARTER_NOTE) },
-    { static_cast<DWORD>(NOTES::G3), static_cast<DWORD>(DURATION_IN_MILLISECONDS::DOTTED_HALF_NOTE) },
+    { static_cast<DWORD>(NOTES::G3), static_cast<DWORD>(DURATION_IN_MILLISECONDS::HALF_NOTE) },
 
-    { static_cast<DWORD>(NOTES::BREAK), static_cast<DWORD>(DURATION_IN_MILLISECONDS::DOTTED_QUARTER_NOTE) },
+    { static_cast<DWORD>(NOTES::BREAK), static_cast<DWORD>(DURATION_IN_MILLISECONDS::EIGHTH_NOTE) },
 
-    { static_cast<DWORD>(NOTES::C4), static_cast<DWORD>(DURATION_IN_MILLISECONDS::DOTTED_QUARTER_NOTE) },
-    { static_cast<DWORD>(NOTES::G3), static_cast<DWORD>(DURATION_IN_MILLISECONDS::DOTTED_QUARTER_NOTE) },
+    { static_cast<DWORD>(NOTES::C4), static_cast<DWORD>(DURATION_IN_MILLISECONDS::QUARTER_NOTE) },
+    { static_cast<DWORD>(NOTES::BREAK), static_cast<DWORD>(DURATION_IN_MILLISECONDS::EIGHTH_NOTE) },
+    { static_cast<DWORD>(NOTES::G3), static_cast<DWORD>(DURATION_IN_MILLISECONDS::QUARTER_NOTE) },
      { static_cast<DWORD>(NOTES::BREAK), static_cast<DWORD>(DURATION_IN_MILLISECONDS::EIGHTH_NOTE) },
-    { static_cast<DWORD>(NOTES::E3), static_cast<DWORD>(DURATION_IN_MILLISECONDS::DOTTED_EIGHTH_NOTE) },
+    { static_cast<DWORD>(NOTES::E3), static_cast<DWORD>(DURATION_IN_MILLISECONDS::EIGHTH_NOTE) },
 
-    
-    { static_cast<DWORD>(NOTES::A4), static_cast<DWORD>(DURATION_IN_MILLISECONDS::DOTTED_QUARTER_NOTE) },
+     { static_cast<DWORD>(NOTES::BREAK), static_cast<DWORD>(DURATION_IN_MILLISECONDS::EIGHTH_NOTE) },
+    { static_cast<DWORD>(NOTES::A4), static_cast<DWORD>(DURATION_IN_MILLISECONDS::QUARTER_NOTE) },
     { static_cast<DWORD>(NOTES::B4), static_cast<DWORD>(DURATION_IN_MILLISECONDS::QUARTER_NOTE) },
      { static_cast<DWORD>(NOTES::BREAK), static_cast<DWORD>(DURATION_IN_MILLISECONDS::EIGHTH_NOTE) },
     { static_cast<DWORD>(NOTES::ASharp4), static_cast<DWORD>(DURATION_IN_MILLISECONDS::EIGHTH_NOTE) },
@@ -112,7 +113,7 @@ Note marioTheme[] = {
 
     
     { static_cast<DWORD>(NOTES::G3), static_cast<DWORD>(DURATION_IN_MILLISECONDS::EIGHTH_NOTE) },
-    { static_cast<DWORD>(NOTES::E4), static_cast<DWORD>(DURATION_IN_MILLISECONDS::EIGHTH_NOTE) },
+    { static_cast<DWORD>(NOTES::E4), static_cast<DWORD>(DURATION_IN_MILLISECONDS::QUARTER_NOTE) },
     { static_cast<DWORD>(NOTES::G4), static_cast<DWORD>(DURATION_IN_MILLISECONDS::EIGHTH_NOTE) },
     { static_cast<DWORD>(NOTES::A4), static_cast<DWORD>(DURATION_IN_MILLISECONDS::QUARTER_NOTE) },
 
@@ -135,8 +136,18 @@ void playDonkeyTheme() {
 }
 
 void playMarioTheme() {
-	for (const auto& note : marioTheme)
-		Beep(note.frequency, note.duration);
+	clrsrc();
+    gotoxy(gameConfig::GAME_WIDTH / 3, gameConfig::GAME_HEIGHT / 2);
+	std::cout << "Playing Mario Theme...\n";
+    gotoxy(gameConfig::GAME_WIDTH / 3, gameConfig::GAME_HEIGHT / 2 + 1);
+	std::cout << "Press any key to stop\n";
+
+    for (const auto& note : marioTheme) {
+        Beep(note.frequency, note.duration);
+		if (_kbhit())
+			break;
+    }
+    gotoxy(0, 0);
 }
 
 

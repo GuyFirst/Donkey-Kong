@@ -1,8 +1,8 @@
 #include "Entity.h"
-#include "gameConfig.h"
 #include "Map.h"
 #include <iostream>
 #include <Windows.h>
+#include "gameConfig.h"
 
 bool Entity::isNearBoundry() const {
     if (m_diff_x == (int)gameConfig::Direction::POSITIVE)

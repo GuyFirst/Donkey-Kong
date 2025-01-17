@@ -1,6 +1,6 @@
 ﻿#include <iostream>
-#include "Game.h"
 #include "gameConfig.h"
+#include "Game.h"
 #include <conio.h> //for kbhit_ getch
 #include <ctime>  // For time functions
 #include <cstdlib>  // For rand() and srand()
@@ -30,8 +30,10 @@ void Game::run()
         Map menu;                                       // the flags indicates if the player wins, loses, or quiting the game.
         flag = menu.mainMenu(vec_to_fill);                         //  -1 for deciding to quit (before we entered the game)
         if (flag == -1)                                 //   1 if the player won
-            return;                                     //  -1 if the player lost
-        flag = startGame(vec_to_fill, flag - 49);                             //
+            return;  
+        else
+            flag = startGame(vec_to_fill, flag - '1');   //  -1 if the player lost
+                                                        //
         if (flag == 1)                                  //
             win();                                      //
         else                                            //

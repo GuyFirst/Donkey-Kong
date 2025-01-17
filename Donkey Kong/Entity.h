@@ -14,7 +14,7 @@ protected:
     Map* map;
     
 
-    virtual bool isNearBoundry() const;
+    bool isNearBoundry() const;
     bool isOnFloor() const;
 
 public:

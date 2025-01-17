@@ -1,11 +1,8 @@
 #include "Map.h"
-#include "general.h"
-#include "platform.h"
 #include "gameConfig.h"
 #include <iostream>
 #include <cstdlib>
 #include <conio.h>
-#include "menu.h"
 #include <Windows.h>
 #include "Point.h"
 #include <vector>
@@ -31,6 +28,8 @@ char Map::chooseScreens(std::vector<std::string> vec_to_fill)
     clrsrc();
     gotoxy(0, 0);
     std::cout << "choose screen to start with:\n";
+	std::cout << "---------------------------\n";
+	std::cout << "Please Select The number that display near the screen to start from it.\nAny other nubmer would not work.\n";
     int num = 1;
     for (auto& it : vec_to_fill)
     {
@@ -41,8 +40,10 @@ char Map::chooseScreens(std::vector<std::string> vec_to_fill)
     while (true)
         if (_kbhit()){
              key = _getch();
-			 if (key >= '1' && key <= '9')
+			 if ((key >= '1') && (key < '0' + num))
                  return key;
+             else
+				 continue;
 }
     
 
@@ -100,7 +101,7 @@ int Map::mainMenu(std::vector<std::string> vec_to_fill)
     showMenu();
     while (true)
     {
-        playMarioTheme();
+        
         char keyPressed = '*';
         if (_kbhit())
             keyPressed = _getch();
@@ -116,22 +117,19 @@ int Map::mainMenu(std::vector<std::string> vec_to_fill)
             showMenu();
             Sleep(500);
         }
-        if (keyPressed == '1')
+        if (keyPressed == '2')
         {
             char key = chooseScreens(vec_to_fill);
             clrsrc();
             return key;
         }
-        if (keyPressed == '0') // a meme
-        {
-            int i = 0;
-            while (true) {
-                std::cout << "WELCOME TO MTA PIZZA" << i << "\n";
-                i++;
-                Sleep(20);
-            }
+		if (keyPressed == '1')
+			return keyPressed;
 
-        } 
+        if (keyPressed == '0') {
+            playMarioTheme();
+            showMenu();
+        }
     }
 }
 

@@ -3,7 +3,6 @@
 #include <ctime>   // std::time
 #include <iostream>
 #include <vector>
-#include "general.h"
 #include "gameConfig.h"
 
 void Ghost::move(std::vector<Ghost>& ghosts) {
@@ -30,7 +29,7 @@ void Ghost::handleCollision(std::vector<Ghost>& ghosts) {
             }
         }
     }
-    if (isNearBoundry()) {
+    if (isOnAir() || isNearBoundry()) {
         m_diff_x = -m_diff_x; }
 }
 

@@ -26,5 +26,5 @@ private:
     void handleCollision(std::vector<Ghost>& Ghosts);
     void handleDirectionChange() { if (((std::rand() + m_id) % 100) + 1 <= 5 || !isOnFloor()) { m_diff_x = -m_diff_x; }}
     bool isNearOtherGhosts() const { return map->currentMap[position.getY()][position.getX() + m_diff_x] == 'x'; }
-    bool isNearBoundry() const { return map->originalMap[position.getY() + 1][position.getX() + m_diff_x] == ' '; }
+    bool isOnAir() const { return map->originalMap[position.getY() + 1][position.getX() + m_diff_x] == ' '; }
 };
