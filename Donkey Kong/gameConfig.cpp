@@ -38,3 +38,13 @@ void clearBuffer()
 		char garbage = _getch();
 }
 
+void printSlow(int delay, const std::string& text)
+{
+	for (size_t i = 0; i < text.length(); ++i) {
+		std::cout << text[i];
+		std::cout.flush();  // Ensures the character is printed immediately
+		Sleep(delay);  // Delay in milliseconds
+	}
+	std::cout << std::endl;  // Print a newline after finishing
+}
+

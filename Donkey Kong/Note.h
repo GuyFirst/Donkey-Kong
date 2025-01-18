@@ -1,6 +1,6 @@
 #include <Windows.h>
 #include <iostream>
-
+#include "gameConfig.h"
 struct Note {
     DWORD frequency;  // Frequency in Hz
     DWORD duration;   // Duration in milliseconds
@@ -138,7 +138,7 @@ void playDonkeyTheme() {
 void playMarioTheme() {
 	clrsrc();
     gotoxy(gameConfig::GAME_WIDTH / 3, gameConfig::GAME_HEIGHT / 2);
-	std::cout << "Playing Mario Theme...\n";
+    std::cout << "Playing Mario Theme...\n";
     gotoxy(gameConfig::GAME_WIDTH / 3, gameConfig::GAME_HEIGHT / 2 + 1);
 	std::cout << "Press any key to stop\n";
 

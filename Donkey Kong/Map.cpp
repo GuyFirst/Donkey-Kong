@@ -119,6 +119,8 @@ int Map::mainMenu(std::vector<std::string> vec_to_fill)
         }
         if (keyPressed == '2')
         {
+			if (vec_to_fill.size() == 0)
+                return '1';
             char key = chooseScreens(vec_to_fill);
             clrsrc();
             return key;
@@ -278,13 +280,9 @@ int Map::load(const std::string& filename) {
           
             ++curr_row;
             curr_col = 0;
-            if (curr_row > Map::GAME_HEIGHT) {
-                throw std::runtime_error("Number of rows exceeds maximum height: " + std::to_string(Map::GAME_HEIGHT));
-            }
-			
             continue;
         }
-
+       
         if (curr_col < Map::GAME_WIDTH && curr_row < Map::GAME_HEIGHT) {
             switch (c) {
             case '@':  // Mario
@@ -337,13 +335,14 @@ int Map::load(const std::string& filename) {
                 break;
             }
         }
-        
+	    if (curr_col >= Map::GAME_WIDTH) {return 5;}
     }
+	if (curr_row < Map::GAME_HEIGHT-1) { return 6; }
     for (; curr_col < Map::GAME_WIDTH - 2; ++curr_col)
         originalMap[curr_row][curr_col] = ' ';   // Fill the remaining space with ' ' (spaces)
 	originalMap[curr_row][curr_col] = '\0';  // Null-terminate the last row
 
-    for (int i = 0; i < ghostStartPositions.size(); i++) //reverse the vector to get the ghosts in the right order
+	for (int i = 0; i < ghostStartPositions.size(); i++) // delete ghosts that are not on the floor
     {
         if (originalMap[ghostStartPositions[i].getY() + 1][ghostStartPositions[i].getX()] != '=' && 
             originalMap[ghostStartPositions[i].getY() + 1][ghostStartPositions[i].getX()] != '<' && 

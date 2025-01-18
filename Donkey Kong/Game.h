@@ -30,7 +30,10 @@ public:
 	std::vector<Point> defineFloorsToToggle(Map& map);
 	void patishDestroy(std::vector<Barrel>& barrels, std::vector<Ghost>& ghosts, Mario& mario, char key);
 	void updateClock(const std::chrono::seconds& elapsedTime);
-	void getAllBoardFileNames(std::vector<std::string>& vec_to_fill);
+	bool getAllBoardFileNames(std::vector<std::string>& vec_to_fill);
 	void handleErrors(int& flag);
+	void noScreensMessage() const;
+	void pressAnyKeyToMoveToNextStage() const;
+	void hack() const;
 };
 

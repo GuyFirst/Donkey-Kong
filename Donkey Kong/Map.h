@@ -54,7 +54,7 @@ public:
        "          2. Start Game From a Specific Screen            ", 
        "          8. Show Instructions                            ",
        "          9. Exit                                         ", 
-       "          0.Play Mario Theme                              ", 
+       "          0. Play Mario Theme                              ", 
 
     };
 

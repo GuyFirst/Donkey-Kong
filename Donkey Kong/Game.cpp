@@ -1,5 +1,4 @@
 ﻿#include <iostream>
-#include "gameConfig.h"
 #include "Game.h"
 #include <conio.h> //for kbhit_ getch
 #include <ctime>  // For time functions
@@ -13,6 +12,7 @@
 #include <vector>
 #include <filesystem>
 #include <algorithm>
+#include "gameConfig.h"
 
 
 
@@ -21,6 +21,7 @@ void Game::run()
 {
     std::vector<std::string> vec_to_fill;
     getAllBoardFileNames(vec_to_fill);
+	
 
     int flag = 0;
     Point screenStart(0, 0);
@@ -31,8 +32,12 @@ void Game::run()
         flag = menu.mainMenu(vec_to_fill);                         //  -1 for deciding to quit (before we entered the game)
         if (flag == -1)                                 //   1 if the player won
             return;  
-        else
-            flag = startGame(vec_to_fill, flag - '1');   //  -1 if the player lost
+        if (vec_to_fill.size() == 0)
+        {
+            noScreensMessage();
+            return;
+        }
+        flag = startGame(vec_to_fill, flag - '1');      //  -1 if the player lost
                                                         //
         if (flag == 1)                                  //
             win();                                      //
@@ -42,16 +47,19 @@ void Game::run()
     return;
 }
 
-void Game::getAllBoardFileNames(std::vector<std::string>& vec_to_fill) {
+bool Game::getAllBoardFileNames(std::vector<std::string>& vec_to_fill) {
+	bool areThereAnyScreen = false;
     namespace fs = std::filesystem;
     for (const auto& entry : fs::directory_iterator(fs::current_path())) {
         auto filename = entry.path().filename();
         auto filenameStr = filename.string();
         if (filenameStr.substr(0, 5) == "dkong" && filename.extension() == ".screen") {
+			areThereAnyScreen = true;
             vec_to_fill.push_back(filenameStr);
         }
     }
     std::sort(vec_to_fill.begin(), vec_to_fill.end());
+    return areThereAnyScreen;
 }
 
 void Game::handleErrors(int& flag)
@@ -59,27 +67,70 @@ void Game::handleErrors(int& flag)
     clrsrc();
     switch (flag) {
     case 1:
-        std::cout << "The provided file does not meet the game settings,\n as Mario does not appear in the file.";
+		printSlow(static_cast<int>(gameConfig::Sleep::TEXT_PRINTING_SLEEP), "The provided file does not meet the game settings,\nas Mario does not appear in the file.\n");
         flag = 0;
-        Sleep((int)gameConfig::Sleep::SCREEN_SLEEP * 2);
+        pressAnyKeyToMoveToNextStage();
         break;
     case 2:
-        std::cout << "The provided file does not meet the game settings,\nas Pauline dose not appear in the file and you can not win.";
+        printSlow(static_cast<int>(gameConfig::Sleep::TEXT_PRINTING_SLEEP), "The provided file does not meet the game settings,\nas Pauline dose not appear in the file and you can not win.\n");
         flag = 0;
-        Sleep(((int)gameConfig::Sleep::SCREEN_SLEEP) * 3);
+        pressAnyKeyToMoveToNextStage();
         break;
     case 3:
-        std::cout << "The provided file does not meet the game settings,\nas Donkey does not appear in the file.";
+        printSlow(static_cast<int>(gameConfig::Sleep::TEXT_PRINTING_SLEEP), "The provided file does not meet the game settings,\nas Donkey does not appear in the file.\n");
         flag = 0;
-        Sleep(((int)gameConfig::Sleep::SCREEN_SLEEP) * 3);
+        pressAnyKeyToMoveToNextStage();
         break;
     case 4:
-        std::cout << "The provided file does not meet the game settings,\nas the Legend must appear in the file.";
+        printSlow(static_cast<int>(gameConfig::Sleep::TEXT_PRINTING_SLEEP), "The provided file does not meet the game settings,\nas the Legend must appear in the file.\n");
         flag = 0;
-        Sleep(((int)gameConfig::Sleep::SCREEN_SLEEP) * 3);
+        pressAnyKeyToMoveToNextStage();
         break;
-    }
+    case 5:
+        printSlow(static_cast<int>(gameConfig::Sleep::TEXT_PRINTING_SLEEP), "The provided file does not meet the game settings,\nas the file is too long.\n");
+        flag = 0;
+        pressAnyKeyToMoveToNextStage();
+        break;
+	case 6:
+        printSlow(static_cast<int>(gameConfig::Sleep::TEXT_PRINTING_SLEEP), "The provided file does not meet the game settings,\nas the file is too short.\n");
+        flag = 0;
+        pressAnyKeyToMoveToNextStage();
+        break;
+    };
+}
 
+void Game::noScreensMessage() const
+{
+        clrsrc();
+        gotoxy(0, 0);
+        printSlow(static_cast<int>(gameConfig::Sleep::TEXT_PRINTING_SLEEP), "No screens found in the current directory.\nPlease add screens to the directory and restart the game.\n");
+		printSlow(static_cast<int>(gameConfig::Sleep::TEXT_PRINTING_SLEEP), "Press any key to Exit.\n");
+        while (true)
+            if (_kbhit())
+                return;
+        return;
+}
+
+void Game::pressAnyKeyToMoveToNextStage() const
+{
+    printSlow(static_cast<int>(gameConfig::Sleep::TEXT_PRINTING_SLEEP), "Press any key to move to the next stage.\n");
+    Sleep((int)gameConfig::Sleep::SCREEN_SLEEP * 2);
+    while (true)
+        if (_kbhit())
+            return;
+}
+
+void Game::hack() const
+{
+	Sleep((int)gameConfig::Sleep::SCREEN_SLEEP);
+    clrsrc();
+	gotoxy(gameConfig::GAME_WIDTH / 3, gameConfig::GAME_HEIGHT / 2);
+    printSlow(static_cast<int>(gameConfig::Sleep::TEXT_PRINTING_SLEEP), "You have activated the hack!\n");
+    gotoxy(gameConfig::GAME_WIDTH / 3, (gameConfig::GAME_HEIGHT / 2) +1);
+    printSlow(static_cast<int>(gameConfig::Sleep::TEXT_PRINTING_SLEEP), "Press any key to move on to the next stage!");
+	while (true)
+		if (_kbhit())
+			return;
 }
 
 
@@ -92,7 +143,7 @@ int Game::startGame(std::vector<std::string> fileNames, int index) {
         Map gameBoard;
         int flag = gameBoard.load(fileNames[i]);
         handleErrors(flag);
-        if (!flag)
+		if (!flag) // If the file is not valid, skip to the next file
             continue;
         gameBoard.resetMap();
         gameBoard.printcurrentMap();
@@ -139,7 +190,11 @@ int Game::startGame(std::vector<std::string> fileNames, int index) {
                     gameBoard.printLegend(currLives);
                 }
             }
-
+            if (keyPressed == 'm')
+            {
+                hack();
+                break;
+            }
             // Handle Mario's interaction with Patish
             if (mario.isNearPatish() && !patishPicked) {
                 mario.isWithPatish = true;

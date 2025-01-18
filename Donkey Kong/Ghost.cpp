@@ -11,6 +11,10 @@ void Ghost::move(std::vector<Ghost>& ghosts) {
     handleCollision(ghosts);
     handleDirectionChange();
     // Update position 
+    if (isOnAir() || isNearBoundry()) {
+        m_diff_x = -m_diff_x;
+    }
+
     position.setX(position.getX() + m_diff_x);
     // Draw ghost at the new position
     draw('x');
@@ -29,8 +33,7 @@ void Ghost::handleCollision(std::vector<Ghost>& ghosts) {
             }
         }
     }
-    if (isOnAir() || isNearBoundry()) {
-        m_diff_x = -m_diff_x; }
+    
 }
 
 
