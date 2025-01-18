@@ -27,6 +27,7 @@ public:
     const std::vector<Point>& getGhostStartPositions() const { return ghostStartPositions; }
 	void m_playMarioTheme() const;
 	void m_playDonkeyStartTheme() const;
+	void m_playHowHighCanYouGetTheme() const;
 	void setValidation(bool valid) { isValid = valid; }
     char originalMap[Map::GAME_HEIGHT][Map::GAME_WIDTH] = {};
 
@@ -55,7 +56,7 @@ public:
        "          2. Start Game From a Specific Screen            ", 
        "          8. Show Instructions                            ",
        "          9. Exit                                         ", 
-       "          0. Play Mario Theme                              ", 
+       "          3. Play Mario Theme     4. Play 'Original Donkey Kong' Start Theme    ", 
 
     };
 

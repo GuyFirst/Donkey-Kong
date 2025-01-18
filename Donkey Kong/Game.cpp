@@ -145,7 +145,7 @@ int Game::startGame(std::vector<std::string> fileNames, int index) {
         std::vector<Ghost> ghosts = initializeGhosts(gameBoard);
         gotoxy(0, 0);
         printSlow(static_cast<int>(gameConfig::Sleep::TEXT_PRINTING_SLEEP), "How High Can You Get?");
-		gameBoard.m_playDonkeyStartTheme();
+        gameBoard.m_playHowHighCanYouGetTheme();
 		gotoxy(0, 0);
 		for (int i = 0; i < strlen("How High Can You Get?"); i++)
 		     std::cout << gameBoard.originalMap[0][i];

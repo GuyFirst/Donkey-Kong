@@ -23,6 +23,11 @@ void Map::m_playDonkeyStartTheme() const
 	playDonkeyStartTheme();
 }
 
+void Map::m_playHowHighCanYouGetTheme() const
+{
+	playHowHighCanYouGetTheme();
+}
+
 void Map::printcurrentMap() const
 {
     gotoxy(0, 0);
@@ -138,8 +143,12 @@ int Map::mainMenu(std::vector<std::string> vec_to_fill) const
 		if (keyPressed == '1')
 			return keyPressed;
 
-        if (keyPressed == '0') {
+        if (keyPressed == '3') {
             playMarioTheme();
+            showMenu();
+        }
+        if (keyPressed == '4') {
+			playDonkeyStartTheme();
             showMenu();
         }
     }

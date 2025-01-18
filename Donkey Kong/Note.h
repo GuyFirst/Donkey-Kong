@@ -47,7 +47,7 @@ enum class NOTES {
 	BREAK = 0,  // No sound
 };
 
-static constexpr int BPM = 167;
+static constexpr int BPM = 150;
 static constexpr int BEAT_DURATION_MS = 60000 / BPM;
 
 enum class DURATION_IN_MILLISECONDS {
@@ -65,7 +65,7 @@ enum class DURATION_IN_MILLISECONDS {
 };
 
 
-Note donkeyHowHighCanYouGet[] = {
+Note donkeyStartTheme[] = {
    {  static_cast<DWORD>(NOTES::C3), static_cast<DWORD>(DURATION_IN_MILLISECONDS::DOTTED_QUARTER_NOTE) },
    {  static_cast<DWORD>(NOTES::D3), static_cast<DWORD>(DURATION_IN_MILLISECONDS::EIGHTH_NOTE) },
    {  static_cast<DWORD>(NOTES::DSharp3), static_cast<DWORD>(DURATION_IN_MILLISECONDS::QUARTER_NOTE) },
@@ -79,11 +79,10 @@ Note donkeyHowHighCanYouGet[] = {
    {  static_cast<DWORD>(NOTES::G3), static_cast<DWORD>(DURATION_IN_MILLISECONDS::SIXTEENTH_NOTE) },
    {  static_cast<DWORD>(NOTES::FSharp3), static_cast<DWORD>(DURATION_IN_MILLISECONDS::SIXTEENTH_NOTE) },
    {  static_cast<DWORD>(NOTES::G3), static_cast<DWORD>(DURATION_IN_MILLISECONDS::WHOLE_NOTE) },
-   {  static_cast<DWORD>(NOTES::G3), static_cast<DWORD>(DURATION_IN_MILLISECONDS::WHOLE_NOTE) },
 
 };
 
-Note donkeyStartTheme[] = {
+Note donkeyHowHighCanYouGet[] = {
    {  static_cast<DWORD>(NOTES::C4), static_cast<DWORD>(DURATION_IN_MILLISECONDS::EIGHTH_NOTE) },
    {  static_cast<DWORD>(NOTES::D4), static_cast<DWORD>(DURATION_IN_MILLISECONDS::EIGHTH_NOTE) },
    {  static_cast<DWORD>(NOTES::F4), static_cast<DWORD>(DURATION_IN_MILLISECONDS::QUARTER_NOTE) },
@@ -151,10 +150,17 @@ Note marioTheme[] = {
 };
 
 void playDonkeyStartTheme() {
+    clrsrc();
+    gotoxy(gameConfig::GAME_WIDTH / 3, gameConfig::GAME_HEIGHT / 2);
+    std::cout << "Playing 'Original Donkey Kong' Theme...\n";
+    gotoxy(gameConfig::GAME_WIDTH / 3, gameConfig::GAME_HEIGHT / 2 + 1);
+    std::cout << "Press any key to stop\n";
     for (const auto& note : donkeyStartTheme) {
         Beep(note.frequency, note.duration);
-		Sleep(1);
+        if (_kbhit())
+            break;
     }
+    gotoxy(0, 0);
 }
 
 void playMarioTheme() {
@@ -172,4 +178,10 @@ void playMarioTheme() {
     gotoxy(0, 0);
 }
 
+void playHowHighCanYouGetTheme() {
+	for (const auto& note : donkeyHowHighCanYouGet) {
+		Beep(note.frequency, note.duration);
+		Sleep(1);
+	}
+}
 
