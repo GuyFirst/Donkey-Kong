@@ -29,14 +29,14 @@ void Game::run()
         Map menu;                                       // the flags indicates if the player wins, loses, or quiting the game.
         flag = menu.mainMenu(vec_to_fill);                         //  -1 for deciding to quit (before we entered the game)
         if (flag == -1)                                 //   1 if the player won
-            return;  
+            return;
         if (vec_to_fill.size() == 0)
         {
             noScreensMessage();
             return;
         }
         flag = startGame(vec_to_fill, flag - '1');      //  -1 if the player lost
-                                                        //
+        //
         if (flag == 1)                                  //
             win();                                      //
         else                                            //
@@ -46,13 +46,13 @@ void Game::run()
 }
 
 bool Game::getAllBoardFileNames(std::vector<std::string>& vec_to_fill) {
-	bool areThereAnyScreen = false;
+    bool areThereAnyScreen = false;
     namespace fs = std::filesystem;
     for (const auto& entry : fs::directory_iterator(fs::current_path())) {
         auto filename = entry.path().filename();
         auto filenameStr = filename.string();
         if (filenameStr.substr(0, 5) == "dkong" && filename.extension() == ".screen") {
-			areThereAnyScreen = true;
+            areThereAnyScreen = true;
             vec_to_fill.push_back(filenameStr);
         }
     }
@@ -65,7 +65,7 @@ void Game::handleErrors(int& flag)
     clrsrc();
     switch (flag) {
     case 1:
-		printSlow(static_cast<int>(gameConfig::Sleep::TEXT_PRINTING_SLEEP), "The provided file does not meet the game settings,\nas Mario does not appear in the file.\n");
+        printSlow(static_cast<int>(gameConfig::Sleep::TEXT_PRINTING_SLEEP), "The provided file does not meet the game settings,\nas Mario does not appear in the file.\n");
         flag = 0;
         pressAnyKeyToMoveToNextStage();
         break;
@@ -85,12 +85,8 @@ void Game::handleErrors(int& flag)
         pressAnyKeyToMoveToNextStage();
         break;
     case 5:
-        printSlow(static_cast<int>(gameConfig::Sleep::TEXT_PRINTING_SLEEP), "The provided file does not meet the game settings,\nas the file is too long.\n");
-        flag = 0;
-        pressAnyKeyToMoveToNextStage();
-        break;
-	case 6:
-        printSlow(static_cast<int>(gameConfig::Sleep::TEXT_PRINTING_SLEEP), "The provided file does not meet the game settings,\nas the file is too short.\n");
+    case 6:
+        printSlow(static_cast<int>(gameConfig::Sleep::TEXT_PRINTING_SLEEP), "The provided file does not meet the game settings,\nas the file is not the appropriate size.\nPlease make sure the screen is 80X25 sized.\n");
         flag = 0;
         pressAnyKeyToMoveToNextStage();
         break;
@@ -99,14 +95,14 @@ void Game::handleErrors(int& flag)
 
 void Game::noScreensMessage() const
 {
-        clrsrc();
-        gotoxy(0, 0);
-        printSlow(static_cast<int>(gameConfig::Sleep::TEXT_PRINTING_SLEEP), "No screens found in the current directory.\nPlease add screens to the directory and restart the game.\n");
-		printSlow(static_cast<int>(gameConfig::Sleep::TEXT_PRINTING_SLEEP), "Press any key to Exit.\n");
-        while (true)
-            if (_kbhit())
-                return;
-        return;
+    clrsrc();
+    gotoxy(0, 0);
+    printSlow(static_cast<int>(gameConfig::Sleep::TEXT_PRINTING_SLEEP), "No screens found in the current directory.\nPlease add screens to the directory and restart the game.\n");
+    printSlow(static_cast<int>(gameConfig::Sleep::TEXT_PRINTING_SLEEP), "Press any key to Exit.\n");
+    while (true)
+        if (_kbhit())
+            return;
+    return;
 }
 
 void Game::pressAnyKeyToMoveToNextStage() const
@@ -120,15 +116,15 @@ void Game::pressAnyKeyToMoveToNextStage() const
 
 void Game::hack() const
 {
-	Sleep((int)gameConfig::Sleep::SCREEN_SLEEP);
+    Sleep((int)gameConfig::Sleep::SCREEN_SLEEP);
     clrsrc();
-	gotoxy(gameConfig::GAME_WIDTH / 3, gameConfig::GAME_HEIGHT / 2);
+    gotoxy(gameConfig::GAME_WIDTH / 3, gameConfig::GAME_HEIGHT / 2);
     printSlow(static_cast<int>(gameConfig::Sleep::TEXT_PRINTING_SLEEP), "You have activated the hack!\n");
-    gotoxy(gameConfig::GAME_WIDTH / 3, (gameConfig::GAME_HEIGHT / 2) +1);
+    gotoxy(gameConfig::GAME_WIDTH / 3, (gameConfig::GAME_HEIGHT / 2) + 1);
     printSlow(static_cast<int>(gameConfig::Sleep::TEXT_PRINTING_SLEEP), "Press any key to move on to the next stage!");
-	while (true)
-		if (_kbhit())
-			return;
+    while (true)
+        if (_kbhit())
+            return;
 }
 
 
@@ -143,14 +139,19 @@ int Game::startGame(std::vector<std::string> fileNames, int index) {
         Mario mario(&gameBoard, gameBoard.getMarioStartPos());
         std::vector<Barrel> barrels = initializeBarrels(gameBoard);
         std::vector<Ghost> ghosts = initializeGhosts(gameBoard);
+
+        //feel free to delete/comment lines 143-152 to remove the theme
+        //theme playing
         gotoxy(0, 0);
         printSlow(static_cast<int>(gameConfig::Sleep::TEXT_PRINTING_SLEEP), "How High Can You Get?");
         gameBoard.m_playHowHighCanYouGetTheme();
-		gotoxy(0, 0);
-		for (int i = 0; i < strlen("How High Can You Get?"); i++)
-		     std::cout << gameBoard.originalMap[0][i];
+        gotoxy(0, 0);
+        for (int i = 0; i < strlen("How High Can You Get?"); i++)
+            std::cout << gameBoard.originalMap[0][i];
+        Sleep((int)gameConfig::Sleep::SCREEN_SLEEP);
+        // end of theme playing
+
         // Game state variables
-		Sleep((int)gameConfig::Sleep::SCREEN_SLEEP);
         int score = (int)gameConfig::Score::STARTING_SCORE;
         int currLives = (int)gameConfig::Size::START_LIVES;
         gameBoard.printLegend(currLives);
@@ -160,7 +161,7 @@ int Game::startGame(std::vector<std::string> fileNames, int index) {
         std::vector<Point> togglePoints = defineFloorsToToggle(gameBoard);
         std::chrono::steady_clock::time_point startTime = std::chrono::steady_clock::now();
         int elapsedSeconds = 0;
-		clearBuffer();
+        clearBuffer();
         while (true) {
             char keyPressed = handleUserInput();
             if (keyPressed == (int)gameConfig::eKeys::ESC) {
@@ -168,7 +169,7 @@ int Game::startGame(std::vector<std::string> fileNames, int index) {
                 continue;
             }
 
-            if (keyPressed == 'm') {
+            if (keyPressed == '`') {
                 barrels.clear();
                 hack();
                 break;
@@ -185,17 +186,17 @@ int Game::startGame(std::vector<std::string> fileNames, int index) {
             // Handle barrel spawning
             handleBarrelSpawning(barrels, gameBoard);
             // handle patish
-			patishDestroy(barrels, ghosts, mario, keyPressed, score);
+            patishDestroy(barrels, ghosts, mario, keyPressed, score);
             // Move barrels and ghosts
             moveBarrelsAndGhosts(barrels, ghosts, mario);
 
-			Sleep((int)gameConfig::Sleep::GAME_LOOP_SLEEP);
+            Sleep((int)gameConfig::Sleep::GAME_LOOP_SLEEP);
 
             // Toggle arrows every 4 seconds
             toggleArrowsEvery4Sec(gameBoard, togglePoints, lastToggleTime);
 
             //handle patish
-			patishDestroy(barrels, ghosts, mario, keyPressed, score);
+            patishDestroy(barrels, ghosts, mario, keyPressed, score);
 
             // Handle Mario movement
             handleMarioMovement(mario, isMarioLocked, keyPressed);
@@ -209,9 +210,9 @@ int Game::startGame(std::vector<std::string> fileNames, int index) {
         if (i != fileNames.size() - 1) {
             moveToNextStage(i);
         }
-		clearBuffer();
+        clearBuffer();
     }
-	clearBuffer();
+    clearBuffer();
     return 1;
 }
 
@@ -228,7 +229,7 @@ void Game::updateClock(std::chrono::steady_clock::time_point& startTime, int& el
         int minutes = elapsedSeconds / 60;
         int seconds = elapsedSeconds % 60;
 
-		if (seconds % 5 == 0)
+        if (seconds % 5 == 0)
             score -= static_cast<int>(gameConfig::Score::SECONDS_PASSED);
         // Position where the clock will be printed (customize as needed)
         Point clockPosition = gameBoard.getLegendPosition();
@@ -241,14 +242,14 @@ void Game::updateClock(std::chrono::steady_clock::time_point& startTime, int& el
 // Initialize game board
 Map Game::initializeGameBoard(const std::string& fileName) {
     Map gameBoard;
-    
+
     int flag = gameBoard.load(fileName);
     handleErrors(flag);
     if (flag) {
         gameBoard.resetMap();
         gameBoard.printcurrentMap();
     }
-	gameBoard.setValidation(flag);
+    gameBoard.setValidation(flag);
     return gameBoard;
 }
 
@@ -532,7 +533,7 @@ void Game::patishDestroy(std::vector<Barrel>& barrels, std::vector<Ghost>& ghost
             if (it->getPoint() == mario.getPoint() || it->getPoint() == marioPos1 || it->getPoint() == marioPos2) {
                 it->draw(' ');
                 it = ghosts.erase(it);
-				score += (int)gameConfig::Score::GHOST_KILL;
+                score += (int)gameConfig::Score::GHOST_KILL;
             }
             else {
                 ++it;
@@ -541,10 +542,10 @@ void Game::patishDestroy(std::vector<Barrel>& barrels, std::vector<Ghost>& ghost
         for (auto it = barrels.begin(); it != barrels.end(); ) {
             if (it->getPoint() == mario.getPoint() || it->getPoint() == marioPos1 || it->getPoint() == marioPos2) {
                 it->draw(' ');
-                it = barrels.erase(it); 
+                it = barrels.erase(it);
                 Barrel::decrementBarrelCurr();
-				Barrel::resetBarrelSpawnCounter();
-				score += (int)gameConfig::Score::BARREL_KILL;
+                Barrel::resetBarrelSpawnCounter();
+                score += (int)gameConfig::Score::BARREL_KILL;
             }
             else {
                 ++it;
