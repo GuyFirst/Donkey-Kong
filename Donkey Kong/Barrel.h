@@ -21,7 +21,13 @@ class Barrel : public Entity {
     bool isMarioNearMe(Point marioPos) const;
 
 public:
-    
+    std::vector<Point> explosionPattern = {
+       {0, 0}, {0, -1}, {1, 0},
+       {-1, 0}, {-1, -1}, {1, -1},
+       {2, 0}, {2, -1}, {2, -1},
+       {-2, 0 }, {-2, -1}, {-2, -1},
+       { -1, 1 }, {0, 1}, {1, 1}
+    };
     static int barrelCurr;
     static int barrelSpawnCounter;
 
@@ -36,7 +42,7 @@ public:
     void move(std::vector<Barrel>& barrels,Mario* mario);
     void reset();
     void addBarrel(std::vector<Barrel>& barrels, Map* map);  
-
+    void drawExplosion(const std::vector<Point>& pattern, char explosionChar);
    
     static int getBarrelCurr() {  return barrelCurr;  }
     static int getBarrelSpawnCounter() { return barrelSpawnCounter; }
