@@ -15,9 +15,9 @@ private:
     Point legendPosition;
     Point patishPosition;
     std::vector<Point> ghostStartPositions;
-
-
+    bool isValid;
 public:
+	Map() : isValid(false) {}
     static constexpr int GAME_WIDTH = 82;
     static constexpr int GAME_HEIGHT = 25;
 	Point getPatishPosition() const { return patishPosition; }
@@ -26,7 +26,7 @@ public:
     Point getLegendPosition() const { return legendPosition; }
     const std::vector<Point>& getGhostStartPositions() const { return ghostStartPositions; }
 
-
+	void setValidation(bool valid) { isValid = valid; }
     char originalMap[Map::GAME_HEIGHT][Map::GAME_WIDTH] = {};
 
     const char loginScreen[Map::GAME_HEIGHT][Map::GAME_WIDTH] = {
@@ -93,16 +93,16 @@ public:
             memcpy(currentMap[i], originalMap[i], Map::GAME_WIDTH);
     }
 
-    
-    void printcurrentMap();    
-    char chooseScreens(std::vector<std::string> vec_to_fill);
-    void printLegend(int remainingLives);
-    int mainMenu(std::vector<std::string> vec_to_fill);
-    void showMenu();
-    void showInstructions();
-    int exitGame() { std::cout << "Exiting the game. Goodbye!" << std::endl; return -1; }
-    void win();
-    void lose();
+	bool isMapValid() const { return isValid; }
+    void printcurrentMap() const;    
+    char chooseScreens(std::vector<std::string> vec_to_fill) const;
+    void printLegend(int remainingLives) const;
+    int mainMenu(std::vector<std::string> vec_to_fill) const;
+    void showMenu() const;
+    void showInstructions() const;
+    int exitGame() const{ std::cout << "Exiting the game. Goodbye!" << std::endl; return -1; }
+    void win() const;
+    void lose() const;
     int load(const std::string& filename);
 
    

@@ -13,7 +13,7 @@
 #include "Note.h"
 
 
-void Map::printcurrentMap()
+void Map::printcurrentMap() const
 {
     gotoxy(0, 0);
     for (int i = 0; i < Map::GAME_HEIGHT; ++i) {
@@ -23,7 +23,7 @@ void Map::printcurrentMap()
     }
 }
 
-char Map::chooseScreens(std::vector<std::string> vec_to_fill)
+char Map::chooseScreens(std::vector<std::string> vec_to_fill) const
 {
     clrsrc();
     gotoxy(0, 0);
@@ -50,7 +50,7 @@ char Map::chooseScreens(std::vector<std::string> vec_to_fill)
     
 }
 
-void Map::printLegend(int remainingLives)
+void Map::printLegend( int remainingLives) const
 {
 	Point  LegendPosition = getLegendPosition();
     gotoxy(LegendPosition.getX(), LegendPosition.getY());
@@ -65,7 +65,7 @@ void Map::printLegend(int remainingLives)
 
 
 }
-void Map::showMenu() {
+void Map::showMenu() const{
     for (int i = 0; i < Map::GAME_HEIGHT; ++i) {
         std::cout << this->loginScreen[i];
         if (i != Map::GAME_HEIGHT - 1)
@@ -73,7 +73,7 @@ void Map::showMenu() {
         Sleep(20);
     }
 }
-void Map::showInstructions()
+void Map::showInstructions() const
 {
     gotoxy(0, 0);
     for (int i = 0; i < Map::GAME_HEIGHT; ++i) {
@@ -95,7 +95,7 @@ void Map::showInstructions()
     }
     return;
 }
-int Map::mainMenu(std::vector<std::string> vec_to_fill)
+int Map::mainMenu(std::vector<std::string> vec_to_fill) const
 {
     int flag = 0;
     showMenu();
@@ -138,7 +138,7 @@ int Map::mainMenu(std::vector<std::string> vec_to_fill)
 
 
 
-void Map::win()
+void Map::win() const
 {
     const char WinScreen[gameConfig::GAME_HEIGHT][gameConfig::GAME_WIDTH] = {
         "                                                                               ", // 1
@@ -187,7 +187,7 @@ void Map::win()
     return;
 }
 
-void Map::lose()
+void Map::lose() const
 {
     const char LoseScreen[gameConfig::GAME_HEIGHT][gameConfig::GAME_WIDTH] = {
        "                                                                               ", // 1

@@ -135,148 +135,226 @@ void Game::hack() const
 
 
 int Game::startGame(std::vector<std::string> fileNames, int index) {
-
-    for (int i = index; i < fileNames.size(); i++)
-    {
+    for (int i = index; i < fileNames.size(); i++) {
         ShowConsoleCursor(false);
-        // Initialize game board
-        Map gameBoard;
-        int flag = gameBoard.load(fileNames[i]);
-        handleErrors(flag);
-		if (!flag) // If the file is not valid, skip to the next file
-            continue;
-        gameBoard.resetMap();
-        gameBoard.printcurrentMap();
-        // Initialize Mario
+
+        // Initialize game board and objects
+        Map gameBoard = initializeGameBoard(fileNames[i]);
+        if (!gameBoard.isMapValid()) continue;
+
         Mario mario(&gameBoard, gameBoard.getMarioStartPos());
-
-        // Initialize barrels
-        std::vector<Barrel> barrels;
-        barrels.emplace_back(&gameBoard, gameBoard.getBarrelStartPoint());
-
-        // Initialize ghosts
-        std::vector<Ghost> ghosts;
-        for (const Point& ghostPos : gameBoard.getGhostStartPositions()) {
-            ghosts.emplace_back(&gameBoard, std::rand(), ghostPos);
-        }
-
+        std::vector<Barrel> barrels = initializeBarrels(gameBoard);
+        std::vector<Ghost> ghosts = initializeGhosts(gameBoard);
 
         // Game state variables
         int score = (int)gameConfig::Score::STARTING_SCORE;
         int currLives = (int)gameConfig::Size::START_LIVES;
         gameBoard.printLegend(currLives);
-		int difficulty = 0;
-        char keyPressed;
         bool isMarioLocked = false;
         bool patishPicked = false;
-        bool isGamePaused = false;
-
         auto lastToggleTime = std::chrono::steady_clock::now();
-
-
-        // Toggle points for arrows
         std::vector<Point> togglePoints = defineFloorsToToggle(gameBoard);
+        std::chrono::steady_clock::time_point startTime = std::chrono::steady_clock::now();
+        int elapsedSeconds = 0;
 
-	
         while (true) {
-            keyPressed = (int)gameConfig::eKeys::NONE;
-
-            // Handle user input
-            if (_kbhit()) {
-                keyPressed = std::tolower(_getch());
-                if (keyPressed == (int)gameConfig::eKeys::ESC) {
-                    pause();
-                    gameBoard.printcurrentMap();
-                    gameBoard.printLegend(currLives);
-                }
+            char keyPressed = handleUserInput();
+            if (keyPressed == (int)gameConfig::eKeys::ESC) {
+                pauseGame(gameBoard, currLives);
+                continue;
             }
-            if (keyPressed == 'm')
-            {
-				barrels.clear();
+
+            if (keyPressed == 'm') {
+                barrels.clear();
                 hack();
                 break;
             }
-            // Handle Mario's interaction with Patish
-            if (mario.isNearPatish() && !patishPicked) {
-                mario.isWithPatish = true;
-                patishPicked = true;
-                Point hammerPos = gameBoard.getPatishPosition();
-                gameBoard.currentMap[hammerPos.getY()][hammerPos.getX()] = ' '; // Remove patish from irignal and current
-                gameBoard.originalMap[hammerPos.getY()][hammerPos.getX()] = ' ';
-            }
-            // Handle life loss
+
+            // Handle game logic
+            if (handlePatishInteraction(mario, patishPicked, gameBoard)) continue;
             if (handleLifeLoss(currLives, mario, gameBoard, Barrel::barrelCurr, Barrel::barrelSpawnCounter, isMarioLocked, ghosts, barrels, score)) {
                 return -1;
             }
 
-            // Check if Mario reached Pauline
-            if (mario.isNearPaulina()) {
-                break;
-            }
+            if (mario.isNearPaulina()) break;
 
             // Handle barrel spawning
-            Barrel::barrelSpawnCounter++;
-            if (Barrel::barrelSpawnCounter == (int)gameConfig::Size::BARRREL_COUNTER && Barrel::barrelCurr < (int)gameConfig::Size::BARREL_MAX) {
-                barrels.emplace_back(&gameBoard, gameBoard.getBarrelStartPoint());
-                Barrel::resetBarrelSpawnCounter();
-                Barrel::incrementBarrelCurr();  
-            }
-
+            handleBarrelSpawning(barrels, gameBoard);
+            // handle patish
+			patishDestroy(barrels, ghosts, mario, keyPressed, score);
             // Move barrels and ghosts
-            moveBarrels(barrels, mario);
-            moveGhosts(ghosts);
+            moveBarrelsAndGhosts(barrels, ghosts, mario);
 
-            // Destroy barrels or ghosts if Patish is used
-            patishDestroy(barrels, ghosts, mario, keyPressed);
+			Sleep((int)gameConfig::Sleep::GAME_LOOP_SLEEP);
 
-            // Toggle arrows on map
-            auto now = std::chrono::steady_clock::now();
-            if (std::chrono::duration_cast<std::chrono::seconds>(now - lastToggleTime).count() >= 4) {
-                for (const Point& p : togglePoints) {
-                    toggleArrow(gameBoard, p);
-                }
-                lastToggleTime = now;
-            }
+            // Toggle arrows every 4 seconds
+            toggleArrowsEvery4Sec(gameBoard, togglePoints, lastToggleTime);
 
-            // Sleep to control game speed
-            Sleep((int)gameConfig::Sleep::GAME_LOOP_SLEEP);
+            //handle patish
+			patishDestroy(barrels, ghosts, mario, keyPressed, score);
 
             // Handle Mario movement
-            if (isMarioLocked) {
-                handleMarioLocked(keyPressed, mario, isMarioLocked);
-            }
-            else {
-                mario.move((gameConfig::eKeys)keyPressed);
-                isMarioLocked = isMarioInLongAction(mario);
-            }
+            handleMarioMovement(mario, isMarioLocked, keyPressed);
 
-            if (isMarioInShortAction(mario)) {
-                isMarioLocked = false;
-            }
-
-            Point LegendPosition = gameBoard.getLegendPosition();
-            // Display updated score
-            gotoxy(LegendPosition.getX() + 7, LegendPosition.getY() + 2);
-            std::cout << score;
-
-
+            // Update the clock every second
+            updateClock(startTime, elapsedSeconds, gameBoard, score);
+            // Update score
+            updateScore(gameBoard, score);
         }
-        if (i != fileNames.size() - 1)
-        {
-            clrsrc();
-            gotoxy(gameConfig::GAME_WIDTH / 3, gameConfig::GAME_HEIGHT / 2);
-            printSlow(static_cast<int>(gameConfig::Sleep::TEXT_PRINTING_SLEEP), "Stage ");
-            std::cout << i + 1;
-            printSlow(static_cast<int>(gameConfig::Sleep::TEXT_PRINTING_SLEEP), " completed!\n");
-            Sleep((int)gameConfig::Sleep::SCREEN_SLEEP);
-            gotoxy(gameConfig::GAME_WIDTH / 3, (gameConfig::GAME_HEIGHT / 2) + 1);
-            printSlow(static_cast<int>(gameConfig::Sleep::TEXT_PRINTING_SLEEP), "Moving on to the next stage...\n");
-            Sleep((int)gameConfig::Sleep::SCREEN_SLEEP);
+
+        if (i != fileNames.size() - 1) {
+            moveToNextStage(i);
         }
-	
+		clearBuffer();
     }
+	clearBuffer();
     return 1;
 }
+
+void Game::updateClock(std::chrono::steady_clock::time_point& startTime, int& elapsedSeconds, Map& gameBoard, int& score) {
+    // Get the current time
+    auto now = std::chrono::steady_clock::now();
+    auto duration = std::chrono::duration_cast<std::chrono::seconds>(now - startTime).count();
+
+    // If a second has passed, update the clock
+    if (duration > elapsedSeconds) {
+        elapsedSeconds = duration;
+
+        // Format the clock (example: "Time: 01:23")
+        int minutes = elapsedSeconds / 60;
+        int seconds = elapsedSeconds % 60;
+
+		if (seconds % 5 == 0)
+            score -= static_cast<int>(gameConfig::Score::SECONDS_PASSED);
+        // Position where the clock will be printed (customize as needed)
+        Point clockPosition = gameBoard.getLegendPosition();
+        gotoxy(clockPosition.getX() + strlen("TIME PASSED:"), clockPosition.getY() + 1); // Adjust position for clock
+        std::cout << (minutes < 10 ? "0" : "") << minutes << ":"
+            << (seconds < 10 ? "0" : "") << seconds;
+    }
+}
+
+// Initialize game board
+Map Game::initializeGameBoard(const std::string& fileName) {
+    Map gameBoard;
+    
+    int flag = gameBoard.load(fileName);
+    handleErrors(flag);
+    if (flag) {
+        gameBoard.resetMap();
+        gameBoard.printcurrentMap();
+    }
+	gameBoard.setValidation(flag);
+    return gameBoard;
+}
+
+// Initialize barrels
+std::vector<Barrel> Game::initializeBarrels(Map& gameBoard) {
+    std::vector<Barrel> barrels;
+    barrels.emplace_back(&gameBoard, gameBoard.getBarrelStartPoint());
+    return barrels;
+}
+
+// Initialize ghosts
+std::vector<Ghost> Game::initializeGhosts(Map& gameBoard) {
+    std::vector<Ghost> ghosts;
+    for (const Point& ghostPos : gameBoard.getGhostStartPositions()) {
+        ghosts.emplace_back(&gameBoard, std::rand(), ghostPos);
+    }
+    return ghosts;
+}
+
+// Handle user input
+char Game::handleUserInput() {
+    char keyPressed = (int)gameConfig::eKeys::NONE;
+    if (_kbhit()) {
+        keyPressed = std::tolower(_getch());
+    }
+    return keyPressed;
+}
+
+// Pause the game
+void Game::pauseGame(Map& gameBoard, const int currLives) {
+    pause();
+    gameBoard.printcurrentMap();
+    gameBoard.printLegend(currLives);
+}
+
+// Handle Patish interaction
+bool Game::handlePatishInteraction(Mario& mario, bool& patishPicked, Map& gameBoard) {
+    if (mario.isNearPatish() && !patishPicked) {
+        mario.isWithPatish = true;
+        patishPicked = true;
+        Point hammerPos = gameBoard.getPatishPosition();
+        gameBoard.currentMap[hammerPos.getY()][hammerPos.getX()] = ' ';
+        gameBoard.originalMap[hammerPos.getY()][hammerPos.getX()] = ' ';
+        return true;
+    }
+    return false;
+}
+
+// Handle barrel spawning
+void Game::handleBarrelSpawning(std::vector<Barrel>& barrels, Map& gameBoard) {
+    Barrel::barrelSpawnCounter++;
+    if (Barrel::barrelSpawnCounter == (int)gameConfig::Size::BARRREL_COUNTER && Barrel::barrelCurr < (int)gameConfig::Size::BARREL_MAX) {
+        barrels.emplace_back(&gameBoard, gameBoard.getBarrelStartPoint());
+        Barrel::resetBarrelSpawnCounter();
+        Barrel::incrementBarrelCurr();
+    }
+}
+
+// Move barrels and ghosts
+void Game::moveBarrelsAndGhosts(std::vector<Barrel>& barrels, std::vector<Ghost>& ghosts, Mario& mario) {
+    moveBarrels(barrels, mario);
+    moveGhosts(ghosts);
+}
+
+// Toggle arrows on map
+void Game::toggleArrowsEvery4Sec(Map& gameBoard, std::vector<Point>& togglePoints, std::chrono::steady_clock::time_point& lastToggleTime) {
+    auto now = std::chrono::steady_clock::now();
+    if (std::chrono::duration_cast<std::chrono::seconds>(now - lastToggleTime).count() >= 4) {
+        for (const Point& p : togglePoints) {
+            toggleArrow(gameBoard, p);
+        }
+        lastToggleTime = now;
+    }
+}
+
+// Handle Mario movement
+void Game::handleMarioMovement(Mario& mario, bool& isMarioLocked, char keyPressed) {
+    if (isMarioLocked) {
+        handleMarioLocked(keyPressed, mario, isMarioLocked);
+    }
+    else {
+        mario.move((gameConfig::eKeys)keyPressed);
+        isMarioLocked = isMarioInLongAction(mario);
+    }
+
+    if (isMarioInShortAction(mario)) {
+        isMarioLocked = false;
+    }
+}
+
+// Update score display
+void Game::updateScore(Map& gameBoard, int score) {
+    Point LegendPosition = gameBoard.getLegendPosition();
+    gotoxy(LegendPosition.getX() + 7, LegendPosition.getY() + 2);
+    std::cout << score;
+}
+
+// Move to the next stage
+void Game::moveToNextStage(int stageIndex) {
+    clrsrc();
+    gotoxy(gameConfig::GAME_WIDTH / 3, gameConfig::GAME_HEIGHT / 2);
+    printSlow(static_cast<int>(gameConfig::Sleep::TEXT_PRINTING_SLEEP), "Stage ");
+    std::cout << stageIndex + 1;
+    printSlow(static_cast<int>(gameConfig::Sleep::TEXT_PRINTING_SLEEP), " completed!\n");
+    Sleep((int)gameConfig::Sleep::SCREEN_SLEEP);
+    gotoxy(gameConfig::GAME_WIDTH / 3, (gameConfig::GAME_HEIGHT / 2) + 1);
+    printSlow(static_cast<int>(gameConfig::Sleep::TEXT_PRINTING_SLEEP), "Moving on to the next stage...\n");
+    Sleep((int)gameConfig::Sleep::SCREEN_SLEEP);
+}
+
 
 
 
@@ -440,7 +518,7 @@ std::vector<Point> Game::defineFloorsToToggle(Map& map)
 
 
 
-void Game::patishDestroy(std::vector<Barrel>& barrels, std::vector<Ghost>& ghosts, Mario& mario, char key) {
+void Game::patishDestroy(std::vector<Barrel>& barrels, std::vector<Ghost>& ghosts, Mario& mario, char key, int& score) {
     if (key == (char)gameConfig::eKeys::PATISH && mario.isWithPatish) {
         Point marioPos1 = mario.getPoint();
         Point marioPos2 = mario.getPoint();
@@ -450,6 +528,7 @@ void Game::patishDestroy(std::vector<Barrel>& barrels, std::vector<Ghost>& ghost
             if (it->getPoint() == mario.getPoint() || it->getPoint() == marioPos1 || it->getPoint() == marioPos2) {
                 it->draw(' ');
                 it = ghosts.erase(it);
+				score += (int)gameConfig::Score::GHOST_KILL;
             }
             else {
                 ++it;
@@ -461,6 +540,7 @@ void Game::patishDestroy(std::vector<Barrel>& barrels, std::vector<Ghost>& ghost
                 it = barrels.erase(it); 
                 Barrel::decrementBarrelCurr();
 				Barrel::resetBarrelSpawnCounter();
+				score += (int)gameConfig::Score::BARREL_KILL;
             }
             else {
                 ++it;
@@ -476,7 +556,6 @@ void Game::updateClock(const std::chrono::seconds& elapsedTime)
     int secondsElapsed = elapsedTime.count();
     int minutes = secondsElapsed / 60;
     int seconds = secondsElapsed % 60;
-
 
     // Print the clock with zero padding (e.g., 01:05 for 1 minute and 5 seconds)
     std::cout << std::setw(2) << std::setfill('0') << minutes << ":"
