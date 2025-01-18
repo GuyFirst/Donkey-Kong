@@ -25,7 +25,8 @@ public:
     Point getBarrelStartPoint() const { return barrelStartPoint; }
     Point getLegendPosition() const { return legendPosition; }
     const std::vector<Point>& getGhostStartPositions() const { return ghostStartPositions; }
-
+	void m_playMarioTheme() const;
+	void m_playDonkeyStartTheme() const;
 	void setValidation(bool valid) { isValid = valid; }
     char originalMap[Map::GAME_HEIGHT][Map::GAME_WIDTH] = {};
 

@@ -65,7 +65,7 @@ enum class DURATION_IN_MILLISECONDS {
 };
 
 
-Note donkeyTheme[] = {
+Note donkeyHowHighCanYouGet[] = {
    {  static_cast<DWORD>(NOTES::C3), static_cast<DWORD>(DURATION_IN_MILLISECONDS::DOTTED_QUARTER_NOTE) },
    {  static_cast<DWORD>(NOTES::D3), static_cast<DWORD>(DURATION_IN_MILLISECONDS::EIGHTH_NOTE) },
    {  static_cast<DWORD>(NOTES::DSharp3), static_cast<DWORD>(DURATION_IN_MILLISECONDS::QUARTER_NOTE) },
@@ -79,6 +79,26 @@ Note donkeyTheme[] = {
    {  static_cast<DWORD>(NOTES::G3), static_cast<DWORD>(DURATION_IN_MILLISECONDS::SIXTEENTH_NOTE) },
    {  static_cast<DWORD>(NOTES::FSharp3), static_cast<DWORD>(DURATION_IN_MILLISECONDS::SIXTEENTH_NOTE) },
    {  static_cast<DWORD>(NOTES::G3), static_cast<DWORD>(DURATION_IN_MILLISECONDS::WHOLE_NOTE) },
+   {  static_cast<DWORD>(NOTES::G3), static_cast<DWORD>(DURATION_IN_MILLISECONDS::WHOLE_NOTE) },
+
+};
+
+Note donkeyStartTheme[] = {
+   {  static_cast<DWORD>(NOTES::C4), static_cast<DWORD>(DURATION_IN_MILLISECONDS::EIGHTH_NOTE) },
+   {  static_cast<DWORD>(NOTES::D4), static_cast<DWORD>(DURATION_IN_MILLISECONDS::EIGHTH_NOTE) },
+   {  static_cast<DWORD>(NOTES::F4), static_cast<DWORD>(DURATION_IN_MILLISECONDS::QUARTER_NOTE) },
+   {  static_cast<DWORD>(NOTES::D4), static_cast<DWORD>(DURATION_IN_MILLISECONDS::EIGHTH_NOTE) },
+   {  static_cast<DWORD>(NOTES::C4), static_cast<DWORD>(DURATION_IN_MILLISECONDS::EIGHTH_NOTE) },
+   {  static_cast<DWORD>(NOTES::D4), static_cast<DWORD>(DURATION_IN_MILLISECONDS::EIGHTH_NOTE) },
+   {  static_cast<DWORD>(NOTES::ASharp3), static_cast<DWORD>(DURATION_IN_MILLISECONDS::EIGHTH_NOTE) },
+   {  static_cast<DWORD>(NOTES::D3), static_cast<DWORD>(DURATION_IN_MILLISECONDS::EIGHTH_NOTE) },
+   {  static_cast<DWORD>(NOTES::E3), static_cast<DWORD>(DURATION_IN_MILLISECONDS::EIGHTH_NOTE) },
+   {  static_cast<DWORD>(NOTES::F3), static_cast<DWORD>(DURATION_IN_MILLISECONDS::EIGHTH_NOTE) },
+   {  static_cast<DWORD>(NOTES::G3), static_cast<DWORD>(DURATION_IN_MILLISECONDS::EIGHTH_NOTE) },
+   {  static_cast<DWORD>(NOTES::GSharp3), static_cast<DWORD>(DURATION_IN_MILLISECONDS::EIGHTH_NOTE) },
+   {  static_cast<DWORD>(NOTES::A3), static_cast<DWORD>(DURATION_IN_MILLISECONDS::EIGHTH_NOTE) },
+   {  static_cast<DWORD>(NOTES::ASharp3), static_cast<DWORD>(DURATION_IN_MILLISECONDS::EIGHTH_NOTE) },
+   {  static_cast<DWORD>(NOTES::BREAK), static_cast<DWORD>(DURATION_IN_MILLISECONDS::QUARTER_NOTE) },
 
 };
 
@@ -130,9 +150,11 @@ Note marioTheme[] = {
 
 };
 
-void playDonkeyTheme() {
-    for (const auto& note : donkeyTheme) 
-        Beep(note.frequency, note.duration); 
+void playDonkeyStartTheme() {
+    for (const auto& note : donkeyStartTheme) {
+        Beep(note.frequency, note.duration);
+		Sleep(1);
+    }
 }
 
 void playMarioTheme() {

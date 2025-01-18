@@ -13,6 +13,16 @@
 #include "Note.h"
 
 
+void Map::m_playMarioTheme() const
+{
+	playMarioTheme();
+}
+
+void Map::m_playDonkeyStartTheme() const
+{
+	playDonkeyStartTheme();
+}
+
 void Map::printcurrentMap() const
 {
     gotoxy(0, 0);

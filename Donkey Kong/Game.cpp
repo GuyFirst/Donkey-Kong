@@ -13,15 +13,13 @@
 #include <filesystem>
 #include <algorithm>
 #include "gameConfig.h"
-
-
+#include "Ghost.h"
 
 
 void Game::run()
 {
     std::vector<std::string> vec_to_fill;
     getAllBoardFileNames(vec_to_fill);
-	
 
     int flag = 0;
     Point screenStart(0, 0);
@@ -137,7 +135,7 @@ void Game::hack() const
 int Game::startGame(std::vector<std::string> fileNames, int index) {
     for (int i = index; i < fileNames.size(); i++) {
         ShowConsoleCursor(false);
-
+        gotoxy(gameConfig::GAME_WIDTH / 3, gameConfig::GAME_HEIGHT / 2);
         // Initialize game board and objects
         Map gameBoard = initializeGameBoard(fileNames[i]);
         if (!gameBoard.isMapValid()) continue;
@@ -145,8 +143,14 @@ int Game::startGame(std::vector<std::string> fileNames, int index) {
         Mario mario(&gameBoard, gameBoard.getMarioStartPos());
         std::vector<Barrel> barrels = initializeBarrels(gameBoard);
         std::vector<Ghost> ghosts = initializeGhosts(gameBoard);
-
+        gotoxy(0, 0);
+        printSlow(static_cast<int>(gameConfig::Sleep::TEXT_PRINTING_SLEEP), "How High Can You Get?");
+		gameBoard.m_playDonkeyStartTheme();
+		gotoxy(0, 0);
+		for (int i = 0; i < strlen("How High Can You Get?"); i++)
+		     std::cout << gameBoard.originalMap[0][i];
         // Game state variables
+		Sleep((int)gameConfig::Sleep::SCREEN_SLEEP);
         int score = (int)gameConfig::Score::STARTING_SCORE;
         int currLives = (int)gameConfig::Size::START_LIVES;
         gameBoard.printLegend(currLives);
@@ -156,7 +160,7 @@ int Game::startGame(std::vector<std::string> fileNames, int index) {
         std::vector<Point> togglePoints = defineFloorsToToggle(gameBoard);
         std::chrono::steady_clock::time_point startTime = std::chrono::steady_clock::now();
         int elapsedSeconds = 0;
-
+		clearBuffer();
         while (true) {
             char keyPressed = handleUserInput();
             if (keyPressed == (int)gameConfig::eKeys::ESC) {
