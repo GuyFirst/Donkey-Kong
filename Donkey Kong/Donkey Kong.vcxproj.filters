@@ -62,14 +62,16 @@
     <ClInclude Include="Entity.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="readme.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Note.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="gameConfig.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="..\..\..\..\OneDrive\שולחן העבודה\readme - donkey kong.txt">
+      <Filter>Header Files</Filter>
+    </Text>
   </ItemGroup>
 </Project>

@@ -147,7 +147,9 @@
     <ClInclude Include="Mario.h" />
     <ClInclude Include="Note.h" />
     <ClInclude Include="Point.h" />
-    <ClInclude Include="readme.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="..\..\..\..\OneDrive\שולחן העבודה\readme - donkey kong.txt" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
