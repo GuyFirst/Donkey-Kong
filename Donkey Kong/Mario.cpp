@@ -13,7 +13,7 @@ void Mario::draw(char ch) const
 
 void Mario::move(gameConfig::eKeys key) {
     // Erase Mario from the current position
-    draw(this->map->originalMap[position.getY()][position.getX()]);
+    draw(map->originalMap[position.getY()][position.getX()]);
 
 
     // Check for collision with barrels before moving
@@ -31,7 +31,7 @@ void Mario::move(gameConfig::eKeys key) {
 
     // Determine the character to draw
     char marioChar;
-    if (this->map->currentMap[position.getY()][position.getX()] == 'H') { marioChar = '#'; } // Mario is climbing 
+    if (map->currentMap[position.getY()][position.getX()] == 'H') { marioChar = '#'; } // Mario is climbing 
 
     else if (isWithPatish) {  marioChar = 'P'; }// Mario has the hammer
     
@@ -271,7 +271,7 @@ void Mario::downLadder() {
 
 void Mario::resetMario() {
     isWithPatish = false;
-	position = this->map->getMarioStartPos();
+	position = map->getMarioStartPos();
     m_diff_x = m_diff_y = m_countHeight = m_isNearExplosion = 0;
 }
 
@@ -282,23 +282,24 @@ void Mario::resetMario() {
 
 
 
-bool Mario::isOnFloor() const            { return this->map->currentMap[position.getY() + 1][position.getX()] != ' ' && this->map->currentMap[position.getY() + 1][position.getX()] != 'O' && this->map->currentMap[position.getY() + 1][position.getX()] != 'x'; }
+bool Mario::isOnFloor() const            { return map->currentMap[position.getY() + 1][position.getX()] != ' ' && map->currentMap[position.getY() + 1][position.getX()] != 'O' && map->currentMap[position.getY() + 1][position.getX()] != 'x'; }
 
 
-bool Mario::isUnderLadder() const        { return this->map->currentMap[position.getY() - 1][position.getX()] == 'H' ||
-                                                  this->map->currentMap[position.getY()][position.getX()] == 'H'     ||
-                                                  this->map->currentMap[position.getY() + 1][position.getX()] == 'H' ;   }
+bool Mario::isUnderLadder() const        { return map->currentMap[position.getY() - 1][position.getX()] == 'H' ||
+                                                  map->currentMap[position.getY()][position.getX()] == 'H'     ||
+                                                  map->currentMap[position.getY() + 1][position.getX()] == 'H' ;   }
 
 bool Mario::isOnLadder() const {
-    return this->map->currentMap[position.getY() + 2][position.getX()] == 'H' ||
-           this->map->currentMap[position.getY() + 1][position.getX()] == 'H' ;  }
+    return map->currentMap[position.getY() + 2][position.getX()] == 'H' ||
+           map->currentMap[position.getY() + 1][position.getX()] == 'H' ;  }
 
 
 
 bool Mario::isUnderFloor() const {
     if (state == State::STANDING) 
-        return this->map->currentMap[position.getY() - 1][position.getX()] != ' ' &&
-               this->map->currentMap[position.getY() - 1][position.getX()] != 'H' ;  
+        return map->currentMap[position.getY() - 1][position.getX()] != ' ' &&
+               map->currentMap[position.getY() - 1][position.getX()] != 'H' &&
+               map->currentMap[position.getY() - 1][position.getX()] != 'p';
     else 
         return isUnderFloorWhileMoving(); 
 }

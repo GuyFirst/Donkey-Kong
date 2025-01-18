@@ -22,11 +22,11 @@ public:
         isWithPatish(false) {
     }  
 	State getState() const     { return state; }
-    bool isNearPaulina() const { return this->map->currentMap[position.getY()][position.getX() + m_diff_x] == '$'; }
-    char getMapChar() const    { return this->map->originalMap[position.getY()][position.getX()]; }
-    bool isBarrelHere() const  { return this->map->currentMap[position.getY()][position.getX()] == 'O'; }
-    bool isGhostHere() const   { return this->map->currentMap[position.getY()][position.getX()] == 'x'; }
-    bool isNearPatish() const  { return this->map->originalMap[position.getY()][position.getX()] == 'p'; }
+    bool isNearPaulina() const { return map->currentMap[position.getY()][position.getX() + m_diff_x] == '$'; }
+    char getMapChar() const    { return map->originalMap[position.getY()][position.getX()]; }
+    bool isBarrelHere() const  { return map->currentMap[position.getY()][position.getX()] == 'O'; }
+    bool isGhostHere() const   { return map->currentMap[position.getY()][position.getX()] == 'x'; }
+    bool isNearPatish() const  { return map->originalMap[position.getY()][position.getX()] == 'p'; }
     void setIsNearExplosion(bool isNear) { m_isNearExplosion = isNear; }
 
 
@@ -61,9 +61,10 @@ private:
     bool isUnderLadder() const;
     bool isOnLadder() const;
     bool checkForCollisions(int key);
-    bool isObstacleAbove(int x) const { return this->map->currentMap[position.getY() - 1][x] != ' ' && this->map->currentMap[position.getY() - 1][x] != 'H'; }
-    bool isCeilingAbove() const       { return this->map->currentMap[position.getY() - 1][position.getX()] != ' ' &&
-                                               this->map->currentMap[position.getY() - 1][position.getX()] != 'H';
+    bool isObstacleAbove(int x) const { return map->currentMap[position.getY() - 1][x] != ' ' && map->currentMap[position.getY() - 1][x] != 'H' && map->currentMap[position.getY() - 1][x] != 'p'; }
+    bool isCeilingAbove() const       { return map->currentMap[position.getY() - 1][position.getX()] != ' ' &&
+                                               map->currentMap[position.getY() - 1][position.getX()] != 'H' &&
+                                               map->currentMap[position.getY() - 1][position.getX()] != 'p';
     }
     void checkFallHeight() { if (m_countHeight >= 5) { lives--; } }
 

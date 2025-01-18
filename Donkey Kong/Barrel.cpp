@@ -70,6 +70,7 @@ void Barrel::handleExplosion(std::vector<Barrel>& barrels, Mario* mario) {
     auto it = std::find(barrels.begin(), barrels.end(), *this);
     if (it != barrels.end()) { barrels.erase(it); }
     Barrel::decrementBarrelCurr();
+	Barrel::resetBarrelSpawnCounter();
 }
 
 

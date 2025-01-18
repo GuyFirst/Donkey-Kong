@@ -165,7 +165,7 @@ int Game::startGame(std::vector<std::string> fileNames, int index) {
         int score = (int)gameConfig::Score::STARTING_SCORE;
         int currLives = (int)gameConfig::Size::START_LIVES;
         gameBoard.printLegend(currLives);
-
+		int difficulty = 0;
         char keyPressed;
         bool isMarioLocked = false;
         bool patishPicked = false;
@@ -192,6 +192,7 @@ int Game::startGame(std::vector<std::string> fileNames, int index) {
             }
             if (keyPressed == 'm')
             {
+				barrels.clear();
                 hack();
                 break;
             }
@@ -218,7 +219,7 @@ int Game::startGame(std::vector<std::string> fileNames, int index) {
             if (Barrel::barrelSpawnCounter == (int)gameConfig::Size::BARRREL_COUNTER && Barrel::barrelCurr < (int)gameConfig::Size::BARREL_MAX) {
                 barrels.emplace_back(&gameBoard, gameBoard.getBarrelStartPoint());
                 Barrel::resetBarrelSpawnCounter();
-                Barrel::incrementBarrelCurr();  // Increment the static barrel counter
+                Barrel::incrementBarrelCurr();  
             }
 
             // Move barrels and ghosts
@@ -260,8 +261,19 @@ int Game::startGame(std::vector<std::string> fileNames, int index) {
 
 
         }
-
-        //here implement a screen that says you finished the i'th screen
+        if (i != fileNames.size() - 1)
+        {
+            clrsrc();
+            gotoxy(gameConfig::GAME_WIDTH / 3, gameConfig::GAME_HEIGHT / 2);
+            printSlow(static_cast<int>(gameConfig::Sleep::TEXT_PRINTING_SLEEP), "Stage ");
+            std::cout << i + 1;
+            printSlow(static_cast<int>(gameConfig::Sleep::TEXT_PRINTING_SLEEP), " completed!\n");
+            Sleep((int)gameConfig::Sleep::SCREEN_SLEEP);
+            gotoxy(gameConfig::GAME_WIDTH / 3, (gameConfig::GAME_HEIGHT / 2) + 1);
+            printSlow(static_cast<int>(gameConfig::Sleep::TEXT_PRINTING_SLEEP), "Moving on to the next stage...\n");
+            Sleep((int)gameConfig::Sleep::SCREEN_SLEEP);
+        }
+	
     }
     return 1;
 }
@@ -446,8 +458,9 @@ void Game::patishDestroy(std::vector<Barrel>& barrels, std::vector<Ghost>& ghost
         for (auto it = barrels.begin(); it != barrels.end(); ) {
             if (it->getPoint() == mario.getPoint() || it->getPoint() == marioPos1 || it->getPoint() == marioPos2) {
                 it->draw(' ');
-                it = barrels.erase(it);
-                Barrel::barrelCurr--;
+                it = barrels.erase(it); 
+                Barrel::decrementBarrelCurr();
+				Barrel::resetBarrelSpawnCounter();
             }
             else {
                 ++it;

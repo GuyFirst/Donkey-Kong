@@ -45,6 +45,5 @@ void printSlow(int delay, const std::string& text)
 		std::cout.flush();  // Ensures the character is printed immediately
 		Sleep(delay);  // Delay in milliseconds
 	}
-	std::cout << std::endl;  // Print a newline after finishing
 }
 
